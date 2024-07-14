@@ -156,6 +156,10 @@ sudo chmod -R -v a+rwx /mnt/shared
 
 #### Backup and Edit `/etc/fstab`    
 
+To make the mounts happen at boot time, we mus edit `/etc/fstab`.    
+Start a Terminal and run the nano editor:    
+
+```
 sudo cp -fv /etc/fstab /etc/fstab.bak
 sudo nano  /etc/fstab
 ```
@@ -164,7 +168,7 @@ Using the nano editor, change fstab so the following entries are in the specific
 Remember to    
 - substitute your PARTUUID id's for `partuuid1/partuuid3/partuuid3/partuuid4`    
 - substitute your root folder names for `mp4lib1/mp4lib2/mp4lib3/mp4lib4`    
-````
+```
 # https://askubuntu.com/questions/109413/how-do-i-use-overlayfs/1348932#1348932
 # To set order/dependency of mounts in fstab file, we will declare systemd option "require" using syntax: x-systemd.require. 
 # Argument for this option is mount point of the mount which should be successfully mounted before given mount.
@@ -180,7 +184,7 @@ PARTUUID=partuuid4 /mnt/shared/usb3disk4 ntfs x-systemd.requires=/mnt/shared/usb
 #
 overlay /mnt/shared/merged overlay x-systemd.requires=/mnt/shared/usb3disk4,defaults,auto,users,ro,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,x-systemd.device-timeout=60,lowerdir=/mnt/shared/usb3disk1/mp4lib1:/mnt/shared/usb3disk2/mp4lib2:/mnt/shared/usb3disk3/mp4lib3:/mnt/shared/usb3disk4/mp4lib4 0 0
 #
-````
+```
 exit nano with `Control O` `Control X`.    
 
 ####  Check and Reboot to see what happens with those mounts    
@@ -203,12 +207,12 @@ If the files in the mounts do not match what you expect from `etc/fstab`, then s
 
 #### Install and configure `SAMBA`
 In a Terminal,    
-````
+```
 sudo apt -y install samba samba-common-bin smbclient cifs-utils
 # create the default user pi in creating the first samba user
 sudo smbpasswd -a pi
 # if prompted, enter the same password as the default user pi you setup earlier    
-````
+```
 
 # https://www.samba.org/samba/docs/current/man-html/smb.conf.5.html
 
