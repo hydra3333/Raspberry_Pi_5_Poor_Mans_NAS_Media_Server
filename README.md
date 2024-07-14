@@ -86,7 +86,7 @@ At this point, the disks should already be auto-mounted. That's OK, well change 
 
 ### Set the Router so this Pi has a Reserved fixed (permanent) DHCP IP Address Lease
 In this outline the LAN IP Address range is 10.0.0.0/255.255.255.0 with the Pi 5 knowing itself of course on 127.0.0.1,
-and the Router's IP Address lease reservation could be 10.0.0.21.
+and the Router's IP Address lease reservation could be 10.0.0.18
 If you need a different IP Address/Range, just substitute in the correct IP and Address range etc in the outline below.     
 
 Normally the Pi will get a DHCP IP Address lease from the router, which may change over time as leases expire.    
@@ -94,7 +94,7 @@ On the Pi start a Terminal and do
 ```
 ifconfig
 ```
-and notice in the `eth0` interface after `inet` is the the Pi's LAN IP address, eg 10.0.0.21
+and notice in the `eth0` interface after `inet` is the the Pi's LAN IP address, eg 10.0.0.18
 and notice after `ether` is the mac address.
 
 Login to your router and look at the LAN connected devices, noticing the IP address and mac address matching the Pi.    
