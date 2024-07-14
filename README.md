@@ -94,7 +94,8 @@ On the Pi start a Terminal and do
 ```
 ifconfig
 ```
-and notice the IP address and mac address.
+and notice in the `eth0` interface after `inet` is the the Pi's LAN IP address, eg 10.0.0.21
+and notice after `ether` is the mac address.
 
 Login to your router and look at the LAN connected devices, noticing the IP address and mac address matching the Pi.    
 Head on to the Router's DHCP management area and allocated a Reserved fixed (permanent) IP address and apply/save it.   
