@@ -156,7 +156,7 @@ sudo chmod -R -v a+rwx /mnt/shared
 
 #### Backup and Edit `/etc/fstab`    
 
-To make the mounts happen at boot time, we mus edit `/etc/fstab`.    
+To make the mounts happen at boot time, we must edit `/etc/fstab`.    
 Start a Terminal and run the nano editor:    
 
 ```
@@ -164,7 +164,7 @@ sudo cp -fv /etc/fstab /etc/fstab.bak
 sudo nano  /etc/fstab
 ```
 
-Using the nano editor, change fstab so the following entries are in the specific order below ...    
+Using the nano editor, change fstab and add the following entries which must be in the specific order below ...    
 Remember to    
 - substitute your PARTUUID id's for `partuuid1/partuuid3/partuuid3/partuuid4`    
 - substitute your root folder names for `mp4lib1/mp4lib2/mp4lib3/mp4lib4`    
@@ -214,13 +214,12 @@ sudo smbpasswd -a pi
 # if prompted, enter the same password as the default user pi you setup earlier    
 ```
 
-# https://www.samba.org/samba/docs/current/man-html/smb.conf.5.html
 
 Edit the `SAMBA` config `/etc/samba/smb.conf`.    
 ```
 sudo nano /etc/samba/smb.conf
 ```
-
+Per https://www.samba.org/samba/docs/current/man-html/smb.conf.5.html    
 Here are some global `SAMBA` settings in `/etc/samba/smb.conf`, use nano to check for and fix them    
 - if they not exist, create them    
 - if they are commented out, uncomment them    
@@ -303,8 +302,9 @@ inherit permissions = yes
 exit nano with `Control O` `Control X`.    
 
 
-The rest of this outliune is yet to bve clarified.
+The rest of this outline is yet to bve clarified.
 
+```
 sudo testparm
 set +x
 echo ""
@@ -339,10 +339,11 @@ set -x
 sudo hostname
 sudo hostname --fqdn
 sudo hostname --all-ip-addresses
-  
+```  
 
 
 
 
-Setup HDIDLE ?????????????
+#### Setup HDIDLE ?????????????
+
 
