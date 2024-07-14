@@ -169,6 +169,29 @@ sudo chown -R -v pi:  /mnt/shared
 #sudo chmod -R -v +777 /mnt/shared
 sudo chmod -R -v a+rwx /mnt/shared
 ```
+So in our example it becomes this (2 disks):
+```
+# create the root for SMB/CIFS sharing
+cd ~
+sudo mkdir -v -m a=rwx /mnt/shared
+
+# create the mount points for the external USB3 disks    
+sudo mkdir -v -m a=rwx /mnt/shared/usb3disk1
+sudo mkdir -v -m a=rwx /mnt/shared/usb3disk2
+
+# create the overlayfs mount point
+sudo mkdir -v -m a=rwx /mnt/shared/merged
+sudo chown -R -v pi:  /mnt/shared/merged
+#sudo chmod -R -v +777 /mnt/shared/merged
+sudo chmod -R -v a+rwx /mnt/shared/merged
+
+# ensure the tree has the right ownership and permissions
+sudo chown -R -v pi:  /mnt/shared
+#sudo chmod -R -v +777 /mnt/shared
+sudo chmod -R -v a+rwx /mnt/shared
+```
+
+
 
 #### Backup and Edit `/etc/fstab`    
 
@@ -201,6 +224,28 @@ PARTUUID=partuuid4 /mnt/shared/usb3disk4 ntfs x-systemd.requires=/mnt/shared/usb
 overlay /mnt/shared/merged overlay x-systemd.requires=/mnt/shared/usb3disk4,defaults,auto,users,ro,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,x-systemd.device-timeout=60,lowerdir=/mnt/shared/usb3disk1/mp4lib1:/mnt/shared/usb3disk2/mp4lib2:/mnt/shared/usb3disk3/mp4lib3:/mnt/shared/usb3disk4/mp4lib4 0 0
 #
 ```
+So in our example it becomexs this
+```
+# create the root for SMB/CIFS sharing
+cd ~
+sudo mkdir -v -m a=rwx /mnt/shared
+
+# create the mount points for the external USB3 disks    
+sudo mkdir -v -m a=rwx /mnt/shared/usb3disk1
+sudo mkdir -v -m a=rwx /mnt/shared/usb3disk2
+
+# create the overlayfs mount point
+sudo mkdir -v -m a=rwx /mnt/shared/merged
+sudo chown -R -v pi:  /mnt/shared/merged
+#sudo chmod -R -v +777 /mnt/shared/merged
+sudo chmod -R -v a+rwx /mnt/shared/merged
+
+# ensure the tree has the right ownership and permissions
+sudo chown -R -v pi:  /mnt/shared
+#sudo chmod -R -v +777 /mnt/shared
+sudo chmod -R -v a+rwx /mnt/shared
+```
+
 exit nano with `Control O` `Control X`.    
 
 ####  Check and Reboot to see what happens with those mounts    
