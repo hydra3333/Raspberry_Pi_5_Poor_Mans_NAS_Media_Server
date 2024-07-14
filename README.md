@@ -61,16 +61,26 @@ Click YES to apply OS customisation.
 Click YES to proceed.    
 
 #### Boot the Raspberry Pi 5 and update system software    
-- Ensure the Pi 5 is powered off    
-- Plug the SD card into the Pi 5    
-- Power on each of the USB3 disks, wait 15 seconds for them to power-up and spin-up    
-- Power on the Pi 5    
-- Once the Pi has finished booting to the desktop, start a Terminal then update the system using    
+Ensure the Pi 5 is powered off    
+Plug the SD card into the Pi 5    
+Power on each of the USB3 disks, wait 15 seconds for them to power-up and spin-up    
+Power on the Pi 5    
+Once the Pi has finished booting to the desktop    
+- Click Start,Preferences, Raspberry Pi Configuration    
+- In the Localisation Tab, Set the Locale and then character set UTF-8, Timezone, Keyboard, WiFi country, then click OK.    
+- If prompted to reboot then click YES and reboot.    
+- Click Start,Preferences, Raspberry Pi Configuration    
+- In the System Tab, set Auto Logion ON, Splash Screen OFF    
+- In the Interfaces Tab, set SSH ON, Raspberry Connect OFF, VNC ON    
+- Click OK    
+- If prompted to reboot then click YES and reboot.    
+Once the Pi has finished booting to the desktop    
+- Start a Terminal then update the system using    
 ```
 sudo apt -y update
 sudo apt -y full-upgrade
 ```
-- If the Pi tells you to reboot, do so.
+If the Pi tells you to reboot, do so.
 
 Login into the Pi and 
 VNC
