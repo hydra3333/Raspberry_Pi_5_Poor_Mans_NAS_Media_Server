@@ -48,7 +48,7 @@ First ensuring that power switch is off where the Pi's power block plugs in,
 - plug in the USB3 hubs into the USB3 slots in the Pi 5    
 - ensure the external USB3 disks are powered off then plug them into the USB3 hubs    
 
-In the outline below, we'll assume only 4 USB disks, you can add more if you like.
+In the outline below, we'll assume only 4 USB3 disks, you can add more if you like.
 
 #### Install Raspberry Pi OS with `autologin`    
 Install the full image to an SD card in the usual way using the Pi imager. This way, you can use it for other things too.    
