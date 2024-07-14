@@ -82,13 +82,6 @@ sudo apt -y full-upgrade
 ```
 If the Pi tells you to reboot, do so.
 
-Login into the Pi and 
-VNC
-- autologin is set ON    
-
-
-
-
 At this point, the disks should already be auto-mounted. That's OK, well change that later to suit our needs.    
 
 ### Set the Router so this Pi has a Reserved fixed (permanent) DHCP IP Address Lease
