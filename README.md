@@ -27,7 +27,7 @@ then the Pi needs to be re-booted so that overlayfs takes notice of changes. Not
 not the end of the world for a media server with infrequent updates;
 one could always setup a nightly Pi reboot at 4:45 am with crontab and say "it'll be ready tomorrow" ...    
 
-### Acknowledgemenets    
+### Acknowledgements    
 
 #### thagrol    
 https://forums.raspberrypi.com/viewtopic.php?p=2236572#p2236547    
