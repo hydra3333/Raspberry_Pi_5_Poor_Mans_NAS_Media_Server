@@ -46,26 +46,40 @@ First ensuring that power switch is off where the Pi's power block plugs in,
 In the outline below, we'll assume only 4 USB3 disks, you can add more if you like.
 
 #### Install Raspberry Pi OS with `autologin`    
-Install the full image to an SD card in the usual way using the Pi imager. This way, you can use it for other things too.    
-During the SD card creation, select and set options so that    
-- the username is `pi` (if not then replace username `pi` in the outline with your chosen username)     
-- the password is something you will remember (you will need to enter it later during `SAMBA` setup)    
-- autologin is set ON    
-- VNC is set ON    
+Use the Raspberry Pi Imager to put the full 64 bit image to an SD card in the usual way.    
+Choose to "Edit Settings" and then the GENERAL tab.    
+Set a Hostname you will recognise, eg PINAS64.    
+Set a username as `pi` (if not `pi` then replace username `pi` in this outline with your chosen username) and
+the password as something you will remember (you will need to enter it later during `SAMBA` setup).    
+Set you locale settings and keyboard layout.    
+Choose the SERVICES tab.    
+Enable SSH with password authentification.    
+Choose the OPTIONS tab.    
+Disable telementry.    
+Click SAVE.    
+Click YES to apply OS customisation.    
+Click YES to proceed.    
 
-#### Boot update the system
+#### Boot the Raspberry Pi 5 and update system software    
 - Ensure the Pi 5 is powered off    
 - Plug the SD card into the Pi 5    
-- Power on all of the USB3 disks, wait 15 seconds for them to power-up and spin-up    
+- Power on each of the USB3 disks, wait 15 seconds for them to power-up and spin-up    
 - Power on the Pi 5    
-- When the Pi has booted to the desktop, start a terminal then update the system    
+- Once the Pi has finished booting to the desktop, start a Terminal then update the system using    
 ```
 sudo apt -y update
 sudo apt -y full-upgrade
 ```
 - If the Pi tells you to reboot, do so.
 
-At the point, the disks should be auto-mounted. That's OK, well change that later to suit our needs.    
+Login into the Pi and 
+VNC
+- autologin is set ON    
+
+
+
+
+At this point, the disks should already be auto-mounted. That's OK, well change that later to suit our needs.    
 
 ### Set the Router so this Pi has a Reserved fixed (permanent) DHCP IP Address Lease
 In this outline the LAN IP Address range is 10.0.0.0/255.255.255.0 with the Pi 5 knowing itself of course on 127.0.0.1,
@@ -73,7 +87,7 @@ and the Router's IP Address lease reservation could be 10.0.0.21.
 If you need a different IP Address/Range, just substitute in the correct IP and Address range etc in the outline below.     
 
 Normally the Pi will get a DHCP IP Address lease from the router, which may change over time as leases expire.    
-On the Pi start a terminal and do    
+On the Pi start a Terminal and do    
 ```
 ifconfig
 ```
