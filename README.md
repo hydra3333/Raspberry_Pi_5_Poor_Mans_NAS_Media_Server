@@ -120,30 +120,29 @@ sudo df
 ```
 From each partition, look for the PARTUUID and substitute that for each of `partuuid1/partuuid3/partuuid3/partuuid4` in the outline below.    
 
-Check the folder names on each of the disks partitions,
-and write down each disk's root foldername
-underneath which the media files to be served exist.    
-eg    
+Look for lines showing mount names, eg something like these:
 ```
-ls -al \dev\sda1
-ls -al \dev\sda2
+a175d2d3-c2f6-44d4-a5fc-209363280c89 └─sda2      ntfs    3.6T /media/pi/Y-4TB           Y-4TB 
+2d5599a2-aa11-4aad-9f75-7fca2078b38b └─sdb2      ntfs    4.5T /media/pi/5TB-recordings1 5TB-recordings1
+```
+Check which partitions contain your data and copy the exact PARTUUID strings for each partition.    
+
+Start File Manager and navigate to the folders, something like the above, and locate the root folder for your media files and note these down alongside the correct PARTUUID. Per the above, something like:
+```
+a175d2d3-c2f6-44d4-a5fc-209363280c89 /media/pi/5TB-recordings1/autoTVS-mpg/converted
+2d5599a2-aa11-4aad-9f75-7fca2078b38b /media/pi/Y-4TB/VRDTVSP-Converted
 ```
 
 Then look on each disk to find the correct root folder name to use instead of `mp4lib1/mp4lib2/mp4lib3/mp4lib4` in the lines below,    
-So, this     
+So, these example lines     
 ```
 /mnt/shared/usb3disk1/mp4lib1
 /mnt/shared/usb3disk2/mp4lib2
-/mnt/shared/usb3disk3/mp4lib3
-/mnt/shared/usb3disk4/mp4lib4
 ```
-could for example become
+could become
 ```
-/mnt/shared/usb3disk1/mp4_folder_on_disk_1
-/mnt/shared/usb3disk2/mp4_folder_on_disk_2
-/mnt/shared/usb3disk3/mpg_folder_on_disk_3
-/mnt/shared/usb3disk4/mp3_folder_on_disk_4
-
+/mnt/shared/usb3disk1/autoTVS-mpg/converted
+/mnt/shared/usb3disk2/VRDTVSP-Converted
 ```
 
 #### Create mount points for the disks and root folders
