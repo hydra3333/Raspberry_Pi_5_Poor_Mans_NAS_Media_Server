@@ -2,7 +2,7 @@
 
 ### Outline    
 If you have a PI 5 and some old USB3 disks (with their own power) and a couple of USB3 hubs laying around,
-but can't afford a NAS box or printer to print one nor a SATA hat for the Pi etc, then perhaps
+but can't afford a NAS box or 3D printer to print one nor a SATA hat for the Pi etc, then perhaps
 cobble together a NAS / Media Server with what you have.
 
 The Pi with    
