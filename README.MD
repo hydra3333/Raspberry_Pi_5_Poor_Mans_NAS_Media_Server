@@ -14,27 +14,25 @@ A Pi 5 with
 
 can serve up the folders/files across a LAN.
 
-Say one has 8 disks old `DISK1` ... `DISK8` all pligged into the USB3 hubs,
+Say one has 8 old USB3 disks `DISK1` ... `DISK8` all plugged into the USB3 hubs,
 and disk each has a single root folder containing subfolders of media to be served `ROOT1` ... `ROOT8`,
 then we can    
 - mount the disks individually in fstab
 - create a virtual folder from all of those root folders and mount that in fstab    
-- setup 	HD-IDLE	 to ensure they all spin down properly between uses and not spin all the time    
 - setup `SAMBA` to serve up the individual disks in read-write mode, and the virtual folder in read-only mode    
+- setup HD-IDLE to ensure they all spin down properly between uses and not spin all the time    
 
-A drawback is that if one copies new files onto the individual drives, or modifies existing files,
-then the Pi needs to be re-booted so that overlayfs takes notice.    
-
-Not so good for a true NAS, not the end of the world for a media server with infrequent updates;
+A drawback is that if one copies new files onto the individual disks, or modifies existing files on them,
+then the Pi needs to be re-booted so that overlayfs takes notice of changes. Not so good for a true NAS,
+not the end of the world for a media server with infrequent updates;
 one could always setup a nightly Pi reboot at 4:45 am with crontab and say "it'll be ready tomorrow" ...    
 
 ### Acknowledgemenets    
 
 #### thagrol    
-https://forums.raspberrypi.com/viewtopic.php?p=2236572#p2236547
-https://forums.raspberrypi.com/viewtopic.php?t=327444   Building A Pi Based NAS    
-https://forums.raspberrypi.com/viewtopic.php?t=302752   Using fstab A Beginner's Guide    
-
+https://forums.raspberrypi.com/viewtopic.php?p=2236572#p2236547    
+Building A Pi Based NAS https://forums.raspberrypi.com/viewtopic.php?t=327444    
+Using fstab A Beginner's Guide https://forums.raspberrypi.com/viewtopic.php?t=302752    
 
 ### This is an outline, not a script    
 
@@ -93,7 +91,8 @@ If not, check what you have done on the router and fix it and reboot the Pi.
 ### Ascertain the disks ID info, specifically the PARTUUID    
 Start a Terminal
 ```
-# Run the following command to get the location of the usb3disk partitions. grep -v mmcblk0 discards any results for the SD card. 
+# Run the following command to get the location of the usb3disk partitions.
+# note: (grep -v mmcblk0 discards any results for the SD card)
 sudo blkid|grep -v mmcblk0
 # List all of the usb3 disk stuff on the Raspberry Pi
 sudo lsblk 
@@ -112,7 +111,6 @@ ls -al \dev\sda1
 ls -al \dev\sda2
 ```
 
-In the example below we'll assume you'll know what to substitute instead of 
 Then look on each disk to find the correct root folder name to use instead of `mp4lib1/mp4lib2/mp4lib3/mp4lib4` in the lines below,    
 So, this     
 ```
@@ -132,8 +130,10 @@ could for example become
 
 #### Create mount points for the disks and root folders
 
-cd ~
+Start a Terminal and do (remember, substitute the real folder names for `mp4lib1/mp4lib2/mp4lib3/mp4lib4` in the lines below)    
+```
 # create the root for SMB/CIFS sharing
+cd ~
 sudo mkdir -v -m a=rwx /mnt/shared
 
 # create the mount points for the external USB3 disks    
@@ -152,10 +152,10 @@ sudo chmod -R -v a+rwx /mnt/shared/merged
 sudo chown -R -v pi:  /mnt/shared
 #sudo chmod -R -v +777 /mnt/shared
 sudo chmod -R -v a+rwx /mnt/shared
+```
 
 #### Backup and Edit `/etc/fstab`    
 
-```
 sudo cp -fv /etc/fstab /etc/fstab.bak
 sudo nano  /etc/fstab
 ```
