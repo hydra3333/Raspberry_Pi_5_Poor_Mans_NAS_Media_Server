@@ -224,26 +224,21 @@ PARTUUID=partuuid4 /mnt/shared/usb3disk4 ntfs x-systemd.requires=/mnt/shared/usb
 overlay /mnt/shared/merged overlay x-systemd.requires=/mnt/shared/usb3disk4,defaults,auto,users,ro,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,x-systemd.device-timeout=60,lowerdir=/mnt/shared/usb3disk1/mp4lib1:/mnt/shared/usb3disk2/mp4lib2:/mnt/shared/usb3disk3/mp4lib3:/mnt/shared/usb3disk4/mp4lib4 0 0
 #
 ```
-So in our example it becomexs this
+So in our example it becomes this
 ```
-# create the root for SMB/CIFS sharing
-cd ~
-sudo mkdir -v -m a=rwx /mnt/shared
-
-# create the mount points for the external USB3 disks    
-sudo mkdir -v -m a=rwx /mnt/shared/usb3disk1
-sudo mkdir -v -m a=rwx /mnt/shared/usb3disk2
-
-# create the overlayfs mount point
-sudo mkdir -v -m a=rwx /mnt/shared/merged
-sudo chown -R -v pi:  /mnt/shared/merged
-#sudo chmod -R -v +777 /mnt/shared/merged
-sudo chmod -R -v a+rwx /mnt/shared/merged
-
-# ensure the tree has the right ownership and permissions
-sudo chown -R -v pi:  /mnt/shared
-#sudo chmod -R -v +777 /mnt/shared
-sudo chmod -R -v a+rwx /mnt/shared
+# https://askubuntu.com/questions/109413/how-do-i-use-overlayfs/1348932#1348932
+# To set order/dependency of mounts in fstab file, we will declare systemd option "require" using syntax: x-systemd.require. 
+# Argument for this option is mount point of the mount which should be successfully mounted before given mount.
+#
+# Mount each usb3 disk partition, each subsequent mount depending on the prior mount.
+# Careful: "nofail" will cause the process to continue with no errors (avoiding a boot hand when a disk does not mount)
+#          however the subsequently dependent mounts will fails as will the overlayfs mount
+#             ... but at least we have booted, not halting boot with a failed fstab entry, and can fix that !
+PARTUUID=a175d2d3-c2f6-44d4-a5fc-209363280c89 /mnt/shared/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,x-systemd>
+PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /mnt/shared/usb3disk2 ntfs x-systemd.requires=/mnt/shared/usb3disk1,defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,u>
+#
+overlay /mnt/shared/merged overlay x-systemd.requires=/mnt/shared/usb3disk2,defaults,auto,users,ro,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,x-systemd.dev>
+#
 ```
 
 exit nano with `Control O` `Control X`.    
