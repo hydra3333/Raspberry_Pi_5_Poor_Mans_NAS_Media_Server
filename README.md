@@ -5,7 +5,7 @@ If you have a PI 5 and some old USB3 disks (with their own power) and a couple o
 but can't afford a NAS box or 3D printer to print one nor a SATA hat for the Pi etc, then perhaps
 cobble together a NAS / Media Server with what you have.
 
-The Pi with    
+A Pi 5 with    
 - `SAMBA` for file sharing    
 - `overlayfs` (inbuilt in debian) for merging folders into a virtual folder    
 - `HD-IDLE` to ensure good disk spin-down times    
