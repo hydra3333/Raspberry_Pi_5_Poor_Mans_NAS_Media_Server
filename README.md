@@ -133,8 +133,7 @@ a175d2d3-c2f6-44d4-a5fc-209363280c89 /media/pi/5TB-recordings1/autoTVS-mpg/conve
 2d5599a2-aa11-4aad-9f75-7fca2078b38b /media/pi/Y-4TB/VRDTVSP-Converted
 ```
 
-Then look on each disk to find the correct root folder name to use instead of `mp4lib1/mp4lib2/mp4lib3/mp4lib4` in the lines below,    
-So, these example lines     
+Then look on each disk to find the correct root folder name to use instead of `mp4lib1/mp4lib2/mp4lib3/mp4lib4` ... so, these example lines     
 ```
 /mnt/shared/usb3disk1/mp4lib1
 /mnt/shared/usb3disk2/mp4lib2
