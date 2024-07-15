@@ -169,25 +169,29 @@ That's OK, we'll change all that later to suit the NAS needs.
 
 ### Set the Router so this Pi has a Reserved fixed (permanent) DHCP IP Address Lease
 In this outline the LAN IP Address range is 10.0.0.0/255.255.255.0 with the Pi 5 knowing itself of course on 127.0.0.1,
-and the Router's IP Address lease reservation could be something like 10.0.0.18.
-If you need a different IP Address/Range, substitute in the correct IP and Address range etc in the outline below.     
+and the Router's IP Address lease for the Pi could be something like 10.0.0.18.    
 
-Normally the Pi will get a DHCP IP Address Lease from the router, which may change over time as leases expire.    
-To get a fixed IP address, on the Pi start a Terminal and do these commands to show the Pi's network name and IP address    
+_If you have a different IP Address/Range, substitute in the correct IP and Address range etc in the outline below._     
+
+Normally the Pi will get a temporary DHCP IP Address Lease from the router, which may change over time as leases expire.    
+To get a `fixed` IP address:    
+
+On the Pi start a Terminal and do these commands to show the Pi's network name and IP address    
 ```
 hostname -f
 hostname -I
-ifconfig
+#ifconfig
 ```
 The Pi's LAN IP address may be something like 10.0.0.18.    
 
-Login to your router and look at the LAN connected devices, noticing the IP address matching the Pi.    
-Head on to the Router's DHCP management area and allocated a Reserved fixed (permanent) DHCP IP address for the Pi and apply/save that in the router.   
-Reboot the Pi, then on the Pi start a Terminal and do    
+Login to your router and look at the LAN connected devices, looking for the IP address matching the Pi.    
+
+Head on to the Router's DHCP management area and allocated a Reserved fixed (permanent) DHCP IP address lease
+for the Pi and apply/save that in the router. Reboot the Pi, then on the Pi start a Terminal and do    
 ```
 hostname -f
 hostname -I
-ifconfig
+#ifconfig
 ```
 and notice the IP address and hope it matches the IP Address reservation you made on the router.    
 If not, check what you have done on the router and fix it and reboot the Pi.    
