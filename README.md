@@ -164,7 +164,8 @@ sudo apt -y dist-upgrade
 ```
 If the Pi tells you to reboot, do so.
 
-We choose to create `alias` some shortcut commands to make life easier by creating a .sh script under `/etc/profile.d/`.    
+We choose to create some `alias` shortcut commands to make life easier,
+by creating a .sh script under `/etc/profile.d/`.    
 In Terminal, edit the existing or new file `/etc/profile.d/alias.sh`
 ```
 sudo nano /etc/profile.d/alias.sh
@@ -184,7 +185,7 @@ alias pscpu10="ps auxf | sort -nr -k 3 | head -10"
 alias psmem="ps auxf | sort -nr -k 4"
 alias psmem10="ps auxf | sort -nr -k 4 | head -10"
 ```
-Then Control O then Control X, to save and exit.    
+exit nano with `Control O` `Control X`.   
 
 Reboot the Pi, perhaps using `sudo reboot now`.
 
