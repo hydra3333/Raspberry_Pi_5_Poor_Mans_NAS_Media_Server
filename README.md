@@ -256,7 +256,7 @@ Start `File Manager` and navigate to each of the partitions, something like:
 - the media root folder is under `/media/pi/DISK2-4TB`
 
 and locate the root folder in each partition which contains your media files 
-... and make a note of these root folder names *alongside* the corresponding PARTUUID.    
+... and make a note of these root folder names **alongside** the corresponding PARTUUID.    
 So, you will have noted for each partition, the PARTUUID and the root folder name on that partition, eg for
 ```
 # File Manager Folder Name
@@ -301,11 +301,11 @@ sudo nano  /etc/fstab
 ```
 
 Using the nano editor, change fstab and add the following entries which must be in the specific order below.    
-*Remember to change the `PARTUUID` values and the `overlay` `lowerdir=` values to correspond to the values we determined !*    
-*Of course, if we have more disks then we*     
-- *add more lines, one for each disk, remembering to update each `x-systemd.requires=` so they are
-all in sequence and eaqch new line requires the mount of the prior line*     
-- *add more `lowerdir=` values*    
+**Remember to change the `PARTUUID` values and the `overlay` `lowerdir=` values to correspond to the values we determined !**    
+**Of course, if we have more disks then we**     
+- **add more lines, one for each disk, remembering to update each `x-systemd.requires=` so they are
+all in sequence and each new line requires the mount of the prior line**     
+- **add more `lowerdir=` values**    
 
 So in our example it becomes
 ```
