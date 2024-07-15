@@ -7,10 +7,6 @@ dmesg
 hostname -f
 hostname -I
 
-
-
-
-
 mkdir ~/Desktop/DEBUG
 cp -fv /etc/fstab ~/Desktop/DEBUG/
 cat ~/Desktop/DEBUG/fstab
@@ -63,7 +59,7 @@ alias dir='ls -alLh --color --group-directories-first'
 # 2. Alternatively, create a .sh script under “/etc/profile.d/”. 
 # When you log in to a shell “/etc/profile” will run any script under profile.d before actually running ~/.profile. 
 # This method will reduce the risk of messing up either /etc/profile or /etc/bash.bashrc file.
-sudo cat >> /etc/profile.d/alias.sh
+sudo nano /etc/profile.d/alias.sh
 # unalias checktemp
 # unalias dir
 alias checktemp='vcgencmd measure_temp'
