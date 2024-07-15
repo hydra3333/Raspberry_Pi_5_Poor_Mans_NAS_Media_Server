@@ -302,10 +302,10 @@ sudo nano  /etc/fstab
 
 Using the nano editor, change fstab and add the following entries which must be in the specific order below.    
 *Remember to change the `PARTUUID` values and the `overlay` `lowerdir=` values to correspond to the values we determined !*    
-*Of course, if we have more disks then we     
+*Of course, if we have more disks then we*     
 - *add more lines, one for each disk, remembering to update each `x-systemd.requires=` so they are
-all in sequence and eaqch new line requires the mount of the prior line     
-- add more `lowerdir=` values*    
+all in sequence and eaqch new line requires the mount of the prior line*     
+- *add more `lowerdir=` values*    
 
 So in our example it becomes
 ```
