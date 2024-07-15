@@ -123,34 +123,38 @@ In the outline below, we'll assume only 2 USB3 disks. You can add more as you ne
 just keep an eye on your disk naming and folder structures in line with the model above.    
 
 #### Install Raspberry Pi OS with `autologin`    
-Use the Raspberry Pi Imager to put the full 64 bit image to an SD card in the usual way.    
-Choose to "Edit Settings" and then the GENERAL tab.    
-Set a Hostname you will recognise, eg PINAS64.    
-Set a username as `pi` (if not `pi` then replace username `pi` in this outline with your chosen username) and
-the password as something you will remember (you will need to enter it later during `SAMBA` setup).    
-Set you locale settings and keyboard layout (setting keyboard layout is important if in non-US non-GB country).    
-Choose the SERVICES tab.    
-Enable SSH with password authentification.    
-Choose the OPTIONS tab.    
-Disable telementry.    
+Run the `Raspberry Pi Imager` on a PC to put the full 64 bit `Raspberry Pi OS` image to an SD card in the usual way    
+- Choose to "Edit Settings" and then the GENERAL tab.    
+- Set a Hostname you will recognise, eg PINAS64.    
+- Set a username as `pi` (if not `pi` then replace username `pi` in this outline with your chosen username) and
+the password as something you will remember (you will need to enter it later during `SAMBA` setup,
+and change all references of `pi` to your username).    
+- Set you locale settings and keyboard layout (setting keyboard layout is important if in non-US non-GB country).    
+- Choose the SERVICES tab.    
+- Enable SSH with password authentification.    
+- Choose the OPTIONS tab.    
+- Disable telementry.    
 Click SAVE.    
 Click YES to apply OS customisation.    
 Click YES to proceed.    
 
 #### Boot the Raspberry Pi 5 and update system software    
-Ensure the Pi 5 is powered off    
-Plug the SD card into the Pi 5    
-Power on each of the USB3 disks, wait 15 seconds for them to power-up and spin-up    
-Power on the Pi 5    
-Once the Pi has finished booting to the desktop    
-- Click Start,Preferences, Raspberry Pi Configuration    
+Order of power up (at least the first time)
+- Ensure the Pi 5 is powered off    
+- Plug the SD card into the Pi 5    
+- Power on each of the USB3 disks, wait 15 to 30 seconds for them to power-up and spin-up    
+- Power on the Pi 5    
+
+Once the Pi has finished booting to the desktop (leave it set to autologin)    
+- Click Start, Preferences, Raspberry Pi Configuration    
 - In the Localisation Tab, Set the Locale and then character set UTF-8, Timezone, Keyboard (setting keyboard is important if in non-US non-GB country), WiFi country, then click OK.    
-- If prompted to reboot then click YES and reboot.    
-- Click Start,Preferences, Raspberry Pi Configuration    
+- If prompted to reboot then click YES and reboot back to the desktop.    
+- Click Start, Preferences, Raspberry Pi Configuration    
 - In the System Tab, set Auto Logion ON, Splash Screen OFF    
 - In the Interfaces Tab, set SSH ON, Raspberry Connect OFF, VNC ON    
 - Click OK    
 - If prompted to reboot then click YES and reboot.    
+
 Once the Pi has finished booting to the desktop    
 - Start a Terminal then update the system using    
 ```
@@ -161,7 +165,7 @@ sudo apt -y dist-upgrade
 If the Pi tells you to reboot, do so.
 
 At this point, the disks should already be auto-mounted and you may see links to them on the desktop.
-That's OK, well change that later to suit the NAS needs.    
+That's OK, we'll change all that later to suit the NAS needs.    
 
 ### Set the Router so this Pi has a Reserved fixed (permanent) DHCP IP Address Lease
 In this outline the LAN IP Address range is 10.0.0.0/255.255.255.0 with the Pi 5 knowing itself of course on 127.0.0.1,
