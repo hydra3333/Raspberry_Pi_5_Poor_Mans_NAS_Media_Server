@@ -1,6 +1,6 @@
 # WARNING: UNDER CONSTRUCTION
 
-## Raspberry Pi 5 Poor Mans NAS / Media Server    
+## Raspberry Pi 5 Poor Persons NAS / Media Server    
 
 ### Outline    
 If you have a PI 5 and some old USB3 disks (with their own power supply) and a couple of USB3 hubs laying around,
