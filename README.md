@@ -199,29 +199,25 @@ If not, check what you have done on the router and fix it and reboot the Pi.
 ### Ascertain disks info, specifically PARTUUID and mount point    
 Start a Terminal and use `sudo lsblk` to look at the connected disks, and see something like this:
 ```
-$ sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
-
-UUID                                 PARTUUID                             NAME FSTYPE  SIZE MOUNTPOINT LABEL
-                                                                          sda          3.6T            
-                                     c8c72b90-6c8a-4631-9704-a3816695a6dc ├─sda1
-                                                                          │            128M            
-96DA1D13DA1CF0EB                     a175d2d3-c2f6-44d4-a5fc-209363280c89 └─sda2
-                                                                               ntfs    3.6T /media/pi/ Y-4TB
-                                                                          sdb          4.5T            
-                                     c542d01e-9ac9-486f-98cb-4521e0fe54f8 ├─sdb1
-                                                                          │            128M            
-C4D05ABAD05AB302                     2d5599a2-aa11-4aad-9f75-7fca2078b38b └─sdb2
-                                                                               ntfs    4.5T /media/pi/ 5TB-recordings1
-                                                                          mmcblk0
-                                                                                      29.7G            
-9BE2-1346                            17db7c1c-01                          ├─mmcblk0p1
-                                                                          │    vfat    512M /boot/firm bootfs
-12974fe2-889e-4060-b497-1d6ac3fbbb4b 17db7c1c-02                          └─mmcblk0p2
+sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
+```
+```
+pi@PI5NAS64:~ $ sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
+UUID                                 PARTUUID                             NAME        FSTYPE  SIZE MOUNTPOINT          LABEL
+                                                                          sda                 3.6T                     
+                                     c8c72b90-6c8a-4631-9704-a3816695a6dc ├─sda1              128M                     
+96DA1D13DA1CF0EB                     a175d2d3-c2f6-44d4-a5fc-209363280c89 └─sda2      ntfs    3.6T /media/pi/DISK2-4TB DISK2-4TB
+                                                                          sdb                 4.5T                     
+                                     c542d01e-9ac9-486f-98cb-4521e0fe54f8 ├─sdb1              128M                     
+C4D05ABAD05AB302                     2d5599a2-aa11-4aad-9f75-7fca2078b38b └─sdb2      ntfs    4.5T /media/pi/DISK1-5TB DISK1-5TB
+                                                                          mmcblk0            29.7G                     
+9BE2-1346                            9fd862b3-01                          ├─mmcblk0p1 vfat    512M /boot/firmware      bootfs
+12974fe2-889e-4060-b497-1d6ac3fbbb4b 9fd862b3-02                          └─mmcblk0p2 ext4   29.2G /                   rootfs
 ```
 In that output, identify lines showing mount names for the USB3 disks, eg something like these:
 ```
-a175d2d3-c2f6-44d4-a5fc-209363280c89 └─sda2      ntfs    3.6T /media/pi/Y-4TB           Y-4TB 
-2d5599a2-aa11-4aad-9f75-7fca2078b38b └─sdb2      ntfs    4.5T /media/pi/5TB-recordings1 5TB-recordings1
+C4D05ABAD05AB302                     2d5599a2-aa11-4aad-9f75-7fca2078b38b └─sdb2      ntfs    4.5T /media/pi/DISK1-5TB DISK1-5TB
+96DA1D13DA1CF0EB                     a175d2d3-c2f6-44d4-a5fc-209363280c89 └─sda2      ntfs    3.6T /media/pi/DISK2-4TB DISK2-4TB
 ```
 From each relevant partition we identify, look for the PARTUUID and save these somewhere, as we NEED these later.
 
