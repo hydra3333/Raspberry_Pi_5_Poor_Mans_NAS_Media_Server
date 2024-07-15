@@ -342,6 +342,104 @@ In a Terminal do an `ls -al` on each of the mounts, eg on `/mnt/shared/usb3disk1
 
 **If the files in the mounts do not match what you expect from `/etc/fstab`, then something is astray !  Check what has been done above.**    
 
+#### Setup HD-IDLE to ensure disks do not constantly spin
+Doing this: `sudo apt -y install hd-idle` and then these
+```
+sudo apt-cache show hd-idle
+sudo apt list --installed | grep hd-idle
+dpkg -l | grep hd-idle
+```
+all show version `1.05+ds-2+b1` which is very old.
+
+This `https://github.com/adelolmo/hd-idle` shows at least release `1.21 / 2023-10-22` in    
+`https://github.com/adelolmo/hd-idle/releases/download/v1.21/hd-idle_1.21_arm64.deb`
+
+Per `https://www.htpcguides.com/spin-down-and-manage-hard-drive-power-on-raspberry-pi/`
+some WD external USB3 disks won't spin down on idle and HDPARM and SDPARM don't work on them
+... the `adelolmo` version of `hd-idle` appears to work, so let's use that.    
+
+Remove any prior install of hd-idle. In a Terminal,
+```
+sudo systemctl disable hd-idle
+# wait 2 seconds, then
+sudo dpkg -l hd-idle
+sudo dpkg -P hd-idle 
+sudo apt -y purge hd-idle
+sudo rm -vf /var/log/hd-idle.log
+```
+
+Install the more up-to-date release of 'adelolmo' version of hd-idle direct from the author.
+In a Terminal
+```
+# https://github.com/adelolmo/hd-idle
+cd ~/Desktop
+rm -fvr ./hd-idle
+mkdir -pv hd-idle
+cd hd-idle
+sudo touch /var/log/hd-idle.log
+sudo chmod +777 /var/log/hd-idle.log
+sudo rm -vf hd-idle_1.21_arm64.deb
+wget https://github.com/adelolmo/hd-idle/releases/download/v1.21/hd-idle_1.21_arm64.deb
+sudo dpkg -i "./hd-idle_1.21_arm64.deb"
+sudo dpkg -l hd-idle
+cd ~/Desktop
+```
+
+Noting previously the [UUID, PARTUUID, root folder name] quadruplet of each disk
+```
+DISK-UUID         PARTUUID                              NAME    root folder name
+C4D05ABAD05AB302  2d5599a2-aa11-4aad-9f75-7fca2078b38b  sdb     ROOTFOLDER1
+96DA1D13DA1CF0EB  a175d2d3-c2f6-44d4-a5fc-209363280c89  sda     ROOTFOLDER2
+```
+
+Stop hd-idle
+```
+sudo systemctl stop hd-idle
+```
+
+After edit `etc/default/hd-idle` to change parameters
+```
+sudo nano /etc/default/hd-idle
+# enabling hd-idle auto start by changing line 'START_HD_IDLE=false' to have a value **true**
+START_HD_IDLE=true
+# Adding lines at the end for every disk, using the noted NAME
+# option -d = debug
+##Double check hd-idle works with your hard drive
+##sudo hd-idle -t ??? -d
+#   #Command line options:
+#   #-a name Set device name of disks for subsequent idle-time parameters -i. This parameter is optional in the sense that there's a default entry for all disks which are not named otherwise by using this parameter. This can also be a symlink (e.g. /dev/disk/by-uuid/...)
+#   #-i idle_time Idle time in seconds for the currently named disk(s) (-a name) or for all disks.
+#   #-c command_type Api call to stop the device. Possible values are scsi (default value) and ata.
+#   #-s symlink_policy Set the policy to resolve symlinks for devices. If set to 0, symlinks are resolve only on start. If set to 1, symlinks are also resolved on runtime until success. By default symlinks are only resolve on start. If the symlink doesn't resolve to a device, the default configuration will be applied.
+#   #-l logfile Name of logfile (written only after a disk has spun up or spun down). Please note that this option might cause the disk which holds the logfile to spin up just because another disk had some activity. On single-disk systems, this option should not cause any additional spinups. On systems with more than one disk, the disk where the log is written will be spun up. On raspberry based systems the log should be written to the SD card.
+#   #-t disk Spin-down the specified disk immediately and exit.
+#   #-d Debug mode. It will print debugging info to stdout/stderr (/var/log/syslog if started with systemctl)
+#   #-h Print usage information.
+# default timeout 300s = 5 mins
+# sda etc     timeout 900s = 15 mins
+HD_IDLE_OPTS="-i 300 -a /dev/sdb -i 900 -a /dev/sda -i 900 -l /var/log/hd-idle.log"
+```
+
+To enable hd-idle on reboot and then restart:
+```
+sudo systemctl enable hd-idle   
+sudo systemctl stop hd-idle
+sudo systemctl restart hd-idle
+# wait 2 secs
+sudo cat /var/log/hd-idle.log
+journalctl -u hd-idle.service | grep hd-idle| tail -n 50
+sudo systemctl status hd-idle.service | tail -n 50
+```
+
+Test hd-idle
+```
+sudo hd-idle -t /dev/sdb -d -l /var/log/hd-idle.log
+sudo hd-idle -t /dev/sda -d -l /var/log/hd-idle.log
+# wait 2 secs
+sudo cat /var/log/hd-idle.log
+journalctl -u hd-idle.service | grep hd-idle| tail -n 50
+sudo systemctl status hd-idle.service | tail -n 50
+```
 
 #### Install and configure `SAMBA`
 In a Terminal,    
@@ -467,108 +565,7 @@ eg on a Windows 11 PC in Windows Explorer use the IP address of the Pi, eg ...
 
 
 
-#### Setup HD-IDLE ?????????????
-Doing this: `sudo apt -y install hd-idle` and then these
-```
-sudo apt-cache show hd-idle
-sudo apt list --installed | grep hd-idle
-dpkg -l | grep hd-idle
-```
-all show version `1.05+ds-2+b1` which is very old.
 
-This `https://github.com/adelolmo/hd-idle` shows at least release `1.21 / 2023-10-22` in    
-`https://github.com/adelolmo/hd-idle/releases/download/v1.21/hd-idle_1.21_arm64.deb`
-
-Per `https://www.htpcguides.com/spin-down-and-manage-hard-drive-power-on-raspberry-pi/`
-some WD external USB3 disks won't spin down on idle and HDPARM and SDPARM don't work on them
-... the `adelolmo` version of `hd-idle` appears to work, so let's use that.    
-
-Remove any prior install of hd-idle. In a Terminal,
-```
-sudo systemctl disable hd-idle
-# wait 2 seconds, then
-sudo dpkg -l hd-idle
-sudo dpkg -P hd-idle 
-sudo apt -y purge hd-idle
-sudo rm -vf /var/log/hd-idle.log
-```
-
-Install the more up-to-date release of 'adelolmo' version of hd-idle direct from the author.
-In a Terminal
-```
-# https://github.com/adelolmo/hd-idle
-cd ~/Desktop
-rm -fvr ./hd-idle
-mkdir -pv hd-idle
-cd hd-idle
-sudo touch /var/log/hd-idle.log
-sudo chmod +777 /var/log/hd-idle.log
-sudo rm -vf hd-idle_1.21_arm64.deb
-wget https://github.com/adelolmo/hd-idle/releases/download/v1.21/hd-idle_1.21_arm64.deb
-sudo dpkg -i "./hd-idle_1.21_arm64.deb"
-sudo dpkg -l hd-idle
-cd ~/Desktop
-```
-
-Noting previously the [UUID, PARTUUID, root folder name] quadruplet of each disk
-```
-DISK-UUID         PARTUUID                              NAME    root folder name
-C4D05ABAD05AB302  2d5599a2-aa11-4aad-9f75-7fca2078b38b  sdb     ROOTFOLDER1
-96DA1D13DA1CF0EB  a175d2d3-c2f6-44d4-a5fc-209363280c89  sda     ROOTFOLDER2
-```
-
-Stop hd-idle
-```
-sudo systemctl stop hd-idle
-```
-
-After edit `etc/default/hd-idle` to change parameters
-```
-sudo nano /etc/default/hd-idle
-# enabling hd-idle auto start by changing line 'START_HD_IDLE=false' to have a value **true**
-START_HD_IDLE=true
-# Adding lines at the end for every disk, using the noted NAME
-# option -d = debug
-##Double check hd-idle works with your hard drive
-##sudo hd-idle -t ??? -d
-#   #Command line options:
-#   #-a name Set device name of disks for subsequent idle-time parameters -i. This parameter is optional in the sense that there's a default entry for all disks which are not named otherwise by using this parameter. This can also be a symlink (e.g. /dev/disk/by-uuid/...)
-#   #-i idle_time Idle time in seconds for the currently named disk(s) (-a name) or for all disks.
-#   #-c command_type Api call to stop the device. Possible values are scsi (default value) and ata.
-#   #-s symlink_policy Set the policy to resolve symlinks for devices. If set to 0, symlinks are resolve only on start. If set to 1, symlinks are also resolved on runtime until success. By default symlinks are only resolve on start. If the symlink doesn't resolve to a device, the default configuration will be applied.
-#   #-l logfile Name of logfile (written only after a disk has spun up or spun down). Please note that this option might cause the disk which holds the logfile to spin up just because another disk had some activity. On single-disk systems, this option should not cause any additional spinups. On systems with more than one disk, the disk where the log is written will be spun up. On raspberry based systems the log should be written to the SD card.
-#   #-t disk Spin-down the specified disk immediately and exit.
-#   #-d Debug mode. It will print debugging info to stdout/stderr (/var/log/syslog if started with systemctl)
-#   #-h Print usage information.
-# default timeout 300s = 5 mins
-# sda etc     timeout 900s = 15 mins
-HD_IDLE_OPTS="-i 300 -a /dev/sdb -i 900 -a /dev/sda -i 900 -l /var/log/hd-idle.log"
-```
-
-```
-sudo cat /etc/default/hd-idle | grep -v "^#"
-```
-
-To enable hd-idle on reboot and then restart:
-```
-sudo systemctl enable hd-idle   
-sudo systemctl stop hd-idle
-sudo systemctl restart hd-idle
-# wait 2 secs
-sudo cat /var/log/hd-idle.log
-journalctl -u hd-idle.service | grep hd-idle| tail -n 50
-sudo systemctl status hd-idle.service | tail -n 50
-```
-
-Test hd-idle
-```
-sudo hd-idle -t /dev/sdb -d -l /var/log/hd-idle.log
-sudo hd-idle -t /dev/sda -d -l /var/log/hd-idle.log
-# wait 2 secs
-sudo cat /var/log/hd-idle.log
-journalctl -u hd-idle.service | grep hd-idle| tail -n 50
-sudo systemctl status hd-idle.service | tail -n 50
-```
 
 
 
