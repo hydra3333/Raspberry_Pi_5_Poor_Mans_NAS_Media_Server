@@ -214,7 +214,7 @@ hostname -I
 and notice the IP address and hope it matches the IP Address reservation you made on the router.    
 If not, check what you have done on the router and fix it and reboot the Pi.    
 
-### Ascertain disks info, specifically PARTUUID and mount point    
+### Ascertain disks info, specifically DISK-UUID, PARTUUID, and MOUNTPOINT    
 At this point, the USB3 disks should already be auto-mounted and you may see links to them on the desktop.
 That's OK, we'll change all that to suit the NAS needs.    
 
@@ -240,7 +240,7 @@ UUID                                 PARTUUID                             NAME  
 C4D05ABAD05AB302                     2d5599a2-aa11-4aad-9f75-7fca2078b38b └─sdb2      ntfs    4.5T /media/pi/DISK1-5TB DISK1-5TB
 96DA1D13DA1CF0EB                     a175d2d3-c2f6-44d4-a5fc-209363280c89 └─sda2      ntfs    3.6T /media/pi/DISK2-4TB DISK2-4TB
 ```
-From each relevant partition we identify, look for the PARTUUID and save these somewhere, as we NEED the PARTUUIDs later.
+From each relevant partition we identify, look for the disk UUID, PARTUUID, NAME (eg `sda`) and save these somewhere, as we NEED the PARTUUIDs later.
 
 If we wanted to cross-check disks, we could `sudo mount` like this and amongst them will be something like this:
 ```
@@ -249,7 +249,7 @@ $ sudo mount -l | grep "overlay\|disk"
 /dev/sda2 on /media/pi/DISK2-4TB type ntfs3 (rw,nosuid,nodev,relatime,uid=1000,gid=1000,windows_names,iocharset=utf8,uhelper=udisks2) [DISK2-4TB]
 ```
 
-Now we have identified the correct partitions and their PARTUUID, and now need to identify the root folder names on them.    
+Now we have identified the correct disks, partitions and their PARTUUID, and now need to identify the root folder names on them.    
 
 Start `File Manager` and navigate to each of the partitions, something like:
 - the media root folder is under `/media/pi/DISK1-5TB`    
@@ -257,17 +257,17 @@ Start `File Manager` and navigate to each of the partitions, something like:
 
 and locate the root folder in each partition which contains your media files 
 ... and make a note of these root folder names **alongside** the corresponding PARTUUID.    
-So, you will have noted for each partition, the PARTUUID and the root folder name on that partition, eg for
+So, you will have noted for each disk UUID, partition PARTUUID. and the root folder name on that partition, eg for
 ```
 # File Manager Folder Name
 /media/pi/DISK1-5TB/ROOTFOLDER1
 /media/pi/DISK2-4TB/ROOTFOLDER2
 ```
-the [PARTUUID and root folder name] pair would be
+the [UUID, PARTUUID, root folder name] quadruplet would be
 ```
-PARTUUID                              root folder name
-2d5599a2-aa11-4aad-9f75-7fca2078b38b  ROOTFOLDER1
-a175d2d3-c2f6-44d4-a5fc-209363280c89  ROOTFOLDER2
+DISK-UUID         PARTUUID                              NAME    root folder name
+C4D05ABAD05AB302  2d5599a2-aa11-4aad-9f75-7fca2078b38b  sdb     ROOTFOLDER1
+96DA1D13DA1CF0EB  a175d2d3-c2f6-44d4-a5fc-209363280c89  sda     ROOTFOLDER2
 ```
 
 #### Create new 'standardized' mount points for disks and 'virtual overlayed folder'
@@ -479,11 +479,11 @@ all show version `1.05+ds-2+b1` which is very old.
 This `https://github.com/adelolmo/hd-idle` shows at least release `1.21 / 2023-10-22` in    
 `https://github.com/adelolmo/hd-idle/releases/download/v1.21/hd-idle_1.21_arm64.deb`
 
-Per `https://www.htpcguides.com/spin-down-and-manage-hard-drive-power-on-raspberry-pi/`   
-Some WD external USB3 disks won't spin down on idle and HDPARM and SDPARM don't work on them
-... 'adelolmo' version of hd-idle appears to work, so let's use that.    
+Per `https://www.htpcguides.com/spin-down-and-manage-hard-drive-power-on-raspberry-pi/`
+some WD external USB3 disks won't spin down on idle and HDPARM and SDPARM don't work on them
+... the `adelolmo` version of `hd-idle` appears to work, so let's use that.    
 
-So, remove any prior install of hd-idle. In a Terminal,
+Remove any prior install of hd-idle. In a Terminal,
 ```
 sudo systemctl disable hd-idle
 # wait 2 seconds, then
@@ -492,50 +492,57 @@ sudo dpkg -P hd-idle
 sudo apt -y purge hd-idle
 ```
 
-
-
-
-
-
-
+Install the more up-to-date release of 'adelolmo' version of hd-idle direct from the author.
+In a Terminal
 ```
-#############################################################################################################################################
-if [[ ${do_setup_hdidle} = true ]]; then
-#############################################################################################################################################
-#
-echo "# List and Remove any prior hd-idle package"
-echo ""
-set -x
-sudo systemctl disable hd-idle
-sleep 2s
-sudo dpkg -l hd-idle
-sudo dpkg -P hd-idle 
-# dpkg -P is the one that works for us, also use 'apt purge' in case an old one was instaleld via apt
-sudo apt purge -y hd-idle
-set +x
-#
-echo ""
-echo "# Install the more up-to-date release of 'adelolmo' version of hd-idle"
-echo ""
 # https://github.com/adelolmo/hd-idle
-set -x
 cd ~/Desktop
 rm -fvr ./hd-idle
 mkdir -pv hd-idle
 cd hd-idle
-hdidle_ver=1.16
-hdidle_deb=hd-idle_${hdidle_ver}_arm64.deb
-hdidle_url=https://github.com/adelolmo/hd-idle/releases/download/v${hdidle_ver}/${hdidle_deb}
-sudo rm -vf "./${hdidle_deb}"
-wget ${hdidle_url}
-sudo dpkg -i "./${hdidle_deb}"
+sudo rm -vf hd-idle_1.21_arm64.deb
+wget https://github.com/adelolmo/hd-idle/releases/download/v1.21/hd-idle_1.21_arm64.deb
+sudo dpkg -i "./hd-idle_1.21_arm64.deb"
 sudo dpkg -l hd-idle
 cd ~/Desktop
-set +x
-echo ""
+```
+
+Noting previously the [UUID, PARTUUID, root folder name] quadruplet of each disk
+```
+DISK-UUID         PARTUUID                              NAME    root folder name
+C4D05ABAD05AB302  2d5599a2-aa11-4aad-9f75-7fca2078b38b  sdb     ROOTFOLDER1
+96DA1D13DA1CF0EB  a175d2d3-c2f6-44d4-a5fc-209363280c89  sda     ROOTFOLDER2
+```
+
+
+After edit `etc/default/hd-idle` to change parameters
+```
+sudo nano /etc/default/hd-idle
+# enabling hd-idle auto start by changing line 'START_HD_IDLE=false' to have a value **true**
+# START_HD_IDLE=true
+# Adding lines at the end for every disk, using the noted NAME
+
+```
+
+Run hd-idle with:
+```
+sudo systemctl start hd-idle
+```
+at the end 
+
+
+
+To enable hd-idle on reboot:
+```
+sudo systemctl enable hd-idle   
+```
+
+
+Note the options:
+```
 # option -d = debug
 ##Double check hd-idle works with your hard drive
-##sudo hd-idle -t ${server_USB3_DEVICE_NAME} -d
+##sudo hd-idle -t ??? -d
 #   #Command line options:
 #   #-a name Set device name of disks for subsequent idle-time parameters -i. This parameter is optional in the sense that there's a default entry for all disks which are not named otherwise by using this parameter. This can also be a symlink (e.g. /dev/disk/by-uuid/...)
 #   #-i idle_time Idle time in seconds for the currently named disk(s) (-a name) or for all disks.
@@ -545,10 +552,21 @@ echo ""
 #   #-t disk Spin-down the specified disk immediately and exit.
 #   #-d Debug mode. It will print debugging info to stdout/stderr (/var/log/syslog if started with systemctl)
 #   #-h Print usage information.
-## observe output
-##Use Ctrl+C to stop hd-idle in the terminal
-echo ""
-echo ""
+```
+
+
+
+
+Test hd-idle
+```
+sudo hd-idle -t sdb -d -l /var/log/hd-idle.log
+sudo hd-idle -t sda -d -l /var/log/hd-idle.log
+```
+
+
+
+
+```
 echo "# Modify the hd-idle configuration file to enable the service to automatically start and spin down drives"
 echo ""
 set -x
