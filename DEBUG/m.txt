@@ -12,6 +12,9 @@ sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL,MODEL
 overlay /mnt/shared/merged overlay x-systemd.requires=/mnt/shared/usb3disk2,lowerdir=/mnt/shared/usb3disk1/VRDTVSP-Converted:/mnt/shared/usb3disk2/autoTVS-mpg/Converted,defaults,auto,users,ro,exec,umask=000,dmask=00>
 #
 
+sudo umount -fRv /mnt/shared/merged
 
-mount -t overlay overlay -olowerdir=/mnt/shared/usb3disk1/VRDTVSP-Converted:/mnt/shared/usb3disk2/autoTVS-mpg/Converted /mnt/shared/merged
+sudo mount -t overlay overlay -olowerdir=/mnt/shared/usb3disk1/VRDTVSP-Converted:/mnt/shared/usb3disk2/autoTVS-mpg/Converted /mnt/shared/merged
+
+
 
