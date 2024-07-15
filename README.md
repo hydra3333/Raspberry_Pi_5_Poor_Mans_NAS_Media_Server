@@ -249,32 +249,28 @@ PARTUUID                              root folder name
 a175d2d3-c2f6-44d4-a5fc-209363280c89  ROOTFOLDER2
 ```
 
-#### Create new 'standardized' mount points for the disks and root folders
-Start a Terminal and create some folders
+#### Create new 'standardized' mount points for disks and 'virtual overlayed folder'
+Start a Terminal and create some folders etc
 ```
-# create the new mount point for SAMBA sharing
+# create a new mount point for SAMBA sharing
 cd ~
 sudo mkdir -v -m a=rwx /mnt/shared
-```
-```
-# create the new `standardized' mount points for the external USB3 disks    
+
+# create new 'standardized' mount points for the external USB3 disks    
 sudo mkdir -v -m a=rwx /mnt/shared/usb3disk1
 sudo mkdir -v -m a=rwx /mnt/shared/usb3disk2
-```
-```
-# create the `overlayfs` mount point for virtually merged folder sharing via SAMBA and set protections
-sudo mkdir -v -m a=rwx /mnt/shared/mp4lib
-sudo chown -R -v pi:  /mnt/shared/mp4lib
-sudo chmod -R -v a+rwx /mnt/shared/mp4lib
-```
-```
-# ensure the `shared` tree has the right ownership and permissions
+
+# create a new 'overlayfs' mount point for 'virtual overlayed folder' sharing via SAMBA and dlna and set protections
+sudo mkdir -v -m a=rwx /mnt/shared/overlay
+sudo chown -R -v pi:   /mnt/shared/overlay
+sudo chmod -R -v a+rwx /mnt/shared/overlay
+
+# ensure the 'shared' tree has the right ownership and permissions
 sudo chown -R -v pi:  /mnt/shared
 sudo chmod -R -v a+rwx /mnt/shared
 ```
 
 #### Backup and Edit `/etc/fstab`    
-
 To make the USB3 disk mounts happen at boot time into the mount points we just created, we must edit `/etc/fstab` and
 use, for each partition, the PARTUUID and the root folder name on that partition which we collected earlier.    
 Start a Terminal and run the nano editor:    
@@ -284,40 +280,20 @@ sudo nano  /etc/fstab
 ```
 
 Using the nano editor, change fstab and add the following entries which must be in the specific order below ...    
-Remember to    
-- substitute your PARTUUID id's for `partuuid1/partuuid3/partuuid3/partuuid4`    
-- substitute your root folder names for `mp4lib1/mp4lib2/mp4lib3/mp4lib4`    
-```
-# https://askubuntu.com/questions/109413/how-do-i-use-overlayfs/1348932#1348932
-# To set order/dependency of mounts in fstab file, we will declare systemd option "require" using syntax: x-systemd.require. 
-# Argument for this option is mount point of the mount which should be successfully mounted before given mount.
-#
-# Mount each usb3 disk partition, each subsequent mount depending on the prior mount.
-# Careful: "nofail" will cause the process to continue with no errors (avoiding a boot hand when a disk does not mount)
-#          however the subsequently dependent mounts will fails as will the overlayfs mount
-#             ... but at least we have booted, not halting boot with a failed fstab entry, and can fix that !
-PARTUUID=partuuid1 /mnt/shared/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,x-systemd.device-timeout=60 0 0
-PARTUUID=partuuid2 /mnt/shared/usb3disk2 ntfs x-systemd.requires=/mnt/shared/usb3disk1,defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,x-systemd.device-timeout=60 0 0
-PARTUUID=partuuid3 /mnt/shared/usb3disk3 ntfs x-systemd.requires=/mnt/shared/usb3disk2,defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,x-systemd.device-timeout=60 0 0
-PARTUUID=partuuid4 /mnt/shared/usb3disk4 ntfs x-systemd.requires=/mnt/shared/usb3disk3,defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,x-systemd.device-timeout=60 0 0
-#
-overlay /mnt/shared/mp4lib overlay x-systemd.requires=/mnt/shared/usb3disk4,defaults,auto,users,ro,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,x-systemd.device-timeout=60,lowerdir=/mnt/shared/usb3disk1/mp4lib1:/mnt/shared/usb3disk2/mp4lib2:/mnt/shared/usb3disk3/mp4lib3:/mnt/shared/usb3disk4/mp4lib4 0 0
-#
-```
+
 So in our example it becomes this
 ```
 # https://askubuntu.com/questions/109413/how-do-i-use-overlayfs/1348932#1348932
 # To set order/dependency of mounts in fstab file, we will declare systemd option "require" using syntax: x-systemd.require. 
 # Argument for this option is mount point of the mount which should be successfully mounted before given mount.
-#
 # Mount each usb3 disk partition, each subsequent mount depending on the prior mount.
 # Careful: "nofail" will cause the process to continue with no errors (avoiding a boot hand when a disk does not mount)
 #          however the subsequently dependent mounts will fails as will the overlayfs mount
 #             ... but at least we have booted, not halting boot with a failed fstab entry, and can fix that !
-PARTUUID=a175d2d3-c2f6-44d4-a5fc-209363280c89 /mnt/shared/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,x-systemd>
-PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /mnt/shared/usb3disk2 ntfs x-systemd.requires=/mnt/shared/usb3disk1,defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,u>
+PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /mnt/shared/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail 0 0
+PARTUUID=a175d2d3-c2f6-44d4-a5fc-209363280c89 /mnt/shared/usb3disk2 ntfs x-systemd.requires=/mnt/shared/usb3disk1,defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail 0 0
 #
-overlay /mnt/shared/mp4lib overlay x-systemd.requires=/mnt/shared/usb3disk2,lowerdir=/mnt/shared/usb3disk1/autoTVS-mpg/converted:/mnt/shared/usb3disk2/VRDTVSP-Converted,defaults,auto,users,ro,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,x-systemd.dev>
+overlay /mnt/shared/overlay overlay x-systemd.requires=/mnt/shared/usb3disk2,lowerdir=/mnt/shared/usb3disk1/autoTVS-mpg/converted:/mnt/shared/usb3disk2/VRDTVSP-Converted,defaults,auto,users,ro,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail 0 0
 #
 ```
 
