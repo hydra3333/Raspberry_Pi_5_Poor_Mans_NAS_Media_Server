@@ -305,7 +305,8 @@ Using the nano editor, change fstab and add the following entries which must be 
 **Of course, if we have more disks then we**     
 - **add more lines, one for each disk, remembering to update each `x-systemd.requires=` so they are
 all in sequence and each new line requires the mount of the prior line**     
-- **add more `lowerdir=` values**    
+- **amend the `x-systemd.requires=` on the `overlay` line to reference the last disk mount line above**    
+- **add more `lowerdir=` root folder names to the `overlay` line**    
 
 So in our example it becomes
 ```
