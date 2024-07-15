@@ -530,7 +530,7 @@ sudo nano /etc/default/hd-idle
 # Adding lines at the end for every disk, using the noted NAME
 # default timeout 300s = 5 mins
 # sda etc     timeout 900s = 15 mins
-HD_IDLE_OPTS="-i 300 -a /dev/sdb -i 900 -a /dev/sda -i 900 -d -l /var/log/hd-idle.log"
+HD_IDLE_OPTS="-i 300 -a /dev/sdb -i 900 -a /dev/sda -i 900 -l /var/log/hd-idle.log"
 ```
 
 ```
