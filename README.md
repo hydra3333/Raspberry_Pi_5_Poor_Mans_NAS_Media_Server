@@ -216,6 +216,7 @@ C4D05ABAD05AB302                     2d5599a2-aa11-4aad-9f75-7fca2078b38b └─
 ```
 In that output, identify lines showing mount names for the USB3 disks, eg something like these:
 ```
+UUID                                 PARTUUID                             NAME        FSTYPE  SIZE MOUNTPOINT          LABEL
 C4D05ABAD05AB302                     2d5599a2-aa11-4aad-9f75-7fca2078b38b └─sdb2      ntfs    4.5T /media/pi/DISK1-5TB DISK1-5TB
 96DA1D13DA1CF0EB                     a175d2d3-c2f6-44d4-a5fc-209363280c89 └─sda2      ntfs    3.6T /media/pi/DISK2-4TB DISK2-4TB
 ```
