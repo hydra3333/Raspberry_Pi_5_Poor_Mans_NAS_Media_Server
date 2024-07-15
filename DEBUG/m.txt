@@ -100,8 +100,6 @@ C4D05ABAD05AB302                     2d5599a2-aa11-4aad-9f75-7fca2078b38b └─
                                                                           mmcblk0            29.7G                   
 9BE2-1346                            9fd862b3-01                          ├─mmcblk0p1 vfat    512M /boot/firmware    bootfs
 12974fe2-889e-4060-b497-1d6ac3fbbb4b 9fd862b3-02                          └─mmcblk0p2 ext4   29.2G /                 rootfs
-pi@PI5NAS64:~ $ 
-
 
 sudo mount -l
 /dev/sdb2 on /media/pi/5TB-recordings1 type ntfs3 (rw,nosuid,nodev,relatime,uid=1000,gid=1000,windows_names,iocharset=utf8,uhelper=udisks2) [5TB-recordings1]
