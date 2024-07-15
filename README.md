@@ -135,7 +135,7 @@ C4D05ABAD05AB302                     2d5599a2-aa11-4aad-9f75-7fca2078b38b └─
                                                                           │    vfat    512M /boot/firm bootfs
 12974fe2-889e-4060-b497-1d6ac3fbbb4b 17db7c1c-02                          └─mmcblk0p2
 ```
-In that output, identify lines showing mount names fr the USB3 disks, eg something like these:
+In that output, identify lines showing mount names for the USB3 disks, eg something like these:
 ```
 a175d2d3-c2f6-44d4-a5fc-209363280c89 └─sda2      ntfs    3.6T /media/pi/Y-4TB           Y-4TB 
 2d5599a2-aa11-4aad-9f75-7fca2078b38b └─sdb2      ntfs    4.5T /media/pi/5TB-recordings1 5TB-recordings1
@@ -155,25 +155,27 @@ $ sudo mount -l | grep "overlay\|disk"
 /dev/sdb2 on /media/pi/5TB-recordings1 type ntfs3 (rw,nosuid,nodev,relatime,uid=1000,gid=1000,windows_names,iocharset=utf8,uhelper=udisks2) [5TB-recordings1]
 /dev/sda2 on /media/pi/Y-4TB type ntfs3 (rw,nosuid,nodev,relatime,uid=1000,gid=1000,windows_names,iocharset=utf8,uhelper=udisks2) [Y-4TB]
 ```
-
-Now we have identified the correct partitions and their PARTUUID.    
-Start File Manager and navigate to each of the partitions, like the below, and locate the root folder of each partition which contains your
+Now we have identified the correct partitions and their PARTUUID.
+    
+Start File Manager and navigate to each of the partitions, something like the below,
+and locate the root folder in each partition which contains your
 media files ... and note these down these root foler names alongside the correct PARTUUID.
 ```
-/dev/sdb2 on /media/pi/5TB-recordings1
-/dev/sda2 on /media/pi/Y-4TB
+/dev/sdb2 the media files are under /media/pi/5TB-recordings1
+/dev/sda2 the media files are under /media/pi/Y-4TB
 ```
-So, you will now have noted for each partition, the PARTUUID and the root folder name on that partition, eg
+So, you will by now have noted for each partition, the PARTUUID and the root folder name on that partition, eg
 ```
 a175d2d3-c2f6-44d4-a5fc-209363280c89 /media/pi/5TB-recordings1/autoTVS-mpg/converted
 2d5599a2-aa11-4aad-9f75-7fca2078b38b /media/pi/Y-4TB/VRDTVSP-Converted
 ```
-We know from the prior output that the mount points are:
+
+We know from these prior outputs that the mount points are:
 ```
 /media/pi/5TB-recordings1 
 /media/pi/Y-4TB
 ```
-... so we are ONLY interested on the trailing parts of the full folder names, eg in this example
+... and we are ONLY interested on the trailing parts of the full folder names (i.e. minus the mount point), eg in that example
 ```
 autoTVS-mpg/converted
 VRDTVSP-Converted
