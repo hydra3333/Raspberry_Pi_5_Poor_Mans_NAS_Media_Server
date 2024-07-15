@@ -528,6 +528,18 @@ sudo nano /etc/default/hd-idle
 # enabling hd-idle auto start by changing line 'START_HD_IDLE=false' to have a value **true**
 START_HD_IDLE=true
 # Adding lines at the end for every disk, using the noted NAME
+# option -d = debug
+##Double check hd-idle works with your hard drive
+##sudo hd-idle -t ??? -d
+#   #Command line options:
+#   #-a name Set device name of disks for subsequent idle-time parameters -i. This parameter is optional in the sense that there's a default entry for all disks which are not named otherwise by using this parameter. This can also be a symlink (e.g. /dev/disk/by-uuid/...)
+#   #-i idle_time Idle time in seconds for the currently named disk(s) (-a name) or for all disks.
+#   #-c command_type Api call to stop the device. Possible values are scsi (default value) and ata.
+#   #-s symlink_policy Set the policy to resolve symlinks for devices. If set to 0, symlinks are resolve only on start. If set to 1, symlinks are also resolved on runtime until success. By default symlinks are only resolve on start. If the symlink doesn't resolve to a device, the default configuration will be applied.
+#   #-l logfile Name of logfile (written only after a disk has spun up or spun down). Please note that this option might cause the disk which holds the logfile to spin up just because another disk had some activity. On single-disk systems, this option should not cause any additional spinups. On systems with more than one disk, the disk where the log is written will be spun up. On raspberry based systems the log should be written to the SD card.
+#   #-t disk Spin-down the specified disk immediately and exit.
+#   #-d Debug mode. It will print debugging info to stdout/stderr (/var/log/syslog if started with systemctl)
+#   #-h Print usage information.
 # default timeout 300s = 5 mins
 # sda etc     timeout 900s = 15 mins
 HD_IDLE_OPTS="-i 300 -a /dev/sdb -i 900 -a /dev/sda -i 900 -l /var/log/hd-idle.log"
@@ -563,83 +575,4 @@ sudo systemctl status hd-idle.service | tail -n 50
 
 
 
-
-Note the options:
-```
-# option -d = debug
-##Double check hd-idle works with your hard drive
-##sudo hd-idle -t ??? -d
-#   #Command line options:
-#   #-a name Set device name of disks for subsequent idle-time parameters -i. This parameter is optional in the sense that there's a default entry for all disks which are not named otherwise by using this parameter. This can also be a symlink (e.g. /dev/disk/by-uuid/...)
-#   #-i idle_time Idle time in seconds for the currently named disk(s) (-a name) or for all disks.
-#   #-c command_type Api call to stop the device. Possible values are scsi (default value) and ata.
-#   #-s symlink_policy Set the policy to resolve symlinks for devices. If set to 0, symlinks are resolve only on start. If set to 1, symlinks are also resolved on runtime until success. By default symlinks are only resolve on start. If the symlink doesn't resolve to a device, the default configuration will be applied.
-#   #-l logfile Name of logfile (written only after a disk has spun up or spun down). Please note that this option might cause the disk which holds the logfile to spin up just because another disk had some activity. On single-disk systems, this option should not cause any additional spinups. On systems with more than one disk, the disk where the log is written will be spun up. On raspberry based systems the log should be written to the SD card.
-#   #-t disk Spin-down the specified disk immediately and exit.
-#   #-d Debug mode. It will print debugging info to stdout/stderr (/var/log/syslog if started with systemctl)
-#   #-h Print usage information.
-```
-
-
-
-
-Test hd-idle
-```
-sudo hd-idle -t sdb -d -l /var/log/hd-idle.log
-sudo hd-idle -t sda -d -l /var/log/hd-idle.log
-sudo systemctl status hd-idle.service | tail -n 20
-```
-
-
-
-
-```
-echo "# Modify the hd-idle configuration file to enable the service to automatically start and spin down drives"
-echo ""
-set -x
-sudo systemctl stop hd-idle
-sleep 2s
-# default timeout 300s = 5 mins
-# sda     timeout 900s = 15 mins
-the_default_timeout=300
-the_sda_timeout=900
-set +x
-echo ""
-idle_opts="HD_IDLE_OPTS=\"-i ${the_default_timeout} "
-idle_opts+=" -a ${USB3_DISK_NAME_1} -i ${the_sda_timeout} "
-if [[ "${SecondDisk}" = "y" ]]; then
-	idle_opts+=" -a ${USB3_DISK_NAME_2} -i ${the_sda_timeout} "
-fi
-idle_opts+=" -l /var/log/hd-idle.log\n\""
-echo "Setting idle_opts=${idle_opts}"
-echo ""
-set -x
-sudo cp -fv "/etc/default/hd-idle" "/etc/default/hd-idle.old"
-sudo sed -i "s;START_HD_IDLE=;#START_HD_IDLE=;g" "/etc/default/hd-idle"
-sudo sed -i "s;HD_IDLE_OPTS=;#HD_IDLE_OPTS=;g" "/etc/default/hd-idle"
-sudo sed -i "1 i START_HD_IDLE=true" "/etc/default/hd-idle" # insert at line 1
-sudo sed -i "$ a ${idle_opts}" "/etc/default/hd-idle" # insert as last line
-sudo cat "/etc/default/hd-idle"
-set +x
-#sudo diff -U 10 "/etc/default/hd-idle.old" "/etc/default/hd-idle"
-# start and enable start at system boot, per instructions https://github.com/adelolmo/hd-idle/
-sudo systemctl stop hd-idle
-sudo systemctl enable hd-idle
-sudo systemctl restart hd-idle
-sleep 2s
-set +x
-echo ""
-sleep 2s
-sudo cat /var/log/hd-idle.log
-set +x
-echo ""
-echo "# Finished installation of hd-idle so that external USB3 disks spin down when idle and not wear out quickly."
-echo ""
-#
-#############################################################################################################################################
-fi ### if [[ ${do_setup_hdidle} ]]; then
-#############################################################################################################################################
-#
-#
-```
 
