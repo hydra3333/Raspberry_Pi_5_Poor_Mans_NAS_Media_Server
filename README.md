@@ -61,12 +61,14 @@ one could easily setup a nightly Pi reboot at 4:45 am with crontab and say "it'l
 
 #### thagrol    
 https://forums.raspberrypi.com/viewtopic.php?p=2236572#p2236547    
+
 Building A Pi Based NAS https://forums.raspberrypi.com/viewtopic.php?t=327444    
+
 Using fstab A Beginner's Guide https://forums.raspberrypi.com/viewtopic.php?t=302752    
 
-### This is an outline, not a script    
+### Outline the steps    
 
-#### ESSENTIAL: Prepare the disks: disk labels, folder structures, security    
+#### ESSENTIAL: Prepare the disks: security, disk volume labels, folder structures, files    
 Assuming we have USB3 disks formatted as NTFS on PCs (often used to create media files)
 we need to prepare every disk to appear and behave in a consistent way.
 
@@ -74,16 +76,16 @@ For every disk, change it's volume label to be like `DISK1` through to `DISK8`.
 If you are unsure how to do that, try
 https://www.google.com.au/search?q=how+to+change+an+NTFS+disk+volume+label+in+windows+11    
 
-On every disk, change it's Security so that inbuilt username `everyone` is added with `Full Control`.
-In File Manager
+On every disk, change it's Security so that inbuilt username `everyone` is added with `Full Control` access.
+In Windows File Manager
 - right click on a drive letter
 - choose Properties
 - choose Security tab
 - click the `Edit` button
 - click the `Add` button
-- enter `everyone` and click the `OK` button
+- enter the word `everyone` and click the `OK` button
 - Ensure `Full control` is ticked and click `Apply`;
-if prompted allow it to change all folders and files on the disk and ignore errors
+if prompted, allow it to change all folders and files on the disk and ignore all errors
 
 On every disk, create a top level folder named like `ROOTFOLDER1` through to `ROOTFOLDER8`, to match the disk volume label number.
 
@@ -108,12 +110,15 @@ DISK2 -- ROOTFOLDER2 --|--ClassicMovies
 
 #### Prepare the hardware    
 First ensuring that power switch is off where the Pi's power block plugs in,    
-- plug in the Pi to its power cable    
-- plug the Pi into a screen with the HDMI cable (sophisticated uses had do it with SSH or VNS
-- plug in the USB3 hubs into the USB3 slots in the Pi 5    
+- plug in the Pi's power cable into the Pi    
+- plug the Pi into a screen with the HDMI cable (sophisticated users may choose do it with `SSH` or `VNC` or `RaspberryPi Connect`)
+- plug in the USB3 hub(s) into the USB3 slots in the Pi    
 - ensure the external USB3 disks are powered off then plug them into the USB3 hubs    
 
-In the outline below, we'll assume only 4 USB3 disks, you can add more if you like.
+That's the hardware prepared and plugged in.    
+
+In the outline below, we'll assume only 2 USB3 disks. You can add more as you need,
+just keep an eye on your disk naming and folder structures in line with the model above.    
 
 #### Install Raspberry Pi OS with `autologin`    
 Use the Raspberry Pi Imager to put the full 64 bit image to an SD card in the usual way.    
