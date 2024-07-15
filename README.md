@@ -164,16 +164,14 @@ sudo apt -y dist-upgrade
 ```
 If the Pi tells you to reboot, do so.
 
-We choose to create some `alias` shortcut commands to make life easier,
-by creating a .sh script under `/etc/profile.d/`.    
-In Terminal, edit the existing or new file `/etc/profile.d/alias.sh`
+We choose to create some `alias` shortcut commands to make life easier, by editing script `~/.bashrc`. 
+In Terminal, edit the existing file `~/.bashrc`
 ```
-sudo nano /etc/profile.d/alias.sh
+nano ~/.bashrc
 ```
-Put this into it:
+Put this at the end of it:
 ```
-# When you log in to a shell “/etc/profile” will run any script under profile.d before actually running ~/.profile. 
-# This method will reduce the risk of messing up either /etc/profile or /etc/bash.bashrc file.
+# Add shortcut commands
 # unalias checktemp
 # unalias dir
 alias checktemp='vcgencmd measure_temp'
@@ -187,9 +185,8 @@ alias psmem10="ps auxf | sort -nr -k 4 | head -10"
 ```
 exit nano with `Control O` `Control X`.   
 
-Reboot the Pi, perhaps using `sudo reboot now`.
 
-At this point, the disks should already be auto-mounted and you may see links to them on the desktop.
+At this point, the USB3 disks should already be auto-mounted and you may see links to them on the desktop.
 That's OK, we'll change all that later to suit the NAS needs.    
 
 ### Set the Router so this Pi has a Reserved fixed (permanent) DHCP IP Address Lease
