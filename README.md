@@ -289,7 +289,7 @@ sudo chown -R -v pi:  /mnt/shared
 sudo chmod -R -v a+rwx /mnt/shared
 ```
 
-### Backup and Edit `/etc/fstab`    
+### Backup and Edit `/etc/fstab` so disks are mounted consistently     
 To make the USB3 disk mounts happen at boot time into the mount points we just created, we must edit `/etc/fstab` and
 use, for each partition, the PARTUUID and the root folder name on that partition which we collected earlier.    
 Start a Terminal and run the nano editor:    
