@@ -1,7 +1,17 @@
-sudo mount -a [-fFnrsvw] [-t fstype] [-O optlist]
+free
+top
+whoami
+cal
+
+
+
+mkdir ~/Desktop/DEBUG
+cp -fv /etc/fstab ~/Desktop/DEBUG/
+cat ~/Desktop/DEBUG/fstab
 
 ls -al /mnt/shared/usb3disk1
 ls -al /mnt/shared/usb3disk2
+ls -al /mnt/shared/merged
 
 sudo lsblk 
 sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
@@ -12,16 +22,56 @@ works:
 sudo mount -t overlay overlay -olowerdir=/mnt/shared/usb3disk1/VRDTVSP-Converted:/mnt/shared/usb3disk2/autoTVS-mpg/Converted /mnt/shared/merged
 
 
-PARTUUID=a175d2d3-c2f6-44d4-a5fc-209363280c89 /mnt/shared/usb3disk1 ntfs defaults,auto,noatime,nodiratime,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,x-systemd.mount-timeout=60
-PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /mnt/shared/usb3disk2 ntfs defaults,auto,noatime,nodiratime,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,x-systemd.mount-timeout=60,x-systemd.requires=/mnt/shared/usb3disk1
 #
-overlay /mnt/shared/merged overlay lowerdir=/mnt/shared/usb3disk1/VRDTVSP-Converted:/mnt/shared/usb3disk2/autoTVS-mpg/Converted,defaults,auto,noatime,nodiratime,nofail,users,ro,exec,x-systemd.mount-timeout=60,x-systemd.requires=/mnt/shared/usb3disk2
+PARTUUID=a175d2d3-c2f6-44d4-a5fc-209363280c89 /mnt/shared/usb3disk1 ntfs defaults,auto,noatime,nodiratime,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,x-systemd.mount-timeout=60,noatime,nodiratime,nofail
+PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /mnt/shared/usb3disk2 ntfs defaults,auto,noatime,nodiratime,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,x-systemd.mount-timeout=60,x-systemd.requires=/mnt/shared/usb3disk1,noatime,nodiratime,nofail
+#
+overlay /mnt/shared/merged overlay defaults,auto,noatime,nodiratime,nofail,users,ro,exec,x-systemd.mount-timeout=60,x-systemd.requires=/mnt/shared/usb3disk2,lowerdir=/mnt/shared/usb3disk1/VRDTVSP-Converted:/mnt/shared/usb3disk2/autoTVS-mpg/Converted,noatime,nodiratime,nofail
+#
 
-sudo mount -asv
-
+# updatesystem with fstab changes
 sudo systemctl daemon-reload
 
+# remount anything new in fstab
+sudo mount -asv
+
+# find our disks and overelays
 sudo mount -l |  grep "overlay\|disk"
 
+# dismount our overlay
 sudo umount -fRv /mnt/shared/merged
+
+# list files in our overlay
+ls -alLh --color --group-directories-first /mnt/shared/merged
+
+
+
+# To make it persistent,either
+# 1. per user you'll have to edit: sudo nano ~/.bashrc
+# Add aliases to the end of the file
+alias checktemp='vcgencmd measure_temp'
+alias dir='ls -alLh --color --group-directories-first'
+# Then reload like this:  source ~/.bashrc
+# ****************** DO 2. BELOW ******************
+# 2. Alternatively, create a .sh script under “/etc/profile.d/”. 
+# When you log in to a shell “/etc/profile” will run any script under profile.d before actually running ~/.profile. 
+# This method will reduce the risk of messing up either /etc/profile or /etc/bash.bashrc file.
+sudo cat >> /etc/profile.d/alias.sh
+# unalias checktemp
+# unalias dir
+alias checktemp='vcgencmd measure_temp'
+alias dir='ls -alLh --color --group-directories-first'
+
+Ctrl+d
+#
+
+
+# use AI to tell hoiw to do things
+sudo npm install -g how-2
+how2 decompress tar gz
+how2 print first 20 prime numbers
+
+
+
+
 
