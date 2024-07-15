@@ -164,6 +164,30 @@ sudo apt -y dist-upgrade
 ```
 If the Pi tells you to reboot, do so.
 
+We choose to create `alias` some shortcut commands to make life easier by creating a .sh script under `/etc/profile.d/`.    
+In Terminal, edit the existing or new file `/etc/profile.d/alias.sh`
+```
+sudo nano /etc/profile.d/alias.sh
+```
+Put this into it:
+```
+# When you log in to a shell “/etc/profile” will run any script under profile.d before actually running ~/.profile. 
+# This method will reduce the risk of messing up either /etc/profile or /etc/bash.bashrc file.
+# unalias checktemp
+# unalias dir
+alias checktemp='vcgencmd measure_temp'
+alias dir='ls -alLh --color --group-directories-first'
+# Get top process eating cpu
+alias pscpu="ps auxf | sort -nr -k 3"
+alias pscpu10="ps auxf | sort -nr -k 3 | head -10"
+# Get top process eating memory
+alias psmem="ps auxf | sort -nr -k 4"
+alias psmem10="ps auxf | sort -nr -k 4 | head -10"
+```
+Then Control O then Control X, to save and exit.    
+
+Reboot the Pi, perhaps using `sudo reboot now`.
+
 At this point, the disks should already be auto-mounted and you may see links to them on the desktop.
 That's OK, we'll change all that later to suit the NAS needs.    
 
@@ -300,18 +324,15 @@ overlay /mnt/shared/overlay overlay lowerdir=/mnt/shared/usb3disk1/ROOTFOLDER1:/
 
 exit nano with `Control O` `Control X`.    
 
-####  Check and Reboot to see what happens with those mounts    
+####  Reboot to see what happens with those mounts    
 Reboot the Pi 5.    
 Start a Terminal
 ```
-# Run the following command to get the location of the usb3disk partitions. grep -v mmcblk0 discards any results for the SD card. 
-sudo blkid|grep -v mmcblk0
-# List all of the usb3 disk stuff on the Raspberry Pi
-sudo lsblk 
-sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL,MODEL
-# Run the following command to get more info on disks
-sudo df
+# find our disks and overlays
+sudo mount -l |  grep "overlay\|disk"
+sudo df  |  grep "overlay\|disk"
 ```
+
 If the mounts do not match what you specified in `etc/fstab`, then something is astray !  Check what you have done above.    
 
 Do an `ls -al` on each of the mounts and on the `/mnt/shared/mp4lib` folder to check they are visible.    
