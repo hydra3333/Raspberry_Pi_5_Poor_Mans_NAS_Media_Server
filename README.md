@@ -441,7 +441,7 @@ journalctl -u hd-idle.service | grep hd-idle| tail -n 50
 sudo systemctl status hd-idle.service | tail -n 50
 ```
 
-### Install and configure `SAMBA`
+### Install and configure `SAMBA`to create SMB file shares
 In a Terminal,    
 ```
 sudo apt -y install samba samba-common-bin smbclient cifs-utils
@@ -564,4 +564,4 @@ eg on a Windows 11 PC in Windows Explorer use the IP address of the Pi, eg ...
 \\10.0.0.18\
 ```
 
-### Install and configure `miniDLNA`
+### Install and configure `miniDLNA` to serve media on the LAN via DLNA
