@@ -338,8 +338,9 @@ sudo df  |  grep "overlay\|disk"
 
 If the mounts do not match what you specified in `etc/fstab`, then something is astray !  Check what you have done above.    
 
-Do an `ls -al` on each of the mounts and on the `/mnt/shared/mp4lib` folder to check they are visible.    
-If the files in the mounts do not match what you expect from `etc/fstab`, then something is astray !  Check what you have done above.    
+In a Terminal do an `ls -al` on each of the mounts, eg on `/mnt/shared/usb3disk1`, and also on the `/mnt/shared/overlay` folder to check they are visible.    
+
+**If the files in the mounts do not match what you expect from `/etc/fstab`, then something is astray !  Check what has been done above.**    
 
 
 #### Install and configure `SAMBA`
@@ -394,9 +395,9 @@ wide links = yes
 Below are the definition of the 2 new shares. Add them to the end of `/etc/samba/smb.conf`    
 ```
 # DEFINE THE SHARES
-[mp4lib]
-comment = RO access to combined mp4ibs on USB3 disks from overlayfs
-path = /mnt/shared/mp4lib
+[overlayed_root_folders]
+comment = RO access to overlayed root folders on USB3 disks using overlayfs
+path = /mnt/shared/overlay
 available = yes
 force user = pi
 writeable = no
@@ -404,15 +405,13 @@ read only = yes
 browseable = yes
 public=yes
 guest ok = yes
-guest account = pi
 guest only = yes
 case sensitive = no
 default case = lower
 preserve case = yes
-allow insecure wide links = yes
 follow symlinks = yes
 wide links = yes
-	
+
 [individual_disks]
 comment = rw access to individual USB3 disks
 path = /mnt/shared
@@ -423,60 +422,46 @@ read only = no
 browseable = yes
 public=yes
 guest ok = yes
-guest account = pi
 guest only = yes
 case sensitive = no
 default case = lower
 preserve case = yes
-allow insecure wide links = yes
 follow symlinks = yes
 wide links = yes
 force create mode = 1777
 force directory mode = 1777
 inherit permissions = yes
 ```
-
 exit nano with `Control O` `Control X`.    
 
-
-The rest of this outline is yet to bve clarified.
-
+Test the new SAMBA parameters in a Terminal:
 ```
 sudo testparm
-set +x
-echo ""
-echo "# Restart Samba service"
-echo ""
-set -x
+```
+
+Restart Samba service, waitin 2 secs in between each command
+```
 sudo systemctl enable smbd
-sleep 2s
+# wait 2 secs
 sudo systemctl stop smbd
-sleep 2s
+# wait 2 secs
 sudo systemctl restart smbd
-sleep 2s
-set +x
-echo ""
-echo "# List the new Samba users (which can have different passwords to the Pi itself) and shares"
-echo ""
-set -x
+```
+
+List the new Samba users (which can have different passwords to the Pi itself) and shares
+
+```
 sudo pdbedit -L -v
 sudo net usershare info --long
 sudo smbstatus
 sudo smbstatus --shares # Will retrieve what's being shared and which machine (if any) is connected to what.
-#sudo net rpc share list -U pi
-#sudo net rpc share list -U root
-#sudo smbclient -L host
-#sudo smbclient -L ${server_ip} -U pi
-#sudo smbclient -L ${server_ip} -U root
-set +x
-echo ""
-echo "You can now access the defined shares from a Windows machine or from an app that supports the SMB protocol"
-echo "eg from Win10 PC in Windows Explorer use the IP address of ${server_name} like ... \\\\${server_ip}\\ "
-set -x
 sudo hostname
 sudo hostname --fqdn
 sudo hostname --all-ip-addresses
-```  
+```
+
+You can now access the defined shares from a Windows machine or from an app that supports the SMB protocol.    
+eg on a Windows 11 PC in Windows Explorer use the IP address of the Pi, eg ... \\\\10.0.0.18\\ "
 
 
 
