@@ -343,20 +343,21 @@ In a Terminal do an `ls -al` on each of the mounts, eg on `/mnt/shared/usb3disk1
 **If the files in the mounts do not match what you expect from `/etc/fstab`, then something is astray !  Check what has been done above.**    
 
 #### Setup HD-IDLE to ensure disks do not constantly spin
-Doing this: `sudo apt -y install hd-idle` and then these
-```
+Per `https://www.htpcguides.com/spin-down-and-manage-hard-drive-power-on-raspberry-pi/`
+some WD external USB3 disks won't spin down on idle and HDPARM and SDPARM don't work on them
+... the `adelolmo` version of `hd-idle` appears to work, so let's use that.  
+
+**Do NOT do this**
+```sudo apt -y install hd-idle`
+# and then these
 sudo apt-cache show hd-idle
 sudo apt list --installed | grep hd-idle
 dpkg -l | grep hd-idle
 ```
-all show version `1.05+ds-2+b1` which is very old.
+since all show version `1.05+ds-2+b1` which is very old.
 
-This `https://github.com/adelolmo/hd-idle` shows at least release `1.21 / 2023-10-22` in    
+This `https://github.com/adelolmo/hd-idle` shows a minimum of release `1.21 / 2023-10-22` in
 `https://github.com/adelolmo/hd-idle/releases/download/v1.21/hd-idle_1.21_arm64.deb`
-
-Per `https://www.htpcguides.com/spin-down-and-manage-hard-drive-power-on-raspberry-pi/`
-some WD external USB3 disks won't spin down on idle and HDPARM and SDPARM don't work on them
-... the `adelolmo` version of `hd-idle` appears to work, so let's use that.    
 
 Remove any prior install of hd-idle. In a Terminal,
 ```
