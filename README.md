@@ -490,6 +490,7 @@ sudo systemctl disable hd-idle
 sudo dpkg -l hd-idle
 sudo dpkg -P hd-idle 
 sudo apt -y purge hd-idle
+sudo rm -vf /var/log/hd-idle.log
 ```
 
 Install the more up-to-date release of 'adelolmo' version of hd-idle direct from the author.
@@ -500,6 +501,8 @@ cd ~/Desktop
 rm -fvr ./hd-idle
 mkdir -pv hd-idle
 cd hd-idle
+sudo touch /var/log/hd-idle.log
+sudo chmod +777 /var/log/hd-idle.log
 sudo rm -vf hd-idle_1.21_arm64.deb
 wget https://github.com/adelolmo/hd-idle/releases/download/v1.21/hd-idle_1.21_arm64.deb
 sudo dpkg -i "./hd-idle_1.21_arm64.deb"
@@ -527,27 +530,32 @@ sudo nano /etc/default/hd-idle
 # Adding lines at the end for every disk, using the noted NAME
 # default timeout 300s = 5 mins
 # sda etc     timeout 900s = 15 mins
-HD_IDLE_OPTS="-i 300 -a ${USB3_DISK_NAME_1} -i 900 -a ${USB3_DISK_NAME_2} -i 900 -l /var/log/hd-idle.log"
+HD_IDLE_OPTS="-i 300 -a /dev/sdb -i 900 -a /dev/sda -i 900 -d -l /var/log/hd-idle.log"
 ```
 
-To enable hd-idle on reboot:
+```
+sudo cat /etc/default/hd-idle | grep -v "^#"
+```
+
+To enable hd-idle on reboot and then restart:
 ```
 sudo systemctl enable hd-idle   
-```
-
-Run hd-idle with:
-```
 sudo systemctl stop hd-idle
 sudo systemctl restart hd-idle
 # wait 2 secs
 sudo cat /var/log/hd-idle.log
+journalctl -u hd-idle.service | grep hd-idle| tail -n 50
+sudo systemctl status hd-idle.service | tail -n 50
 ```
 
 Test hd-idle
 ```
-sudo hd-idle -t sdb -d -l /var/log/hd-idle.log
-sudo hd-idle -t sda -d -l /var/log/hd-idle.log
+sudo hd-idle -t /dev/sdb -d -l /var/log/hd-idle.log
+sudo hd-idle -t /dev/sda -d -l /var/log/hd-idle.log
+# wait 2 secs
 sudo cat /var/log/hd-idle.log
+journalctl -u hd-idle.service | grep hd-idle| tail -n 50
+sudo systemctl status hd-idle.service | tail -n 50
 ```
 
 
@@ -579,6 +587,7 @@ Test hd-idle
 ```
 sudo hd-idle -t sdb -d -l /var/log/hd-idle.log
 sudo hd-idle -t sda -d -l /var/log/hd-idle.log
+sudo systemctl status hd-idle.service | tail -n 20
 ```
 
 
