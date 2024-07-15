@@ -232,7 +232,8 @@ Now we have identified the correct partitions and their PARTUUID, and now need t
 
 Start `File Manager` and navigate to each of the partitions, something like:
 - the media root folder is under `/media/pi/DISK1-5TB`    
-- the media root folder is under `/media/pi/DISK2-4TB`    
+- the media root folder is under `/media/pi/DISK2-4TB`
+
 and locate the root folder in each partition which contains your media files 
 ... and make a note of these root folder names *alongside* the corresponding PARTUUID.    
 So, you will have noted for each partition, the PARTUUID and the root folder name on that partition, eg
@@ -243,20 +244,9 @@ So, you will have noted for each partition, the PARTUUID and the root folder nam
 ```
 would be
 ```
-PARTUUID                             root folder
-2d5599a2-aa11-4aad-9f75-7fca2078b38b ROOTFOLDER1
-a175d2d3-c2f6-44d4-a5fc-209363280c89 ROOTFOLDER2
-```
-
-We know from these prior outputs that the mount points are:
-```
-/media/pi/5TB-recordings1 
-/media/pi/Y-4TB
-```
-... and we are ONLY interested on the trailing parts of the full folder names (i.e. minus the mount point), eg for the above example it that would be
-```
-autoTVS-mpg/converted
-VRDTVSP-Converted
+PARTUUID                              root folder
+2d5599a2-aa11-4aad-9f75-7fca2078b38b  ROOTFOLDER1
+a175d2d3-c2f6-44d4-a5fc-209363280c89  ROOTFOLDER2
 ```
 
 #### Create new 'standardized' mount points for the disks and root folders
