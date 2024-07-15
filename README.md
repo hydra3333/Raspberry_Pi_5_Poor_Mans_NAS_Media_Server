@@ -340,7 +340,7 @@ In a Terminal do an `ls -al` on each of the mounts, eg on `/mnt/shared/usb3disk1
 
 **If the files in the mounts do not match what you expect from `/etc/fstab`, then something is astray !  Check what has been done above.**    
 
-### Setup `HD-IDLE` to ensure disks do not constantly spin
+### Setup `HD-IDLE` to ensure disks are not constantly spun up
 Per `https://www.htpcguides.com/spin-down-and-manage-hard-drive-power-on-raspberry-pi/`
 some WD external USB3 disks won't spin down on idle and HDPARM and SDPARM don't work on them
 ... the `adelolmo` version of `hd-idle` appears to work, so let's use that.  
