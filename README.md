@@ -441,7 +441,7 @@ journalctl -u hd-idle.service | grep hd-idle| tail -n 50
 sudo systemctl status hd-idle.service | tail -n 50
 ```
 
-### Install and configure `SAMBA`to create SMB file shares
+### Install and configure `SAMBA`to create SMB file shares on the LAN
 In a Terminal,    
 ```
 sudo apt -y install samba samba-common-bin smbclient cifs-utils
