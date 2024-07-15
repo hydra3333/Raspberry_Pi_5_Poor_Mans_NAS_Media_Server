@@ -202,7 +202,6 @@ Start a Terminal and use `sudo lsblk` to look at the connected disks, and see so
 sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
 ```
 ```
-pi@PI5NAS64:~ $ sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
 UUID                                 PARTUUID                             NAME        FSTYPE  SIZE MOUNTPOINT          LABEL
                                                                           sda                 3.6T                     
                                      c8c72b90-6c8a-4631-9704-a3816695a6dc ├─sda1              128M                     
@@ -224,30 +223,31 @@ From each relevant partition we identify, look for the PARTUUID and save these s
 
 To cross-check disks, use `sudo mount` like this and amongst them will be something like this:
 ```
-$ sudo mount -l
-/dev/sdb2 on /media/pi/5TB-recordings1 type ntfs3 (rw,nosuid,nodev,relatime,uid=1000,gid=1000,windows_names,iocharset=utf8,uhelper=udisks2) [5TB-recordings1]
-/dev/sda2 on /media/pi/Y-4TB type ntfs3 (rw,nosuid,nodev,relatime,uid=1000,gid=1000,windows_names,iocharset=utf8,uhelper=udisks2) [Y-4TB]
+sudo mount -l | grep "overlay\|disk"
+```
+```
+/dev/sdb2 on /media/pi/DISK1-5TB type ntfs3 (rw,nosuid,nodev,relatime,uid=1000,gid=1000,windows_names,iocharset=utf8,uhelper=udisks2) [DISK1-5TB]
+/dev/sda2 on /media/pi/DISK2-4TB type ntfs3 (rw,nosuid,nodev,relatime,uid=1000,gid=1000,windows_names,iocharset=utf8,uhelper=udisks2) [DISK2-4TB]
 ```
 
-To further cross-check disks, refine the `sudo mount` to find the ones we are interested in, amongst them will be something like this:
-```
-$ sudo mount -l | grep "overlay\|disk"
-/dev/sdb2 on /media/pi/5TB-recordings1 type ntfs3 (rw,nosuid,nodev,relatime,uid=1000,gid=1000,windows_names,iocharset=utf8,uhelper=udisks2) [5TB-recordings1]
-/dev/sda2 on /media/pi/Y-4TB type ntfs3 (rw,nosuid,nodev,relatime,uid=1000,gid=1000,windows_names,iocharset=utf8,uhelper=udisks2) [Y-4TB]
-```
 Now we have identified the correct partitions and their PARTUUID.
-    
 Start File Manager and navigate to each of the partitions, something like the below,
-and locate the root folder in each partition which contains your
-media files ... and note these down these root foler names alongside the correct PARTUUID.
+- the media root folder is under `/media/pi/DISK1-5TB`    
+- the media root folder is under `/media/pi/DISK2-4TB`    
+
+and locate the root folder in each partition which contains your media files 
+... and make a note of these root folder names *alongside* the corresponding PARTUUID.    
+So, you will have noted for each partition, the PARTUUID and the root folder name on that partition, eg
 ```
-/dev/sdb2 the media files are under /media/pi/5TB-recordings1
-/dev/sda2 the media files are under /media/pi/Y-4TB
+# File Manager Folder Name
+/media/pi/DISK1-5TB/ROOTFOLDER1
+/media/pi/DISK2-4TB/ROOTFOLDER2
 ```
-So, you will by now have noted for each partition, the PARTUUID and the root folder name on that partition, eg
+would be
 ```
-a175d2d3-c2f6-44d4-a5fc-209363280c89 /media/pi/5TB-recordings1/autoTVS-mpg/converted
-2d5599a2-aa11-4aad-9f75-7fca2078b38b /media/pi/Y-4TB/VRDTVSP-Converted
+PARTUUID                             root folder
+2d5599a2-aa11-4aad-9f75-7fca2078b38b ROOTFOLDER1
+a175d2d3-c2f6-44d4-a5fc-209363280c89 ROOTFOLDER2
 ```
 
 We know from these prior outputs that the mount points are:
