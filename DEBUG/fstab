@@ -1,0 +1,20 @@
+proc            /proc           proc    defaults          0       0
+PARTUUID=17db7c1c-01  /boot/firmware  vfat    defaults          0       2
+PARTUUID=17db7c1c-02  /               ext4    defaults,noatime  0       1
+# a swapfile is not a swap partition, no line here
+#   use  dphys-swapfile swap[on|off]  for that
+#
+# https://askubuntu.com/questions/109413/how-do-i-use-overlayfs/1348932#1348932
+# To set order/dependency of mounts in fstab file, we will declare systemd option "require" using syntax: x-systemd.require. 
+# Argument for this option is mount point of the mount which should be successfully mounted before given mount.
+#
+# Mount each usb3 disk partition, each subsequent mount depending on the prior mount.
+# Careful: "nofail" will cause the process to continue with no errors (avoiding a boot hand when a disk does not mount)
+#          however the subsequently dependent mounts will fails as will the overlayfs mount
+#             ... but at least we have booted, not halting boot with a failed fstab entry, and can fix that !
+PARTUUID=a175d2d3-c2f6-44d4-a5fc-209363280c89 /mnt/shared/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,x-systemd>
+PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /mnt/shared/usb3disk2 ntfs x-systemd.requires=/mnt/shared/usb3disk1,defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,u>
+#
+#overlay /mnt/shared/merged overlay x-systemd.requires=/mnt/shared/usb3disk2,lowerdir=/mnt/shared/usb3disk1/VRDTVSP-Converted:/mnt/shared/usb3disk2/autoTVS-mpg/Converted,defaults,auto,users,ro,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,x-systemd.dev>
+#
+
