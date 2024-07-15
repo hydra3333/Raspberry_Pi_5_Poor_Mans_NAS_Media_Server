@@ -1,7 +1,13 @@
-free
-top
+lscpu
+free -t
+htop
 whoami
 cal
+dmesg
+hostname -f
+hostname -I
+
+
 
 
 
@@ -15,7 +21,7 @@ ls -al /mnt/shared/merged
 
 sudo lsblk 
 sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
-sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL,MODEL
+sudo df
 
 
 works:
@@ -35,8 +41,9 @@ sudo systemctl daemon-reload
 # remount anything new in fstab
 sudo mount -asv
 
-# find our disks and overelays
+# find our disks and overlays
 sudo mount -l |  grep "overlay\|disk"
+sudo df  |  grep "overlay\|disk"
 
 # dismount our overlay
 sudo umount -fRv /mnt/shared/merged
@@ -61,7 +68,12 @@ sudo cat >> /etc/profile.d/alias.sh
 # unalias dir
 alias checktemp='vcgencmd measure_temp'
 alias dir='ls -alLh --color --group-directories-first'
-
+# Get top process eating cpu
+alias pscpu="ps auxf | sort -nr -k 3"
+alias pscpu10="ps auxf | sort -nr -k 3 | head -10"
+# Get top process eating memory
+alias psmem="ps auxf | sort -nr -k 4"
+alias psmem10="ps auxf | sort -nr -k 4 | head -10"
 Ctrl+d
 #
 
@@ -71,7 +83,23 @@ sudo npm install -g how-2
 how2 decompress tar gz
 how2 print first 20 prime numbers
 
+--------------------------------------------------------------------------------------
 
-
-
-
+sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
+UUID                                 PARTUUID                             NAME  FSTYPE  SIZE MOUNTPOINT LABEL
+                                                                          sda           3.6T            
+                                     c8c72b90-6c8a-4631-9704-a3816695a6dc ├─sda1
+                                                                          │             128M            
+96DA1D13DA1CF0EB                     a175d2d3-c2f6-44d4-a5fc-209363280c89 └─sda2
+                                                                                ntfs    3.6T /mnt/share Y-4TB
+                                                                          sdb           4.5T            
+                                     c542d01e-9ac9-486f-98cb-4521e0fe54f8 ├─sdb1
+                                                                          │             128M            
+C4D05ABAD05AB302                     2d5599a2-aa11-4aad-9f75-7fca2078b38b └─sdb2
+                                                                                ntfs    4.5T /mnt/share 5TB-recordings1
+                                                                          mmcblk0
+                                                                                       29.7G            
+9BE2-1346                            17db7c1c-01                          ├─mmcblk0p1
+                                                                          │     vfat    512M /boot/firm bootfs
+12974fe2-889e-4060-b497-1d6ac3fbbb4b 17db7c1c-02                          └─mmcblk0p2
+                                                                                ext4   29.2G /          rootfs
