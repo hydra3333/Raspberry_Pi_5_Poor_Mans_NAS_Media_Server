@@ -27,7 +27,22 @@ on the internet - at the cost of having to deal with more complexity ... safety 
 ### General Approach
 Say one has 8 old USB3 disks `DISK1` ... `DISK8` all plugged into the (1 or 2) USB3 hubs,
 and disk each has a single root folder containing subfolders of media to be served
-`ROOTFOLDER1` ... `ROOTFOLDER8`, then we can    
+`ROOTFOLDER1` ... `ROOTFOLDER8`    
+```
+DISK1 -- ROOTFOLDER1 --|--ClassicMovies
+                       |--Documentaries
+                       |--Footy-----------|--1997
+                                          |--1998
+                       |--SciFi
+DISK2 -- ROOTFOLDER2 --|--ClassicMovies
+                       |--Footy-----------|--2000
+                                          |--2002
+                       |--Movies
+                       |--Music
+                       |--OldMovies
+                       |--SciFi
+```
+Then we can    
 - mount the disks individually in fstab so they appear in a consistent way to the system    
 - use `overlaysf` (inbuilt in debian) to create a virtual overlayed folder of all of those
 root folder trees into a single virtual folder tree for presentation to devices on your LAN    
