@@ -1,0 +1,8 @@
+Click Start,Preferences, Raspberry Pi Configuration
+In the Localisation Tab, Set the Locale and then character set UTF-8, Timezone, Keyboard, WiFi country, then click OK.
+If prompted to reboot then click YES and reboot.
+Click Start,Preferences, Raspberry Pi Configuration
+In the System Tab, set Auto Logion ON, Splash Screen OFF
+In the Interfaces Tab, set SSH ON, Raspberry Connect OFF, VNC ON
+Click OK
+If prompted to reboot then click YES and reboot.
