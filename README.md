@@ -3,31 +3,43 @@
 ## Raspberry Pi 5 Poor Mans NAS / Media Server    
 
 ### Outline    
-If you have a PI 5 and some old USB3 disks (with their own power) and a couple of USB3 hubs laying around,
-but can't afford a NAS box or 3D printer to print one nor a SATA hat for the Pi etc, then perhaps
+If you have a PI 5 and some old USB3 disks (with their own power supply) and a couple of USB3 hubs laying around,
+but can't afford a NAS box nor a 3D printer to print one nor a SATA hat for the Pi etc, then perhaps
 cobble together a NAS / Media Server with what you have.
 
-A Pi 5 with    
-- `SAMBA` for file sharing    
-- `overlayfs` (inbuilt in debian) for merging folders into a virtual folder    
-- `HD-IDLE` to ensure good disk spin-down times    
-- 1 or 2 USB3 hubs plugged into the Pi 5    
-- old USB3 disks, plugged into the USB hubs    
+Together with a Pi 5 and an SD card you can use    
+- 1 or 2 (say, 4-port) USB3 hubs plugged into the Pi 5 to connect many old USB3 disks to the Pi    
+- 1 to 8 old USB3 disks plugged into the USB hubs    
 
-can serve up the folders/files across a LAN.
+With this harware you can readuly serve up standard SAMBA SMB/CIFS file shares
+and media files to devices across your LAN.   
 
-Say one has 8 old USB3 disks `DISK1` ... `DISK8` all plugged into the USB3 hubs,
-and disk each has a single root folder containing subfolders of media to be served `ROOT1` ... `ROOT8`,
-then we can    
-- mount the disks individually in fstab
-- create a virtual folder from all of those root folders and mount that in fstab    
-- setup `SAMBA` to serve up the individual disks in read-write mode, and the virtual folder in read-only mode    
-- setup HD-IDLE to ensure they all spin down properly between uses and not spin all the time    
+### Why ?
+You could use `OpenMediaVault` or `Plex` more easily, but they connect to the internet to do 'stuff'.
+I looked at `Plex` years ago and was very uncomfortable with the level of access provided to the vendor
+servers directly into my LAN and hence to all the devices on my LAN ... their products essentially gave
+them unfettered access. I valued my banking details and documents etc, so refused to go down that route.    
 
-A drawback is that if one copies new files onto the individual disks, or modifies existing files on them,
-then the Pi needs to be re-booted so that overlayfs takes notice of changes. Not so good for a true NAS,
+This 'roll your own' approach avoids the pain of getting 'done over' by your own hand - installing
+packages known to interact of themselves in essentially unknown ways with (uncontrolled) vendors' servers
+on the internet - at the cost of having to deal with more complexity ... safety first.
+
+### General Approach
+Say one has 8 old USB3 disks `DISK1` ... `DISK8` all plugged into the (1 or 2) USB3 hubs,
+and disk each has a single root folder containing subfolders of media to be served
+`ROOTFOLDER1` ... `ROOTFOLDER8`, then we can    
+- mount the disks individually in fstab so they appear in a consistent way to the system    
+- use `overlaysf` (inbuilt in debian) to create a virtual overlayed folder of all of those
+root folder trees into a single virtual folder tree for presentation to devices on your LAN    
+- use `SAMBA` to serve up the individual USB3 disks in read-write mode for PCs on the LAN to copy new files onto    
+- use `SAMBA` to serve up the virtual overlayed folder tree in read-only mode to devices on your LAN    
+- use `DLNA` to serve up the virtual overlayed folder in read-only mode to devices on your LAN (eg PCs, ChromeCasts, TVs)    
+- use `HD-IDLE` to ensure the USB3 disks all spin down properly between uses and not stay spinning all the time    
+
+One drawback is that if one copies new files onto the individual disks, or modifies existing files on them,
+then the Pi needs to be re-booted so that `overlayfs` takes notice of changes. Not so good for a true NAS,
 not the end of the world for a media server with infrequent updates;
-one could always setup a nightly Pi reboot at 4:45 am with crontab and say "it'll be ready tomorrow" ...    
+one could easily setup a nightly Pi reboot at 4:45 am with crontab and say "it'll be up tomorrow" ...    
 
 ### Acknowledgements    
 
@@ -37,6 +49,45 @@ Building A Pi Based NAS https://forums.raspberrypi.com/viewtopic.php?t=327444
 Using fstab A Beginner's Guide https://forums.raspberrypi.com/viewtopic.php?t=302752    
 
 ### This is an outline, not a script    
+
+#### ESSENTIAL: Prepare the disks: disk labels, folder structures, security    
+Assuming we have USB3 disks formatted as NTFS on PCs (often used to create media files)
+we need to prepare every disk to appear and behave in a consistent way.
+
+For every disk, change it's volume label to be like `DISK1` through to `DISK8`.
+If you are unsure how to do that, try
+https://www.google.com.au/search?q=how+to+change+an+NTFS+disk+volume+label+in+windows+11    
+
+On every disk, change it's Security so that inbuilt username `everyone` is added with `Full Control`.
+In File Manager
+- right click on a drive letter
+- choose Properties
+- choose Security tab
+- click the `Edit` button
+- click the `Add` button
+- enter `everyone` and click the `OK` button
+- Ensure `Full control` is ticked and click `Apply`;
+if prompted allow it to change all folders and files on the disk and ignore errors
+
+On every disk, create a top level folder named like `ROOTFOLDER1` through to `ROOTFOLDER8`, to match the disk volume label number.
+
+Under the top level folder on the disks, place you media files in a reasonably consistent (including filename capitalisation)
+folder structure of your choice. The same folder names and files may or may not exist on every disk, you can
+spread out the media files and folders across disks and even double them up for backup purposes. eg
+```
+DISK1 -- ROOTFOLDER1 --|--ClassicMovies
+                       |--Documentaries
+                       |--Footy-----------|--1997
+                                          |--1998
+                       |--SciFi
+DISK2 -- ROOTFOLDER2 --|--ClassicMovies
+                       |--Footy-----------|--2000
+                                          |--2002
+                       |--Movies
+                       |--Music
+                       |--OldMovies
+                       |--SciFi
+```
 
 #### Prepare the hardware    
 First ensuring that power switch is off where the Pi's power block plugs in,    
@@ -175,7 +226,7 @@ We know from these prior outputs that the mount points are:
 /media/pi/5TB-recordings1 
 /media/pi/Y-4TB
 ```
-... and we are ONLY interested on the trailing parts of the full folder names (i.e. minus the mount point), eg in that example
+... and we are ONLY interested on the trailing parts of the full folder names (i.e. minus the mount point), eg for the above example it that would be
 ```
 autoTVS-mpg/converted
 VRDTVSP-Converted
@@ -196,9 +247,9 @@ sudo mkdir -v -m a=rwx /mnt/shared/usb3disk2
 ```
 ```
 # create the `overlayfs` mount point for virtually merged folder sharing via SAMBA and set protections
-sudo mkdir -v -m a=rwx /mnt/shared/merged
-sudo chown -R -v pi:  /mnt/shared/merged
-sudo chmod -R -v a+rwx /mnt/shared/merged
+sudo mkdir -v -m a=rwx /mnt/shared/mp4lib
+sudo chown -R -v pi:  /mnt/shared/mp4lib
+sudo chmod -R -v a+rwx /mnt/shared/mp4lib
 ```
 ```
 # ensure the `shared` tree has the right ownership and permissions
@@ -234,7 +285,7 @@ PARTUUID=partuuid2 /mnt/shared/usb3disk2 ntfs x-systemd.requires=/mnt/shared/usb
 PARTUUID=partuuid3 /mnt/shared/usb3disk3 ntfs x-systemd.requires=/mnt/shared/usb3disk2,defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,x-systemd.device-timeout=60 0 0
 PARTUUID=partuuid4 /mnt/shared/usb3disk4 ntfs x-systemd.requires=/mnt/shared/usb3disk3,defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,x-systemd.device-timeout=60 0 0
 #
-overlay /mnt/shared/merged overlay x-systemd.requires=/mnt/shared/usb3disk4,defaults,auto,users,ro,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,x-systemd.device-timeout=60,lowerdir=/mnt/shared/usb3disk1/mp4lib1:/mnt/shared/usb3disk2/mp4lib2:/mnt/shared/usb3disk3/mp4lib3:/mnt/shared/usb3disk4/mp4lib4 0 0
+overlay /mnt/shared/mp4lib overlay x-systemd.requires=/mnt/shared/usb3disk4,defaults,auto,users,ro,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,x-systemd.device-timeout=60,lowerdir=/mnt/shared/usb3disk1/mp4lib1:/mnt/shared/usb3disk2/mp4lib2:/mnt/shared/usb3disk3/mp4lib3:/mnt/shared/usb3disk4/mp4lib4 0 0
 #
 ```
 So in our example it becomes this
@@ -250,7 +301,7 @@ So in our example it becomes this
 PARTUUID=a175d2d3-c2f6-44d4-a5fc-209363280c89 /mnt/shared/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,x-systemd>
 PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /mnt/shared/usb3disk2 ntfs x-systemd.requires=/mnt/shared/usb3disk1,defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,u>
 #
-overlay /mnt/shared/merged overlay x-systemd.requires=/mnt/shared/usb3disk2,lowerdir=/mnt/shared/usb3disk1/autoTVS-mpg/converted:/mnt/shared/usb3disk2/VRDTVSP-Converted,defaults,auto,users,ro,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,x-systemd.dev>
+overlay /mnt/shared/mp4lib overlay x-systemd.requires=/mnt/shared/usb3disk2,lowerdir=/mnt/shared/usb3disk1/autoTVS-mpg/converted:/mnt/shared/usb3disk2/VRDTVSP-Converted,defaults,auto,users,ro,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,x-systemd.dev>
 #
 ```
 
@@ -270,7 +321,7 @@ sudo df
 ```
 If the mounts do not match what you specified in `etc/fstab`, then something is astray !  Check what you have done above.    
 
-Do an `ls -al` on each of the mounts and on the `/mnt/shared/merged` folder to check they are visible.    
+Do an `ls -al` on each of the mounts and on the `/mnt/shared/mp4lib` folder to check they are visible.    
 If the files in the mounts do not match what you expect from `etc/fstab`, then something is astray !  Check what you have done above.    
 
 
@@ -328,7 +379,7 @@ Below are the definition of the 2 new shares. Add them to the end of `/etc/samba
 # DEFINE THE SHARES
 [mp4lib]
 comment = RO access to combined mp4ibs on USB3 disks from overlayfs
-path = /mnt/shared/merged
+path = /mnt/shared/mp4lib
 available = yes
 force user = pi
 writeable = no
