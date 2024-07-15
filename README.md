@@ -514,6 +514,10 @@ C4D05ABAD05AB302  2d5599a2-aa11-4aad-9f75-7fca2078b38b  sdb     ROOTFOLDER1
 96DA1D13DA1CF0EB  a175d2d3-c2f6-44d4-a5fc-209363280c89  sda     ROOTFOLDER2
 ```
 
+Stop hd-idle
+```
+sudo systemctl stop hd-idle
+```
 
 After edit `etc/default/hd-idle` to change parameters
 ```
@@ -521,21 +525,35 @@ sudo nano /etc/default/hd-idle
 # enabling hd-idle auto start by changing line 'START_HD_IDLE=false' to have a value **true**
 # START_HD_IDLE=true
 # Adding lines at the end for every disk, using the noted NAME
-
+# default timeout 300s = 5 mins
+# sda etc     timeout 900s = 15 mins
+HD_IDLE_OPTS="-i 300 -a ${USB3_DISK_NAME_1} -i 900 -a ${USB3_DISK_NAME_2} -i 900 -l /var/log/hd-idle.log"
 ```
-
-Run hd-idle with:
-```
-sudo systemctl start hd-idle
-```
-at the end 
-
-
 
 To enable hd-idle on reboot:
 ```
 sudo systemctl enable hd-idle   
 ```
+
+Run hd-idle with:
+```
+sudo systemctl stop hd-idle
+sudo systemctl restart hd-idle
+# wait 2 secs
+sudo cat /var/log/hd-idle.log
+```
+
+Test hd-idle
+```
+sudo hd-idle -t sdb -d -l /var/log/hd-idle.log
+sudo hd-idle -t sda -d -l /var/log/hd-idle.log
+sudo cat /var/log/hd-idle.log
+```
+
+
+
+
+
 
 
 Note the options:
