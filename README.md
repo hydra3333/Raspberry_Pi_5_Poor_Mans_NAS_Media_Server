@@ -342,7 +342,7 @@ In a Terminal do an `ls -al` on each of the mounts, eg on `/mnt/shared/usb3disk1
 
 **If the files in the mounts do not match what you expect from `/etc/fstab`, then something is astray !  Check what has been done above.**    
 
-#### Setup HD-IDLE to ensure disks do not constantly spin
+#### Setup `HD-IDLE` to ensure disks do not constantly spin
 Per `https://www.htpcguides.com/spin-down-and-manage-hard-drive-power-on-raspberry-pi/`
 some WD external USB3 disks won't spin down on idle and HDPARM and SDPARM don't work on them
 ... the `adelolmo` version of `hd-idle` appears to work, so let's use that.  
@@ -360,7 +360,7 @@ since all show version `1.05+ds-2+b1` which is very old.
 This `https://github.com/adelolmo/hd-idle` shows a minimum of release `1.21 / 2023-10-22` in
 `https://github.com/adelolmo/hd-idle/releases/download/v1.21/hd-idle_1.21_arm64.deb`
 
-Remove any prior install of hd-idle. In a Terminal,
+Remove any prior install of `hd-idle`. In a Terminal,
 ```
 sudo systemctl disable hd-idle
 # wait 2 seconds, then
@@ -370,7 +370,7 @@ sudo apt -y purge hd-idle
 sudo rm -vf /var/log/hd-idle.log
 ```
 
-Install the more up-to-date release of 'adelolmo' version of hd-idle direct from the author.
+Install the more up-to-date release of 'adelolmo' version of `hd-idle` direct from the author.
 In a Terminal
 ```
 # https://github.com/adelolmo/hd-idle
@@ -394,12 +394,12 @@ C4D05ABAD05AB302  2d5599a2-aa11-4aad-9f75-7fca2078b38b  sdb     ROOTFOLDER1
 96DA1D13DA1CF0EB  a175d2d3-c2f6-44d4-a5fc-209363280c89  sda     ROOTFOLDER2
 ```
 
-Stop hd-idle
+Stop `hd-idle`
 ```
 sudo systemctl stop hd-idle
 ```
 
-After edit `etc/default/hd-idle` to change parameters
+After edit `etc/default/hd-idle` to change `hd-idle` parameters
 ```
 sudo nano /etc/default/hd-idle
 # enabling hd-idle auto start by changing line 'START_HD_IDLE=false' to have a value **true**
@@ -422,7 +422,7 @@ START_HD_IDLE=true
 HD_IDLE_OPTS="-i 300 -a /dev/sdb -i 900 -a /dev/sda -i 900 -l /var/log/hd-idle.log"
 ```
 
-To enable hd-idle on reboot and then restart:
+To enable `hd-idle` on reboot and then restart:
 ```
 sudo systemctl enable hd-idle   
 sudo systemctl stop hd-idle
@@ -433,7 +433,7 @@ journalctl -u hd-idle.service | grep hd-idle| tail -n 50
 sudo systemctl status hd-idle.service | tail -n 50
 ```
 
-Test hd-idle
+Test `hd-idle`
 ```
 sudo hd-idle -t /dev/sdb -d -l /var/log/hd-idle.log
 sudo hd-idle -t /dev/sda -d -l /var/log/hd-idle.log
@@ -534,7 +534,7 @@ inherit permissions = yes
 ```
 exit nano with `Control O` `Control X`.    
 
-Test the new SAMBA parameters in a Terminal:
+Test the new `SAMBA` parameters in a Terminal:
 ```
 sudo testparm
 ```
