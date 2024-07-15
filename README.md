@@ -562,6 +562,8 @@ sudo hostname --all-ip-addresses
 
 You can now access the defined shares from a Windows machine or from an app that supports the SMB protocol.    
 eg on a Windows 11 PC in Windows Explorer use the IP address of the Pi, eg ...    
-`\\\\10.0.0.18\\`
+```
+\\10.0.0.18\
+```
 
 #### Install and configure `miniDLNA`
