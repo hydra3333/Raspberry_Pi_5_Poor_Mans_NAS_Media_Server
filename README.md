@@ -526,7 +526,7 @@ After edit `etc/default/hd-idle` to change parameters
 ```
 sudo nano /etc/default/hd-idle
 # enabling hd-idle auto start by changing line 'START_HD_IDLE=false' to have a value **true**
-# START_HD_IDLE=true
+START_HD_IDLE=true
 # Adding lines at the end for every disk, using the noted NAME
 # default timeout 300s = 5 mins
 # sda etc     timeout 900s = 15 mins
