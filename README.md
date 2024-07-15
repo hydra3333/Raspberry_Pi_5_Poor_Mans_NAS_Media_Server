@@ -347,8 +347,9 @@ Per `https://www.htpcguides.com/spin-down-and-manage-hard-drive-power-on-raspber
 some WD external USB3 disks won't spin down on idle and HDPARM and SDPARM don't work on them
 ... the `adelolmo` version of `hd-idle` appears to work, so let's use that.  
 
-**Do NOT do this**
-```sudo apt -y install hd-idle`
+**Do NOT do this:**
+```
+sudo apt -y install hd-idle
 # and then these
 sudo apt-cache show hd-idle
 sudo apt list --installed | grep hd-idle
