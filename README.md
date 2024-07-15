@@ -32,12 +32,12 @@ and disk each has a single root folder containing subfolders of media to be serv
 DISK1 -- ROOTFOLDER1 --|--ClassicMovies
                        |--Documentaries
                        |--Footy-----------|--1997
-                                          |--1998
+                       |                  |--1998
                        |--SciFi
 
 DISK2 -- ROOTFOLDER2 --|--ClassicMovies
                        |--Footy-----------|--2000
-                                          |--2002
+                       |                  |--2002
                        |--Movies
                        |--Music
                        |--OldMovies
@@ -94,12 +94,12 @@ spread out the media files and folders across disks and even double them up for 
 DISK1 -- ROOTFOLDER1 --|--ClassicMovies
                        |--Documentaries
                        |--Footy-----------|--1997
-                                          |--1998
+                       |                  |--1998
                        |--SciFi
 
 DISK2 -- ROOTFOLDER2 --|--ClassicMovies
                        |--Footy-----------|--2000
-                                          |--2002
+                       |                  |--2002
                        |--Movies
                        |--Music
                        |--OldMovies
