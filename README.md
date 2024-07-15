@@ -479,52 +479,30 @@ all show version `1.05+ds-2+b1` which is very old.
 This `https://github.com/adelolmo/hd-idle` shows at least release `1.21 / 2023-10-22` in    
 `https://github.com/adelolmo/hd-idle/releases/download/v1.21/hd-idle_1.21_arm64.deb`
 
-So, remove any existing install of hd-idle 
-`sudo apt -y purge hd-idle`
+Per `https://www.htpcguides.com/spin-down-and-manage-hard-drive-power-on-raspberry-pi/`   
+Some WD external USB3 disks won't spin down on idle and HDPARM and SDPARM don't work on them
+... 'adelolmo' version of hd-idle appears to work, so let's use that.    
+
+So, remove any prior install of hd-idle. In a Terminal,
+```
+sudo systemctl disable hd-idle
+# wait 2 seconds, then
+sudo dpkg -l hd-idle
+sudo dpkg -P hd-idle 
+sudo apt -y purge hd-idle
+```
+
+
+
+
+
+
 
 ```
 #############################################################################################################################################
 if [[ ${do_setup_hdidle} = true ]]; then
 #############################################################################################################################################
 #
-echo "#-------------------------------------------------------------------------------------------------------------------------------------"
-echo "#-------------------------------------------------------------------------------------------------------------------------------------"
-echo ""
-echo "# Install 'hd-idle' so that external USB3 disks spin down when idle and not wear out quickly."
-echo ""
-echo "# Some WD external USB3 disks won't spin down on idle and HDPARM and SDPARM don't work on them."
-echo "# ... 'adelolmo' version of hd-idle appears to work, so let's use that."
-echo ""
-# https://www.htpcguides.com/spin-down-and-manage-hard-drive-power-on-raspberry-pi/
-echo ""
-echo "# FIRST USB3 DISK"
-echo "#     USB3_DISK_NAME_1=${USB3_DISK_NAME_1}"
-echo "#   USB3_DEVICE_NAME_1=${USB3_DEVICE_NAME_1}"
-echo "#   USB3_DEVICE_UUID_1=${USB3_DEVICE_UUID_1}"
-if [[ "${SecondDisk}" = "y" ]]; then
-	echo "# SECOND USB3 DISK"
-	echo "#    USB3_DISK_NAME_2=${USB3_DISK_NAME_2}"
-	echo "#  USB3_DEVICE_NAME_2=${USB3_DEVICE_NAME_2}"
-	echo "#  USB3_DEVICE_UUID_2=${USB3_DEVICE_UUID_2}"
-fi
-echo "# Attributes of FIRST USB3 DISK"
-set -x
-sudo blkid
-sudo df
-sudo lsblk
-sudo blkid -U ${USB3_DEVICE_UUID_1}
-sudo df -l /dev/${USB3_DISK_NAME_1}
-sudo lsblk /dev/${USB3_DISK_NAME_1}
-set +x
-if [[ "${SecondDisk}" = "y" ]]; then
-	echo "# Attributes of SECOND USB3 DISK"
-	set -x
-	sudo blkid -U ${USB3_DEVICE_UUID_2}
-	sudo df -l /dev/${USB3_DISK_NAME_2}
-	sudo lsblk /dev/${USB3_DISK_NAME_2}
-	set +x
-fi
-echo ""
 echo "# List and Remove any prior hd-idle package"
 echo ""
 set -x
