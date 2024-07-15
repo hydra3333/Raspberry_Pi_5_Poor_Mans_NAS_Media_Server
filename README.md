@@ -185,10 +185,6 @@ alias psmem10="ps auxf | sort -nr -k 4 | head -10"
 ```
 exit nano with `Control O` `Control X`.   
 
-
-At this point, the USB3 disks should already be auto-mounted and you may see links to them on the desktop.
-That's OK, we'll change all that later to suit the NAS needs.    
-
 ### Set the Router so this Pi has a Reserved fixed (permanent) DHCP IP Address Lease
 In this outline the LAN IP Address range is 10.0.0.0/255.255.255.0 with the Pi 5 knowing itself of course on 127.0.0.1,
 and the Router's IP Address lease for the Pi could be something like 10.0.0.18.    
@@ -219,6 +215,9 @@ and notice the IP address and hope it matches the IP Address reservation you mad
 If not, check what you have done on the router and fix it and reboot the Pi.    
 
 ### Ascertain disks info, specifically PARTUUID and mount point    
+At this point, the USB3 disks should already be auto-mounted and you may see links to them on the desktop.
+That's OK, we'll change all that to suit the NAS needs.    
+
 Start a Terminal and use `sudo lsblk` to look at the connected disks, and see something like this:
 ```
 sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
