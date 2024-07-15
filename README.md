@@ -196,7 +196,7 @@ hostname -I
 and notice the IP address and hope it matches the IP Address reservation you made on the router.    
 If not, check what you have done on the router and fix it and reboot the Pi.    
 
-### Ascertain the disks ID info, specifically the PARTUUID    
+### Ascertain disks info, specifically PARTUUID and mount point    
 Start a Terminal and use `sudo lsblk` to look at the connected disks, and see something like this:
 ```
 $ sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
