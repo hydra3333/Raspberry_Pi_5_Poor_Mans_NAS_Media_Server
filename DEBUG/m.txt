@@ -1,3 +1,94 @@
+lscpu
+free -t
+htop
+whoami
+cal
+dmesg
+hostname -f
+hostname -I
+
+****************
+just a note:
+Re: Disable/Enable automount
+Open the file manager (pcmanfm); go to the settings / preferences. In one of the tabs of this dialog you can disable all the automount stuff...
+****************
+
+mkdir ~/Desktop/DEBUG
+cp -fv /etc/fstab ~/Desktop/DEBUG/
+cat ~/Desktop/DEBUG/fstab
+
+ls -al /mnt/shared/usb3disk1
+ls -al /mnt/shared/usb3disk2
+ls -al /mnt/shared/merged
+
+sudo lsblk 
+sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
+sudo df
+
+
+works:
+sudo mount -t overlay overlay -olowerdir=/mnt/shared/usb3disk1/VRDTVSP-Converted:/mnt/shared/usb3disk2/autoTVS-mpg/Converted /mnt/shared/merged
+
+
+#
+PARTUUID=a175d2d3-c2f6-44d4-a5fc-209363280c89 /mnt/shared/usb3disk1 ntfs defaults,auto,noatime,nodiratime,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,x-systemd.mount-timeout=60,noatime,nodiratime,nofail
+PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /mnt/shared/usb3disk2 ntfs defaults,auto,noatime,nodiratime,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,x-systemd.mount-timeout=60,x-systemd.requires=/mnt/shared/usb3disk1,noatime,nodiratime,nofail
+#
+overlay /mnt/shared/merged overlay defaults,auto,noatime,nodiratime,nofail,users,ro,exec,x-systemd.mount-timeout=60,x-systemd.requires=/mnt/shared/usb3disk2,lowerdir=/mnt/shared/usb3disk1/VRDTVSP-Converted:/mnt/shared/usb3disk2/autoTVS-mpg/Converted,noatime,nodiratime,nofail
+#
+
+# updatesystem with fstab changes
+sudo systemctl daemon-reload
+
+# remount anything new in fstab
+sudo mount -asv
+
+# find our disks and overlays
+sudo mount -l |  grep "overlay\|disk"
+sudo df  |  grep "overlay\|disk"
+
+# dismount our overlay
+sudo umount -fRv /mnt/shared/merged
+
+# list files in our overlay
+ls -alLh --color --group-directories-first /mnt/shared/merged
+
+
+
+# To make it persistent,either
+# 1. per user you'll have to edit: sudo nano ~/.bashrc
+# Add aliases to the end of the file
+alias checktemp='vcgencmd measure_temp'
+alias dir='ls -alLh --color --group-directories-first'
+# Then reload like this:  source ~/.bashrc
+# ****************** DO 2. BELOW ******************
+# 2. Alternatively, create a .sh script under “/etc/profile.d/”. 
+# When you log in to a shell “/etc/profile” will run any script under profile.d before actually running ~/.profile. 
+# This method will reduce the risk of messing up either /etc/profile or /etc/bash.bashrc file.
+sudo nano /etc/profile.d/alias.sh
+# unalias checktemp
+# unalias dir
+alias checktemp='vcgencmd measure_temp'
+alias dir='ls -alLh --color --group-directories-first'
+# Get top process eating cpu
+alias pscpu="ps auxf | sort -nr -k 3"
+alias pscpu10="ps auxf | sort -nr -k 3 | head -10"
+# Get top process eating memory
+alias psmem="ps auxf | sort -nr -k 4"
+alias psmem10="ps auxf | sort -nr -k 4 | head -10"
+Ctrl+d
+#
+
+
+# use AI to tell hoiw to do things
+sudo npm install -g how-2
+how2 decompress tar gz
+how2 print first 20 prime numbers
+
+
+--------------------------------------------------------------------------------------
+BEFORE FSTAB EDITS
+
 pi@PI5NAS64:~ $ sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
 UUID                                 PARTUUID                             NAME        FSTYPE  SIZE MOUNTPOINT        LABEL
                                                                           sda                 3.6T                   
@@ -10,3 +101,125 @@ C4D05ABAD05AB302                     2d5599a2-aa11-4aad-9f75-7fca2078b38b └─
 9BE2-1346                            9fd862b3-01                          ├─mmcblk0p1 vfat    512M /boot/firmware    bootfs
 12974fe2-889e-4060-b497-1d6ac3fbbb4b 9fd862b3-02                          └─mmcblk0p2 ext4   29.2G /                 rootfs
 pi@PI5NAS64:~ $ 
+
+
+sudo mount -l
+/dev/sdb2 on /media/pi/5TB-recordings1 type ntfs3 (rw,nosuid,nodev,relatime,uid=1000,gid=1000,windows_names,iocharset=utf8,uhelper=udisks2) [5TB-recordings1]
+/dev/sda2 on /media/pi/Y-4TB type ntfs3 (rw,nosuid,nodev,relatime,uid=1000,gid=1000,windows_names,iocharset=utf8,uhelper=udisks2) [Y-4TB]
+
+sudo mount -l |  grep "overlay\|disk"
+/dev/sdb2 on /media/pi/5TB-recordings1 type ntfs3 (rw,nosuid,nodev,relatime,uid=1000,gid=1000,windows_names,iocharset=utf8,uhelper=udisks2) [5TB-recordings1]
+/dev/sda2 on /media/pi/Y-4TB type ntfs3 (rw,nosuid,nodev,relatime,uid=1000,gid=1000,windows_names,iocharset=utf8,uhelper=udisks2) [Y-4TB]
+
+--------------------------------------------------------------------------------------
+AFTER FSTAB EDITS
+
+sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
+UUID                                 PARTUUID                             NAME FSTYPE  SIZE MOUNTPOINT LABEL
+                                                                          sda          3.6T            
+                                     c8c72b90-6c8a-4631-9704-a3816695a6dc ├─sda1
+                                                                          │            128M            
+96DA1D13DA1CF0EB                     a175d2d3-c2f6-44d4-a5fc-209363280c89 └─sda2
+                                                                               ntfs    3.6T /mnt/share Y-4TB
+                                                                          sdb          4.5T            
+                                     c542d01e-9ac9-486f-98cb-4521e0fe54f8 ├─sdb1
+                                                                          │            128M            
+C4D05ABAD05AB302                     2d5599a2-aa11-4aad-9f75-7fca2078b38b └─sdb2
+                                                                               ntfs    4.5T /mnt/share 5TB-recordings1
+                                                                          mmcblk0
+                                                                                      29.7G            
+9BE2-1346                            17db7c1c-01                          ├─mmcblk0p1
+                                                                          │    vfat    512M /boot/firm bootfs
+12974fe2-889e-4060-b497-1d6ac3fbbb4b 17db7c1c-02                          └─mmcblk0p2
+                                                                               ext4   29.2G /          rootfs
+
+
+sudo mount -l
+/dev/sda2 on /mnt/shared/usb3disk1 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.mount-timeout=60) [Y-4TB]
+/dev/sdb2 on /mnt/shared/usb3disk2 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.mount-timeout=60,x-systemd.requires=/mnt/shared/usb3disk1) [5TB-recordings1]
+
+sudo mount -l |  grep "overlay\|disk"
+sudo mount -l |  grep "overlay\|disk"
+/dev/sda2 on /mnt/shared/usb3disk1 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.mount-timeout=60) [Y-4TB]
+/dev/sdb2 on /mnt/shared/usb3disk2 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.mount-timeout=60,x-systemd.requires=/mnt/shared/usb3disk1) [5TB-recordings1]
+overlay on /mnt/shared/merged type overlay (ro,nosuid,nodev,noatime,nodiratime,lowerdir=/mnt/shared/usb3disk1/VRDTVSP-Converted:/mnt/shared/usb3disk2/autoTVS-mpg/Converted,redirect_dir=on,x-systemd.mount-timeout=60,x-systemd.requires=/mnt/shared/usb3disk2)
+
+--------------------------------------------------------------------------------------
+
+Put these in the end of the [global] section just before the line #======================= Share Definitions =======================
+
+#======================= START MODIFIED SAMBA Definitions =======================
+hosts allow = 10.0.0.0/255.255.255.0 127.0.0.1
+security = user
+deadtime = 15
+#socket options = IPTOS_LOWDELAY TCP_NODELAY SO_RCVBUF=65536 SO_SNDBUF=65536 SO_KEEPALIVE
+# linux auto tunes SO_RCVBUF=65536 SO_SNDBUF=65536
+socket options = IPTOS_LOWDELAY TCP_NODELAY SO_KEEPALIVE
+inherit permissions = yes
+# OK ... 1 is a sticky bit
+# create mask and directory mask actually REMOVE permissions !!!
+#   create mask = 0777
+#   directory mask = 0777
+# force create mode and force directory mode 
+# specifies a set of UNIX mode bit permissions that will always be set 
+force create mode = 1777
+force directory mode = 1777
+preferred master = No
+local master = No
+guest ok = yes
+browseable = yes
+#guest account = root
+public = yes
+guest account = pi
+allow insecure wide links = yes
+follow symlinks = yes
+wide links = yes
+#======================= START MODIFIED SAMBA Definitions =======================
+
+Put these at trhe very end of file
+
+#======================= START NEW SAMBA SHARE Definitions =======================
+# DEFINE THE SHARES
+[mp4lib]
+comment = RO access to combined mp4ibs on USB3 disks from overlayfs
+path = /mnt/shared/merged
+available = yes
+force user = pi
+writeable = no
+read only = yes
+browseable = yes
+public=yes
+guest ok = yes
+guest only = yes
+case sensitive = no
+default case = lower
+preserve case = yes
+follow symlinks = yes
+wide links = yes
+
+[individual_disks]
+comment = rw access to individual USB3 disks
+path = /mnt/shared
+available = yes
+force user = pi
+writeable = yes
+read only = no
+browseable = yes
+public=yes
+guest ok = yes
+guest only = yes
+case sensitive = no
+default case = lower
+preserve case = yes
+follow symlinks = yes
+wide links = yes
+force create mode = 1777
+force directory mode = 1777
+inherit permissions = yes
+#======================= END NEW SAMBA SHARE Definitions =======================
+
+# test the new parameters work
+sudo testparm
+
+# restart SAMBA
+sudo systemctl restart smbd
