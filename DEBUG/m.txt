@@ -1,17 +1,12 @@
 sudo mount -a [-fFnrsvw] [-t fstype] [-O optlist]
 
-sudo mount -asv
-
 ls -al /mnt/shared/usb3disk1
 ls -al /mnt/shared/usb3disk2
 
 sudo lsblk 
+sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
 sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL,MODEL
 
-sudo systemctl daemon-reload
-
-sudo mount -l |  grep "overlay\|disk"
-sudo umount -fRv /mnt/shared/merged
 
 works:
 sudo mount -t overlay overlay -olowerdir=/mnt/shared/usb3disk1/VRDTVSP-Converted:/mnt/shared/usb3disk2/autoTVS-mpg/Converted /mnt/shared/merged
@@ -22,4 +17,11 @@ PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /mnt/shared/usb3disk2 ntfs default
 #
 overlay /mnt/shared/merged overlay lowerdir=/mnt/shared/usb3disk1/VRDTVSP-Converted:/mnt/shared/usb3disk2/autoTVS-mpg/Converted,defaults,auto,noatime,nodiratime,nofail,users,ro,exec,x-systemd.mount-timeout=60,x-systemd.requires=/mnt/shared/usb3disk2
 
+sudo mount -asv
+
+sudo systemctl daemon-reload
+
+sudo mount -l |  grep "overlay\|disk"
+
+sudo umount -fRv /mnt/shared/merged
 
