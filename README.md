@@ -539,7 +539,7 @@ Test the new SAMBA parameters in a Terminal:
 sudo testparm
 ```
 
-Restart Samba service, waiting 2 secs in between each command
+Restart the `SAMBA` service, waiting 2 secs in between each command
 ```
 sudo systemctl enable smbd
 # wait 2 secs
@@ -548,7 +548,7 @@ sudo systemctl stop smbd
 sudo systemctl restart smbd
 ```
 
-List the new Samba users (which can have different passwords to the Pi itself) and shares
+List the new `SAMBA` users (which can have different passwords to the Pi itself) and shares
 
 ```
 sudo pdbedit -L -v
