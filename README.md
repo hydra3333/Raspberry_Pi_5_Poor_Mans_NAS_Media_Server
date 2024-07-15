@@ -53,7 +53,7 @@ Choose to "Edit Settings" and then the GENERAL tab.
 Set a Hostname you will recognise, eg PINAS64.    
 Set a username as `pi` (if not `pi` then replace username `pi` in this outline with your chosen username) and
 the password as something you will remember (you will need to enter it later during `SAMBA` setup).    
-Set you locale settings and keyboard layout.    
+Set you locale settings and keyboard layout (setting keyboard layout is important if in non-US non-GB country).    
 Choose the SERVICES tab.    
 Enable SSH with password authentification.    
 Choose the OPTIONS tab.    
@@ -69,7 +69,7 @@ Power on each of the USB3 disks, wait 15 seconds for them to power-up and spin-u
 Power on the Pi 5    
 Once the Pi has finished booting to the desktop    
 - Click Start,Preferences, Raspberry Pi Configuration    
-- In the Localisation Tab, Set the Locale and then character set UTF-8, Timezone, Keyboard, WiFi country, then click OK.    
+- In the Localisation Tab, Set the Locale and then character set UTF-8, Timezone, Keyboard (setting keyboard is important if in non-US non-GB country), WiFi country, then click OK.    
 - If prompted to reboot then click YES and reboot.    
 - Click Start,Preferences, Raspberry Pi Configuration    
 - In the System Tab, set Auto Logion ON, Splash Screen OFF    
@@ -81,125 +81,134 @@ Once the Pi has finished booting to the desktop
 ```
 sudo apt -y update
 sudo apt -y full-upgrade
+sudo apt -y dist-upgrade
 ```
 If the Pi tells you to reboot, do so.
 
-At this point, the disks should already be auto-mounted. That's OK, well change that later to suit our needs.    
+At this point, the disks should already be auto-mounted and you may see links to them on the desktop.
+That's OK, well change that later to suit the NAS needs.    
 
 ### Set the Router so this Pi has a Reserved fixed (permanent) DHCP IP Address Lease
 In this outline the LAN IP Address range is 10.0.0.0/255.255.255.0 with the Pi 5 knowing itself of course on 127.0.0.1,
-and the Router's IP Address lease reservation could be 10.0.0.18
-If you need a different IP Address/Range, just substitute in the correct IP and Address range etc in the outline below.     
+and the Router's IP Address lease reservation could be something like 10.0.0.18.
+If you need a different IP Address/Range, substitute in the correct IP and Address range etc in the outline below.     
 
-Normally the Pi will get a DHCP IP Address lease from the router, which may change over time as leases expire.    
-On the Pi start a Terminal and do    
+Normally the Pi will get a DHCP IP Address Lease from the router, which may change over time as leases expire.    
+To get a fixed IP address, on the Pi start a Terminal and do these commands to show the Pi's network name and IP address    
 ```
+hostname -f
+hostname -I
 ifconfig
 ```
-and notice in the `eth0` interface after `inet` is the the Pi's LAN IP address, eg 10.0.0.18
-and notice after `ether` is the mac address.
+The Pi's LAN IP address may be something like 10.0.0.18.    
 
-Login to your router and look at the LAN connected devices, noticing the IP address and mac address matching the Pi.    
-Head on to the Router's DHCP management area and allocated a Reserved fixed (permanent) IP address and apply/save it.   
+Login to your router and look at the LAN connected devices, noticing the IP address matching the Pi.    
+Head on to the Router's DHCP management area and allocated a Reserved fixed (permanent) DHCP IP address for the Pi and apply/save that in the router.   
 Reboot the Pi, then on the Pi start a Terminal and do    
 ```
+hostname -f
+hostname -I
 ifconfig
 ```
-and notice the IP address and mac address and hope they do match the reservation you made on the router.    
+and notice the IP address and hope it matches the IP Address reservation you made on the router.    
 If not, check what you have done on the router and fix it and reboot the Pi.    
 
 ### Ascertain the disks ID info, specifically the PARTUUID    
-Start a Terminal
+Start a Terminal and use `sudo lsblk` to look at the connected disks, and see something like this:
 ```
-# Run the following command to get the location of the usb3disk partitions.
-# note: (grep -v mmcblk0 discards any results for the SD card)
-sudo blkid|grep -v mmcblk0
-# List all of the usb3 disk stuff on the Raspberry Pi
-sudo lsblk 
-sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL,MODEL
-# Run the following command to get more info on disks
-sudo df
-```
-From each partition, look for the PARTUUID and substitute that for each of `partuuid1/partuuid3/partuuid3/partuuid4` in the outline below.    
+$ sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
 
-Look for lines showing mount names, eg something like these:
+UUID                                 PARTUUID                             NAME FSTYPE  SIZE MOUNTPOINT LABEL
+                                                                          sda          3.6T            
+                                     c8c72b90-6c8a-4631-9704-a3816695a6dc ├─sda1
+                                                                          │            128M            
+96DA1D13DA1CF0EB                     a175d2d3-c2f6-44d4-a5fc-209363280c89 └─sda2
+                                                                               ntfs    3.6T /media/pi/ Y-4TB
+                                                                          sdb          4.5T            
+                                     c542d01e-9ac9-486f-98cb-4521e0fe54f8 ├─sdb1
+                                                                          │            128M            
+C4D05ABAD05AB302                     2d5599a2-aa11-4aad-9f75-7fca2078b38b └─sdb2
+                                                                               ntfs    4.5T /media/pi/ 5TB-recordings1
+                                                                          mmcblk0
+                                                                                      29.7G            
+9BE2-1346                            17db7c1c-01                          ├─mmcblk0p1
+                                                                          │    vfat    512M /boot/firm bootfs
+12974fe2-889e-4060-b497-1d6ac3fbbb4b 17db7c1c-02                          └─mmcblk0p2
+```
+In that output, identify lines showing mount names fr the USB3 disks, eg something like these:
 ```
 a175d2d3-c2f6-44d4-a5fc-209363280c89 └─sda2      ntfs    3.6T /media/pi/Y-4TB           Y-4TB 
 2d5599a2-aa11-4aad-9f75-7fca2078b38b └─sdb2      ntfs    4.5T /media/pi/5TB-recordings1 5TB-recordings1
 ```
-Check which partitions contain your data and copy the exact PARTUUID strings for each partition.    
+From each relevant partition we identify, look for the PARTUUID and save these somewhere, as we NEED these later.
 
-Start File Manager and navigate to the folders, something like the above, and locate the root folder for your media files and note these down alongside the correct PARTUUID. Per the above, something like:
+To cross-check disks, use `sudo mount` like this and amongst them will be something like this:
+```
+$ sudo mount -l
+/dev/sdb2 on /media/pi/5TB-recordings1 type ntfs3 (rw,nosuid,nodev,relatime,uid=1000,gid=1000,windows_names,iocharset=utf8,uhelper=udisks2) [5TB-recordings1]
+/dev/sda2 on /media/pi/Y-4TB type ntfs3 (rw,nosuid,nodev,relatime,uid=1000,gid=1000,windows_names,iocharset=utf8,uhelper=udisks2) [Y-4TB]
+```
+
+To further cross-check disks, refine the `sudo mount` to find the ones we are interested in, amongst them will be something like this:
+```
+$ sudo mount -l | grep "overlay\|disk"
+/dev/sdb2 on /media/pi/5TB-recordings1 type ntfs3 (rw,nosuid,nodev,relatime,uid=1000,gid=1000,windows_names,iocharset=utf8,uhelper=udisks2) [5TB-recordings1]
+/dev/sda2 on /media/pi/Y-4TB type ntfs3 (rw,nosuid,nodev,relatime,uid=1000,gid=1000,windows_names,iocharset=utf8,uhelper=udisks2) [Y-4TB]
+```
+
+Now we have identified the correct partitions and their PARTUUID.    
+Start File Manager and navigate to each of the partitions, like the below, and locate the root folder of each partition which contains your
+media files ... and note these down these root foler names alongside the correct PARTUUID.
+```
+/dev/sdb2 on /media/pi/5TB-recordings1
+/dev/sda2 on /media/pi/Y-4TB
+```
+So, you will now have noted for each partition, the PARTUUID and the root folder name on that partition, eg
 ```
 a175d2d3-c2f6-44d4-a5fc-209363280c89 /media/pi/5TB-recordings1/autoTVS-mpg/converted
 2d5599a2-aa11-4aad-9f75-7fca2078b38b /media/pi/Y-4TB/VRDTVSP-Converted
 ```
+We know from the prior output that the mount points are:
+```
+/media/pi/5TB-recordings1 
+/media/pi/Y-4TB
+```
+... so we are ONLY interested on the trailing parts of the full folder names, eg in this example
+```
+autoTVS-mpg/converted
+VRDTVSP-Converted
+```
 
-Then look on each disk to find the correct root folder name to use instead of `mp4lib1/mp4lib2/mp4lib3/mp4lib4` ... so, these example lines     
-```
-/mnt/shared/usb3disk1/mp4lib1
-/mnt/shared/usb3disk2/mp4lib2
-```
-could become
-```
-/mnt/shared/usb3disk1/autoTVS-mpg/converted
-/mnt/shared/usb3disk2/VRDTVSP-Converted
-```
+#### Create new 'standardized' mount points for the disks and root folders
 
-#### Create mount points for the disks and root folders
-
-Start a Terminal and do (remember, substitute the real folder names for `mp4lib1/mp4lib2/mp4lib3/mp4lib4` in the lines below)    
+Start a Terminal and create some folders
 ```
-# create the root for SMB/CIFS sharing
+# create the new mount point for SAMBA sharing
 cd ~
 sudo mkdir -v -m a=rwx /mnt/shared
-
-# create the mount points for the external USB3 disks    
+```
+```
+# create the new `standardized' mount points for the external USB3 disks    
 sudo mkdir -v -m a=rwx /mnt/shared/usb3disk1
 sudo mkdir -v -m a=rwx /mnt/shared/usb3disk2
-sudo mkdir -v -m a=rwx /mnt/shared/usb3disk3
-sudo mkdir -v -m a=rwx /mnt/shared/usb3disk4
-
-# create the overlayfs mount point
+```
+```
+# create the `overlayfs` mount point for virtually merged folder sharing via SAMBA and set protections
 sudo mkdir -v -m a=rwx /mnt/shared/merged
 sudo chown -R -v pi:  /mnt/shared/merged
-#sudo chmod -R -v +777 /mnt/shared/merged
 sudo chmod -R -v a+rwx /mnt/shared/merged
-
-# ensure the tree has the right ownership and permissions
+```
+```
+# ensure the `shared` tree has the right ownership and permissions
 sudo chown -R -v pi:  /mnt/shared
-#sudo chmod -R -v +777 /mnt/shared
 sudo chmod -R -v a+rwx /mnt/shared
 ```
-So in our example it becomes this (2 disks):
-```
-# create the root for SMB/CIFS sharing
-cd ~
-sudo mkdir -v -m a=rwx /mnt/shared
-
-# create the mount points for the external USB3 disks    
-sudo mkdir -v -m a=rwx /mnt/shared/usb3disk1
-sudo mkdir -v -m a=rwx /mnt/shared/usb3disk2
-
-# create the overlayfs mount point
-sudo mkdir -v -m a=rwx /mnt/shared/merged
-sudo chown -R -v pi:  /mnt/shared/merged
-#sudo chmod -R -v +777 /mnt/shared/merged
-sudo chmod -R -v a+rwx /mnt/shared/merged
-
-# ensure the tree has the right ownership and permissions
-sudo chown -R -v pi:  /mnt/shared
-#sudo chmod -R -v +777 /mnt/shared
-sudo chmod -R -v a+rwx /mnt/shared
-```
-
-
 
 #### Backup and Edit `/etc/fstab`    
 
-To make the mounts happen at boot time, we must edit `/etc/fstab`.    
+To make the USB3 disk mounts happen at boot time into the mount points we just created, we must edit `/etc/fstab` and
+use, for each partition, the PARTUUID and the root folder name on that partition which we collected earlier.    
 Start a Terminal and run the nano editor:    
-
 ```
 sudo cp -fv /etc/fstab /etc/fstab.bak
 sudo nano  /etc/fstab
