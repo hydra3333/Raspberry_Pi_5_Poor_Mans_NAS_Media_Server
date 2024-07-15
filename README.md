@@ -236,21 +236,20 @@ Start `File Manager` and navigate to each of the partitions, something like:
 
 and locate the root folder in each partition which contains your media files 
 ... and make a note of these root folder names *alongside* the corresponding PARTUUID.    
-So, you will have noted for each partition, the PARTUUID and the root folder name on that partition, eg
+So, you will have noted for each partition, the PARTUUID and the root folder name on that partition, eg for
 ```
 # File Manager Folder Name
 /media/pi/DISK1-5TB/ROOTFOLDER1
 /media/pi/DISK2-4TB/ROOTFOLDER2
 ```
-would be
+the [PARTUUID and root folder name] pair would be
 ```
-PARTUUID                              root folder
+PARTUUID                              root folder name
 2d5599a2-aa11-4aad-9f75-7fca2078b38b  ROOTFOLDER1
 a175d2d3-c2f6-44d4-a5fc-209363280c89  ROOTFOLDER2
 ```
 
 #### Create new 'standardized' mount points for the disks and root folders
-
 Start a Terminal and create some folders
 ```
 # create the new mount point for SAMBA sharing
