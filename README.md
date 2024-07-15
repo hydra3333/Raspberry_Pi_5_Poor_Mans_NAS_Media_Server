@@ -68,9 +68,7 @@ https://forums.raspberrypi.com/viewtopic.php?t=327444
 Using fstab A Beginner's Guide    
 https://forums.raspberrypi.com/viewtopic.php?t=302752    
 
-### Outline the steps    
-
-#### ESSENTIAL: Prepare the disks: security, disk volume labels, folder structures, files    
+### ESSENTIAL: Prepare the disks: security, disk volume labels, folder structures, files    
 Assuming we have USB3 disks formatted as NTFS on PCs (often used to create media files)
 we need to prepare every disk to appear and behave in a consistent way.
 
@@ -110,7 +108,7 @@ DISK2 -- ROOTFOLDER2 --|--ClassicMovies
                        |--SciFi
 ```
 
-#### Prepare the hardware    
+### Prepare the hardware    
 First ensuring that power switch is off where the Pi's power block plugs in,    
 - plug in the Pi's power cable into the Pi    
 - plug the Pi into a screen with the HDMI cable (sophisticated users may choose do it with `SSH` or `VNC` or `RaspberryPi Connect`)
@@ -122,7 +120,7 @@ That's the hardware prepared and plugged in.
 In the outline below, we'll assume only 2 USB3 disks. You can add more as you need,
 just keep an eye on your disk naming and folder structures in line with the model above.    
 
-#### Install Raspberry Pi OS with `autologin`    
+### Install Raspberry Pi OS with `autologin`    
 Run the `Raspberry Pi Imager` on a PC to put the full 64 bit `Raspberry Pi OS` image to an SD card in the usual way    
 - Choose to "Edit Settings" and then the GENERAL tab.    
 - Set a Hostname you will recognise, eg PINAS64.    
@@ -138,7 +136,7 @@ Click SAVE.
 Click YES to apply OS customisation.    
 Click YES to proceed.    
 
-#### Boot the Raspberry Pi 5 and update system software    
+### Boot the Raspberry Pi 5 and update system software    
 Order of power up (at least the first time)
 - Ensure the Pi 5 is powered off    
 - Plug the SD card into the Pi 5    
@@ -270,7 +268,7 @@ C4D05ABAD05AB302  2d5599a2-aa11-4aad-9f75-7fca2078b38b  sdb     ROOTFOLDER1
 96DA1D13DA1CF0EB  a175d2d3-c2f6-44d4-a5fc-209363280c89  sda     ROOTFOLDER2
 ```
 
-#### Create new 'standardized' mount points for disks and 'virtual overlayed folder'
+### Create new 'standardized' mount points for disks and 'virtual overlayed folder'
 Start a Terminal and create some folders etc
 ```
 # create a new mount point for SAMBA sharing
@@ -291,7 +289,7 @@ sudo chown -R -v pi:  /mnt/shared
 sudo chmod -R -v a+rwx /mnt/shared
 ```
 
-#### Backup and Edit `/etc/fstab`    
+### Backup and Edit `/etc/fstab`    
 To make the USB3 disk mounts happen at boot time into the mount points we just created, we must edit `/etc/fstab` and
 use, for each partition, the PARTUUID and the root folder name on that partition which we collected earlier.    
 Start a Terminal and run the nano editor:    
@@ -327,7 +325,7 @@ overlay /mnt/shared/overlay overlay lowerdir=/mnt/shared/usb3disk1/ROOTFOLDER1:/
 
 exit nano with `Control O` `Control X`.    
 
-####  Reboot to see what happens with those mounts    
+###  Reboot to see what happens with those mounts    
 Reboot the Pi 5.    
 Start a Terminal
 ```
@@ -342,7 +340,7 @@ In a Terminal do an `ls -al` on each of the mounts, eg on `/mnt/shared/usb3disk1
 
 **If the files in the mounts do not match what you expect from `/etc/fstab`, then something is astray !  Check what has been done above.**    
 
-#### Setup `HD-IDLE` to ensure disks do not constantly spin
+### Setup `HD-IDLE` to ensure disks do not constantly spin
 Per `https://www.htpcguides.com/spin-down-and-manage-hard-drive-power-on-raspberry-pi/`
 some WD external USB3 disks won't spin down on idle and HDPARM and SDPARM don't work on them
 ... the `adelolmo` version of `hd-idle` appears to work, so let's use that.  
@@ -443,7 +441,7 @@ journalctl -u hd-idle.service | grep hd-idle| tail -n 50
 sudo systemctl status hd-idle.service | tail -n 50
 ```
 
-#### Install and configure `SAMBA`
+### Install and configure `SAMBA`
 In a Terminal,    
 ```
 sudo apt -y install samba samba-common-bin smbclient cifs-utils
@@ -566,4 +564,4 @@ eg on a Windows 11 PC in Windows Explorer use the IP address of the Pi, eg ...
 \\10.0.0.18\
 ```
 
-#### Install and configure `miniDLNA`
+### Install and configure `miniDLNA`
