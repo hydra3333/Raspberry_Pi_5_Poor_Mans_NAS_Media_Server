@@ -62,9 +62,11 @@ one could easily setup a nightly Pi reboot at 4:45 am with crontab and say "it'l
 #### thagrol    
 https://forums.raspberrypi.com/viewtopic.php?p=2236572#p2236547    
 
-Building A Pi Based NAS https://forums.raspberrypi.com/viewtopic.php?t=327444    
+Building A Pi Based NAS    
+https://forums.raspberrypi.com/viewtopic.php?t=327444    
 
-Using fstab A Beginner's Guide https://forums.raspberrypi.com/viewtopic.php?t=302752    
+Using fstab A Beginner's Guide    
+https://forums.raspberrypi.com/viewtopic.php?t=302752    
 
 ### Outline the steps    
 
