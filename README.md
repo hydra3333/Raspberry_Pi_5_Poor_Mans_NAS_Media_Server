@@ -34,6 +34,7 @@ DISK1 -- ROOTFOLDER1 --|--ClassicMovies
                        |--Footy-----------|--1997
                                           |--1998
                        |--SciFi
+
 DISK2 -- ROOTFOLDER2 --|--ClassicMovies
                        |--Footy-----------|--2000
                                           |--2002
@@ -95,6 +96,7 @@ DISK1 -- ROOTFOLDER1 --|--ClassicMovies
                        |--Footy-----------|--1997
                                           |--1998
                        |--SciFi
+
 DISK2 -- ROOTFOLDER2 --|--ClassicMovies
                        |--Footy-----------|--2000
                                           |--2002
