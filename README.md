@@ -439,7 +439,7 @@ Test the new SAMBA parameters in a Terminal:
 sudo testparm
 ```
 
-Restart Samba service, waitin 2 secs in between each command
+Restart Samba service, waiting 2 secs in between each command
 ```
 sudo systemctl enable smbd
 # wait 2 secs
@@ -461,11 +461,21 @@ sudo hostname --all-ip-addresses
 ```
 
 You can now access the defined shares from a Windows machine or from an app that supports the SMB protocol.    
-eg on a Windows 11 PC in Windows Explorer use the IP address of the Pi, eg ... \\\\10.0.0.18\\ "
+eg on a Windows 11 PC in Windows Explorer use the IP address of the Pi, eg ...    
+`\\\\10.0.0.18\\`
 
 
 
 
-#### Setup HDIDLE ?????????????
+#### Setup HD-IDLE ?????????????
+Doing this: `sudo apt -y install hd-idle` and then these
+```
+sudo apt-cache show hd-idle
+sudo apt list --installed | grep hd-idle
+dpkg -l | grep hd-idle
+```
+all show version `1.05+ds-2+b1` which is very old.
+
+This https://github.com/adelolmo/hd-idle shows at least release `1.21 / 2023-10-22`
 
 
