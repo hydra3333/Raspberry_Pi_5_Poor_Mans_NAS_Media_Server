@@ -661,7 +661,7 @@ REM DISK2 root folder as read-write (copy new media to subfolders here, dependin
 #### NOTE: we install the miniDLNA index db onto USB3 DISK1 rather than the SD card    
 ####       since it is faster, and the SD car won't wear out quicker due to index rebuilds    
 
-1. Ensure we un-install any prior `miniDLNA`; in a Terminal    
+1. **Ensure we un-install any prior `miniDLNA`; in a Terminal**    
 ```
 sudo systemctl stop minidlna
 sleep 2s
@@ -671,7 +671,7 @@ sudo apt purge minidlna -y
 sudo apt autoremove -y
 ```
 
-2. Remove any prior config items and index db
+2. **Remove any prior config items and index db; in a Terminal**    
 ```
 sudo rm -vfR "/etc/minidlna.conf"
 sudo rm -vfR "/var/log/minidlna.log"
@@ -680,7 +680,7 @@ sudo rm -vfR "/run/minidlna"
 sudo rm -vfR "/mnt/shared/usb3disk1/minidlna"
 ```
 
-3. Install miniDLNA and then stop the service so we can configure it
+3. I**nstall `miniDLNA` and then stop the service so we can configure it; in a Terminal**    
 ```
 sudo apt install -y minidlna
 sleep 2s
@@ -690,7 +690,7 @@ sudo systemctl stop minidlna
 sleep 2s
 ```
 
-4. Add user pi to miniDLNA Groups, fix ownershups etc, create folders for minidlna logs and db at the top of external USB3 disk DISK1 
+4. **Add users to `miniDLNA` Groups, fix ownershups etc, create folders for logs and db at the top of external USB3 disk DISK1; in a Terminal**    
 ```
 echo ""
 set -x
@@ -732,7 +732,7 @@ sudo chown -c -R pi:minidlna "/mnt/shared/usb3disk1/minidlna/log"
 
 
 
-#### create an outline from an older miniDLNA setup scriipt
+#### create an outline from an older miniDLNA setup script from this:    
 ```
 echo ""
 echo "# Change miniDLNA config settings"
