@@ -57,9 +57,12 @@ root folder trees into a single virtual folder tree for presentation to devices 
 - use `HD-IDLE` to ensure the USB3 disks all spin down properly between uses and not stay spinning all the time    
 
 One drawback is that if one copies new files onto the individual disks, or modifies existing files on them,
-then the Pi needs to be re-booted so that `overlayfs` takes notice of changes. Not so good for a true NAS,
-not the end of the world for a media server with infrequent updates;
-one could easily setup a nightly Pi reboot at 4:45 am with crontab and say "it'll be up tomorrow" ...    
+then the Pi needs to be re-booted so that `overlayfs` takes notice of changes. Similarly, the miniDLNA index
+must be updated.    
+Not so good for a true NAS, not the end of the world for a media server with infrequent updates;
+one could easily say "it'll be up tomorrow" ... and setup a nightly with crontab at 4:45 am for    
+- miniDLNA to run a rebuild of its index, then
+- reboot, for overlayfs to notice changes
 
 ## Acknowledgements    
 
