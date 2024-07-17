@@ -84,7 +84,7 @@ Assuming we have USB3 disks formatted as NTFS
 (since Windows PCs are often used to create media files, and WIndows only really likes disks formatted as NTFS)
 we need to prepare every disk to appear and behave in a consistent way.
 
-For every disk, change it's volume label to be like `DISK1` through to `DISK8`.
+For every disk, change it's volume label to be like `DISK1` through to `DISK8` and unique to each disk.
 If you are unsure how to do that, try
 https://www.google.com.au/search?q=how+to+change+an+NTFS+disk+volume+label+in+windows+11    
 
@@ -99,7 +99,7 @@ In Windows File Manager
 - Ensure `Full control` is ticked and click `Apply`;
 if prompted, allow it to change all folders and files on the disk and ignore all errors
 
-On every disk, create a top level folder named like `ROOTFOLDER1` through to `ROOTFOLDER8`, to match the disk volume label number.
+On each disk, create one top level folder named like `ROOTFOLDER1` through to `ROOTFOLDER8` to match the unique disk volume label number.
 
 Under the top level folder on the disks, place the media files in a reasonably consistent (including filename capitalisation)
 folder structure of your choice. The same folder names and files may or may not exist on every disk, you can
