@@ -15,8 +15,9 @@ With this harware you can readuly serve up standard SAMBA SMB/CIFS file shares
 and media files to devices across the LAN.   
 
 ## Why ?
-Most ordinary people cannot afford expensive new bits like terrabyte NVME drives or Pi Hat's etc, as shown on youtube 'how-to's !
-It's great they show and test those things, but money doesn't grow on trees especially if you have kids and/or are retired.    
+Most ordinary people cannot afford expensive new bits like multiple terrabyte NVME drives or Pi Hat's etc,
+as shown on youtube 'how-to's !  It's great they show and test those things, but money doesn't grow on trees,
+especially if you have kids and/or are retired.    
 
 One could use `OpenMediaVault` or `Plex` more easily, but they connect to the internet to do 'stuff'.
 I looked at `Plex` et al years ago and was very uncomfortable with the level of access installed packages potentially
