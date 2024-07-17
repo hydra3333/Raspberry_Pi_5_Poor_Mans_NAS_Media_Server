@@ -493,7 +493,7 @@ wide links = yes
 Below are the definition of the 2 new shares. Add them to the end of `/etc/samba/smb.conf`    
 ```
 # DEFINE THE SHARES
-[overlayed_root_folders]
+[overlayed_media_root]
 comment = RO access to overlayed root folders on USB3 disks using overlayfs
 path = /mnt/shared/overlay
 available = yes
@@ -561,7 +561,7 @@ sudo hostname --all-ip-addresses
 You can now access the defined shares from a Windows machine or from an app that supports the SMB protocol.    
 eg on a Windows 11 PC in Windows Explorer use the IP address of the Pi, eg ...    
 ```
-\\10.0.0.18\
+\\10.0.0.18\overlayed_media_root
 ```
 
 ### Install and configure `miniDLNA` to serve media on the LAN via DLNA
