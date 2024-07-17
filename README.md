@@ -745,38 +745,57 @@ now in nano,
 #minidlna_refresh_sh_file=/mnt/shared/usb3disk1/minidlna/minidlna_refresh.sh
 #minidlna_restart_refresh_sh_file=/mnt/shared/usb3disk1/minidlna/minidlna_restart_refresh.sh
 
-# uncomment and/or change line `#friendly_name=` to:
+# Find and uncomment and/or change line `#friendly_name=` to:
 friendly_name=PINAS64-minidlna
 
-# uncomment and/or change line `#db_dir=/var/cache/minidlna` to:
+# Find and uncomment and/or change line `#db_dir=/var/cache/minidlna` to:
 db_dir=/mnt/shared/usb3disk1/minidlna
 
-# uncomment and/or change line `#log_dir=/var/log/minidlna` to:
+# Find and uncomment and/or change line `#log_dir=/var/log/minidlna` to:
 log_dir=/mnt/shared/usb3disk1/minidlna/log
 
-# uncomment and/or change line `#inotify=yes` to:
+# Find and uncomment and/or change line `#inotify=yes` to:
 inotify=yes
 
-# uncomment and/or change line `#strict_dlna=no` to:
+# Find and uncomment and/or change line `#strict_dlna=no` to:
 strict_dlna=yes
 
-# uncomment and/or change line `#notify_interval=895` to:
+# Find and uncomment and/or change line `#notify_interval=895` to:
 notify_interval=900
 
-# uncomment and/or change line `#max_connections=50` to:
+# Find and uncomment and/or change line `#max_connections=50` to:
 max_connections=6
 
-# uncomment and/or change line `#log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=warn;` to:
+# Find and uncomment and/or change line `#log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=warn` to:
 log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=info
 
+# Find and uncomment and/or change line `#wide_links=no` to:
+#wide_links=yes
+
+# Find and uncomment and/or change line `album_art_names=` to comment it out:
+#album_art_names=
+
+# Find and uncomment and/or change line `media_dir=/var/lib/minidlna` to comment it out:
+#media_dir=/var/lib/minidlna
+
+# now ADD the line to expose the overlayed media folder ...
+media_dir=PVA,/mnt/shared/overlay
+
+# now ADD any lines where wish to expose folders
+# separately to, but as well as in, the overlayed folder tree, eg
+media_dir=PVA,/mnt/shared/overlay/ClassicMovies
+media_dir=PVA,/mnt/shared/overlay/Documentaries
+media_dir=PVA,/mnt/shared/overlay/Footy
+media_dir=PVA,/mnt/shared/overlay/Movies
+media_dir=PVA,/mnt/shared/overlay/Music
+media_dir=PVA,/mnt/shared/overlay/OldMovies
+media_dir=PVA,/mnt/shared/overlay/SciFi
 
 
 
 
-sudo sed -i "s;#log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=warn;#log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=warn\nlog_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=info;g" "/etc/minidlna.conf"
-sudo sed -i "s;#wide_links=no;wide_links=yes;g" "/etc/minidlna.conf"
-sudo sed -i "s;album_art_names=;#album_art_names=;g" "/etc/minidlna.conf"
 ```
+
 
 
 
