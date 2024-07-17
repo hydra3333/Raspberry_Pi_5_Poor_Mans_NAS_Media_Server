@@ -1,8 +1,8 @@
 # WARNING: UNDER CONSTRUCTION
 
-## Raspberry Pi 5 Poor Persons NAS / Media Server    
+# Raspberry Pi 5 Poor Persons NAS / Media Server    
 
-### Outline    
+## Outline    
 If you have a PI 5 and some old USB3 disks (with their own power supply) and a couple of USB3 hubs laying around,
 but can't afford a NAS box nor a 3D printer to print one nor a SATA hat for the Pi etc, then perhaps
 cobble together a NAS / Media Server with what you have.
@@ -14,7 +14,7 @@ Together with a Pi 5 and an SD card you can use
 With this harware you can readuly serve up standard SAMBA SMB/CIFS file shares
 and media files to devices across your LAN.   
 
-### Why ?
+## Why ?
 You could use `OpenMediaVault` or `Plex` more easily, but they connect to the internet to do 'stuff'.
 I looked at `Plex` years ago and was very uncomfortable with the level of access provided to the vendor
 servers directly into my LAN and hence to all the devices on my LAN ... their products essentially gave
@@ -24,7 +24,7 @@ This 'roll your own' approach avoids the pain of getting 'done over' by your own
 packages known to interact of themselves in essentially unknown ways with (uncontrolled) vendors' servers
 on the internet - at the cost of having to deal with more complexity ... safety first.
 
-### General Approach
+## General Approach
 This assumes you know how to use the nano editor, if not please google it, if using another editor then cool !
 
 If one has, say, 8 old USB3 disks `DISK1` ... `DISK8` all plugged into the (1 or 2) USB3 hubs,
@@ -60,9 +60,9 @@ then the Pi needs to be re-booted so that `overlayfs` takes notice of changes. N
 not the end of the world for a media server with infrequent updates;
 one could easily setup a nightly Pi reboot at 4:45 am with crontab and say "it'll be up tomorrow" ...    
 
-### Acknowledgements    
+## Acknowledgements    
 
-#### thagrol    
+### thagrol    
 https://forums.raspberrypi.com/viewtopic.php?p=2236572#p2236547    
 
 Building A Pi Based NAS    
@@ -71,7 +71,7 @@ https://forums.raspberrypi.com/viewtopic.php?t=327444
 Using fstab A Beginner's Guide    
 https://forums.raspberrypi.com/viewtopic.php?t=302752    
 
-### ESSENTIAL: Prepare the disks: security, disk volume labels, folder structures, files    
+## ESSENTIAL: Prepare the disks: security, disk volume labels, folder structures, files    
 Assuming we have USB3 disks formatted as NTFS on PCs (often used to create media files)
 we need to prepare every disk to appear and behave in a consistent way.
 
@@ -111,7 +111,7 @@ DISK2 -- ROOTFOLDER2 --|--ClassicMovies
                        |--SciFi
 ```
 
-### Prepare the hardware    
+## Prepare the hardware    
 First ensuring that power switch is off where the Pi's power block plugs in,    
 - plug in the Pi's power cable into the Pi    
 - plug the Pi into a screen with the HDMI cable (sophisticated users may choose do it with `SSH` or `VNC` or `RaspberryPi Connect`)
@@ -123,7 +123,7 @@ That's the hardware prepared and plugged in.
 In the outline below, we'll assume only 2 USB3 disks. You can add more as you need,
 just keep an eye on your disk naming and folder structures in line with the model above.    
 
-### Install Raspberry Pi OS with `autologin`    
+## Install Raspberry Pi OS with `autologin`    
 Run the `Raspberry Pi Imager` on a PC to put the full 64 bit `Raspberry Pi OS` image to an SD card in the usual way    
 - Choose to "Edit Settings" and then the GENERAL tab.    
 - Set a Hostname you will recognise, eg PINAS64.    
@@ -139,7 +139,7 @@ Click SAVE.
 Click YES to apply OS customisation.    
 Click YES to proceed.    
 
-### Boot the Raspberry Pi 5 and update the system    
+## Boot the Raspberry Pi 5 and update the system    
 1. **Order of power up (at least the first time)**    
 - Ensure the Pi 5 is powered off    
 - Plug the SD card into the Pi 5    
@@ -250,7 +250,7 @@ exit nano with `Control O` `Control X`.
 sudo reboot now
 ```
 
-### Set the Router so this Pi has a Reserved fixed (permanent) DHCP IP Address Lease
+## Set the Router so this Pi has a Reserved fixed (permanent) DHCP IP Address Lease
 In this outline the LAN IP Address range is 10.0.0.0/255.255.255.0 with the Pi 5 knowing itself of course on 127.0.0.1,
 and the Router's IP Address lease for the Pi could be something like 10.0.0.18.    
 
@@ -279,7 +279,7 @@ hostname -I
 and notice the IP address and hope it matches the IP Address reservation you made on the router.    
 If not, check what you have done on the router and fix it and reboot the Pi.    
 
-### Ascertain disks info, specifically DISK-UUID, PARTUUID, and MOUNTPOINT    
+## Ascertain disks info, specifically DISK-UUID, PARTUUID, and MOUNTPOINT    
 At this point, the USB3 disks should already be auto-mounted and you may see links to them on the desktop.
 That's OK, we'll change all that to suit the NAS needs.    
 
@@ -335,7 +335,7 @@ C4D05ABAD05AB302  2d5599a2-aa11-4aad-9f75-7fca2078b38b  sdb     ROOTFOLDER1
 96DA1D13DA1CF0EB  a175d2d3-c2f6-44d4-a5fc-209363280c89  sda     ROOTFOLDER2
 ```
 
-### Create new 'standardized' mount points for disks and 'virtual overlayed folder'
+## Create new 'standardized' mount points for disks and 'virtual overlayed folder'
 Start a Terminal and create some folders etc
 ```
 # create a new mount point for SAMBA sharing
@@ -356,7 +356,7 @@ sudo chown -R -v pi:  /mnt/shared
 sudo chmod -R -v a+rwx /mnt/shared
 ```
 
-### Backup and Edit `/etc/fstab` so disks are mounted consistently     
+## Backup and Edit `/etc/fstab` so disks are mounted consistently     
 To make the USB3 disk mounts happen at boot time into the mount points we just created, we must edit `/etc/fstab` and
 use, for each partition, the PARTUUID and the root folder name on that partition which we collected earlier.    
 Start a Terminal and run the nano editor:    
@@ -392,7 +392,7 @@ overlay /mnt/shared/overlay overlay lowerdir=/mnt/shared/usb3disk1/ROOTFOLDER1:/
 
 exit nano with `Control O` `Control X`.    
 
-###  Reboot to see what happens with those mounts    
+##  Reboot to see what happens with those mounts    
 Reboot the Pi 5.    
 Start a Terminal
 ```
@@ -407,7 +407,7 @@ In a Terminal do an `ls -al` on each of the mounts, eg on `/mnt/shared/usb3disk1
 
 **If the files in the mounts do not match what you expect from `/etc/fstab`, then something is astray !  Check what has been done above.**    
 
-### Setup `HD-IDLE` to ensure disks are not constantly spun up
+## Setup `HD-IDLE` to ensure disks are not constantly spun up
 Per `https://www.htpcguides.com/spin-down-and-manage-hard-drive-power-on-raspberry-pi/`
 some WD external USB3 disks won't spin down on idle and HDPARM and SDPARM don't work on them
 ... the `adelolmo` version of `hd-idle` appears to work, so let's use that.  
@@ -508,7 +508,7 @@ journalctl -u hd-idle.service | grep hd-idle| tail -n 50
 sudo systemctl status hd-idle.service | tail -n 50
 ```
 
-### Install and configure `SAMBA`to create file shares on the LAN
+## Install and configure `SAMBA`to create file shares on the LAN
 In a Terminal,    
 ```
 sudo apt -y install samba samba-common-bin smbclient cifs-utils
@@ -636,4 +636,6 @@ REM DISK2 root folder as read-write (copy new media to subfolders here, dependin
 \\10.0.0.18\individual_disks\DISK2\ROOTFOLDER2
 ```
 
-### Install and configure `miniDLNA` to serve media on the LAN via DLNA
+## Install and configure `miniDLNA` to serve media on the LAN via DLNA
+
+
