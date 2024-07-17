@@ -16,9 +16,10 @@ and media files to devices across your LAN.
 
 ## Why ?
 You could use `OpenMediaVault` or `Plex` more easily, but they connect to the internet to do 'stuff'.
-I looked at `Plex` years ago and was very uncomfortable with the level of access provided to the vendor
-servers directly into my LAN and hence to all the devices on my LAN ... their products essentially gave
-them unfettered access. I valued my banking details and documents etc, so refused to go down that route.    
+I looked at `Plex` years ago and was very uncomfortable with the level of access the packages potentially
+provided to the vendor servers directly into my LAN and hence to all the devices on my LAN
+... their products essentially gave them unfettered access.
+I valued my banking details and documents etc, so refused to go down that route.    
 
 This 'roll your own' approach avoids the pain of getting 'done over' by your own hand - installing
 packages known to interact of themselves in essentially unknown ways with (uncontrolled) vendors' servers
