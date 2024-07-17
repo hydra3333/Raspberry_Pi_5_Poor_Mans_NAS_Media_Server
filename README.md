@@ -505,7 +505,7 @@ START_HD_IDLE=true
 HD_IDLE_OPTS="-i 300 -a /dev/sdb -i 900 -a /dev/sda -i 900 -l /var/log/hd-idle.log"
 ```
 
-To enable `hd-idle` on reboot and then restart:
+To enable `hd-idle` on reboot and then restart, in a Terminal:
 ```
 sudo systemctl enable hd-idle   
 sudo systemctl stop hd-idle
@@ -701,30 +701,28 @@ sudo usermod -a -G root minidlna
 5. **Fix ownerships etc, create folders for db and log at the top of external USB3 disk DISK1; in a Terminal**    
 
 ```
-sudo chmod -c a=rwx -R "/etc/minidlna.conf"
-sudo chown -c -R pi:minidlna "/etc/minidlna.conf"
+sudo chmod -c a=rwx -R         "/etc/minidlna.conf"
+sudo chown -c -R pi:minidlna   "/etc/minidlna.conf"
 #
-sudo mkdir -pv "/mnt/shared/usb3disk1/minidlna"
-sudo chmod -c a=rwx -R "/mnt/shared/usb3disk1/minidlna"
-sudo chown -c -R pi:minidlna "/mnt/shared/usb3disk1/minidlna"
-sudo chmod -c a=rwx -R "/run/minidlna"
-sudo chown -c -R pi:minidlna "/run/minidlna"
-sudo touch "/run/minidlna/minidlna.pid"
-sudo chmod -c a=rwx -R "/run/minidlna/minidlna.pid"
-sudo chown -c -R pi:minidlna "/run/minidlna/minidlna.pid"
+sudo mkdir -pv                 "/mnt/shared/usb3disk1/minidlna"
+sudo chmod -c a=rwx -R         "/mnt/shared/usb3disk1/minidlna"
+sudo chown -c -R pi:minidlna   "/mnt/shared/usb3disk1/minidlna"
 #
-##sudo chmod -c a=rwx -R "/var/cache/minidlna"
-##sudo chown -c -R pi:minidlna "/var/cache/minidlna"
-sudo mkdir -pv "/mnt/shared/usb3disk1/minidlna/cache"
-sudo chmod -c a=rwx -R "/mnt/shared/usb3disk1/minidlna/cache"
-sudo chown -c -R pi:minidlna "/mnt/shared/usb3disk1/minidlna/cache"
+sudo chmod -c a=rwx -R         "/run/minidlna"
+sudo chown -c -R pi:minidlna   "/run/minidlna"
 #
-##sudo chmod -c a=rwx -R "/var/log/minidlna.log"
-##sudo chown -c -R pi:minidlna "/var/log/minidlna.log"
-sudo mkdir -pv "/mnt/shared/usb3disk1/minidlna/log"
-sudo touch "/mnt/shared/usb3disk1/minidlna/log/minidlna.log"
-sudo chmod -c a=rwx -R "/mnt/shared/usb3disk1/minidlna/log"
-sudo chown -c -R pi:minidlna "/mnt/shared/usb3disk1/minidlna/log"
+sudo touch                     "/run/minidlna/minidlna.pid"
+sudo chmod -c a=rwx -R         "/run/minidlna/minidlna.pid"
+sudo chown -c -R pi:minidlna   "/run/minidlna/minidlna.pid"
+#
+sudo mkdir -pv                 "/mnt/shared/usb3disk1/minidlna/cache"
+sudo chmod -c a=rwx -R         "/mnt/shared/usb3disk1/minidlna/cache"
+sudo chown -c -R pi:minidlna   "/mnt/shared/usb3disk1/minidlna/cache"
+#
+sudo mkdir -pv                 "/mnt/shared/usb3disk1/minidlna/log"
+sudo touch                     "/mnt/shared/usb3disk1/minidlna/log/minidlna.log"
+sudo chmod -c a=rwx -R         "/mnt/shared/usb3disk1/minidlna/log"
+sudo chown -c -R pi:minidlna   "/mnt/shared/usb3disk1/minidlna/log"
 ```
 
 6. **Change the config to align with out disk/folder arrangement etc; in a Terminal**    
@@ -754,7 +752,7 @@ merge_media_dirs=no
 enable_thumbnail=no
 
 # Find and uncomment and/or change/add line `#db_dir=/var/cache/minidlna` to:
-db_dir=/mnt/shared/usb3disk1/minidlna
+db_dir=/mnt/shared/usb3disk1/minidlna/cache
 
 # Find and uncomment and/or change/add line `#log_dir=/var/log/minidlna` to:
 log_dir=/mnt/shared/usb3disk1/minidlna/log
@@ -797,10 +795,6 @@ media_dir=PVA,/mnt/shared/overlay/Movies
 media_dir=PVA,/mnt/shared/overlay/Music
 media_dir=PVA,/mnt/shared/overlay/OldMovies
 media_dir=PVA,/mnt/shared/overlay/SciFi
-
-
-
-
 ```
 
 
@@ -809,12 +803,8 @@ media_dir=PVA,/mnt/shared/overlay/SciFi
 
 **Under COnstruction**    
 ```
-minidlna_db_dir="/mnt/shared/usb3disk1/minidlna"
-minidlna_log_dir="/mnt/shared/usb3disk1/minidlna/log"
-minidlna_sh_dir="/mnt/shared/usb3disk1/minidlna"
-minidlna_main_log_file=/mnt/shared/usb3disk1/minidlna/log/minidlna.log
-minidlna_refresh_log_file=/mnt/shared/usb3disk1/minidlna/log/minidlna_refresh.log
 minidlna_refresh_sh_file=/mnt/shared/usb3disk1/minidlna/minidlna_refresh.sh
+minidlna_refresh_log_file=/mnt/shared/usb3disk1/minidlna/log/minidlna_refresh.log
 minidlna_restart_refresh_sh_file=/mnt/shared/usb3disk1/minidlna/minidlna_restart_refresh.sh
 ```
 
@@ -825,55 +815,7 @@ minidlna_restart_refresh_sh_file=/mnt/shared/usb3disk1/minidlna/minidlna_restart
 
 #### create an outline from an older miniDLNA setup script from this:    
 ```
-echo ""
-echo "# Change miniDLNA config settings"
-echo ""
-set -x
-minidlna_db_dir="${minidlna_root_folder}"
-minidlna_log_dir="${minidlna_root_folder}"
-minidlna_sh_dir="${minidlna_root_folder}"
-minidlna_main_log_file=${minidlna_log_dir}/minidlna.log
-minidlna_refresh_log_file=${minidlna_log_dir}/minidlna_refresh.log
-minidlna_refresh_sh_file=${minidlna_sh_dir}/minidlna_refresh.sh
-minidlna_restart_refresh_sh_file=~/Desktop/minidlna_restart_refresh.sh
-sudo cp -fv "/etc/minidlna.conf" "/etc/minidlna.conf.old"
-sudo sed -i "s;#user=minidlna;#user=minidlna\n#user=pi;g" "/etc/minidlna.conf"
-sudo sed -i "s;#db_dir=/var/cache/minidlna;#db_dir=/var/cache/minidlna\ndb_dir=${minidlna_db_dir};g" "/etc/minidlna.conf"
-sudo sed -i "s;#log_dir=/var/log/minidlna;#log_dir=/var/log/minidlna\nlog_dir=${minidlna_log_dir};g" "/etc/minidlna.conf"
-sudo sed -i "s;#friendly_name=;#friendly_name=\nfriendly_name=${server_name}-minidlna;g" "/etc/minidlna.conf"
-sudo sed -i "s;#inotify=yes;#inotify=yes\ninotify=yes;g" "/etc/minidlna.conf"
-sudo sed -i "s;#strict_dlna=no;#strict_dlna=no\nstrict_dlna=yes;g" "/etc/minidlna.conf"
-sudo sed -i "s;#notify_interval=895;#notify_interval=895\nnotify_interval=900;g" "/etc/minidlna.conf"
-sudo sed -i "s;#max_connections=50;#max_connections=50\nmax_connections=6;g" "/etc/minidlna.conf"
-sudo sed -i "s;#log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=warn;#log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=warn\nlog_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=info;g" "/etc/minidlna.conf"
-sudo sed -i "s;#wide_links=no;wide_links=yes;g" "/etc/minidlna.conf"
-sudo sed -i "s;album_art_names=;#album_art_names=;g" "/etc/minidlna.conf"
-set +x
-echo ""
-echo "# Change miniDLNA folders SPECIFIC to my media drive(s) sets of folders !!! For me only !!!"
-echo "# Change miniDLNA folders SPECIFIC to my media drive(s) sets of folders !!! For me only !!!"
-echo "# Change miniDLNA folders SPECIFIC to my media drive(s) sets of folders !!! For me only !!!"
-echo ""
-set -x
-sudo sed -i "/^#zzz---zzz/d" "/etc/minidlna.conf"
-sudo sed -i "s;media_dir=/var/lib/minidlna;#media_dir=/var/lib/minidlna\n#zzz---zzz;g" "/etc/minidlna.conf"
-sudo sed -i "s;#zzz---zzz;#zzz---zzz\nmedia_dir=PVA,${root_folder_2}/Series;g" "/etc/minidlna.conf"
-sudo sed -i "s;#zzz---zzz;#zzz---zzz\nmedia_dir=PVA,${root_folder_2}/Railway_Journeys;g" "/etc/minidlna.conf"
-sudo sed -i "s;#zzz---zzz;#zzz---zzz\nmedia_dir=PVA,${root_folder_2}/MusicVideos;g" "/etc/minidlna.conf"
-sudo sed -i "s;#zzz---zzz;#zzz---zzz\nmedia_dir=PVA,${root_folder_2}/Footy;g" "/etc/minidlna.conf"
-sudo sed -i "s;#zzz---zzz;#zzz---zzz\n## for medialibrary2 on SECOND USB3 drive;g" "/etc/minidlna.conf"
-sudo sed -i "s;#zzz---zzz;#zzz---zzz\nmedia_dir=PVA,${root_folder_1}/SciFi;g" "/etc/minidlna.conf"
-sudo sed -i "s;#zzz---zzz;#zzz---zzz\nmedia_dir=PVA,${root_folder_1}/OldSciFi;g" "/etc/minidlna.conf"
-sudo sed -i "s;#zzz---zzz;#zzz---zzz\nmedia_dir=PVA,${root_folder_1}/OldMovies;g" "/etc/minidlna.conf"
-sudo sed -i "s;#zzz---zzz;#zzz---zzz\nmedia_dir=PVA,${root_folder_1}/Documentaries;g" "/etc/minidlna.conf"
-sudo sed -i "s;#zzz---zzz;#zzz---zzz\nmedia_dir=PVA,${root_folder_1}/ClassicMovies;g" "/etc/minidlna.conf"
-sudo sed -i "s;#zzz---zzz;#zzz---zzz\nmedia_dir=PVA,${root_folder_1}/ClassicDocumentaries;g" "/etc/minidlna.conf"
-sudo sed -i "s;#zzz---zzz;#zzz---zzz\nmedia_dir=PVA,${root_folder_1}/CharlieWalsh;g" "/etc/minidlna.conf"
-sudo sed -i "s;#zzz---zzz;#zzz---zzz\nmedia_dir=PVA,${root_folder_1}/BigIdeas;g" "/etc/minidlna.conf"
-sudo sed -i "s;#zzz---zzz;#zzz---zzz\nmedia_dir=PVA,${root_folder_1}/2015.11.29-Jess-21st-birthday-party;g" "/etc/minidlna.conf"
-sudo sed -i "s;#zzz---zzz;#zzz---zzz\n## for medialibrary1 on FIRST USB3 drive;g" "/etc/minidlna.conf"
-sudo cat "/etc/minidlna.conf"
-#sudo diff -U 10 "/etc/minidlna.conf.old" "/etc/minidlna.conf"
+
 set +x
 echo ""
 sudo rm -vf "${minidlna_main_log_file}"
