@@ -194,9 +194,12 @@ sudo apt install -y curl
 sudo apt install -y wget
 ```
 
-6. **Add `plugdev` right for user `pi` so that it has no trouble with mounting USB3 external disk(s); in a Terminal**    
+6. **Add user `pi` into groups `plugdev` and `systemd-journal`; in a Terminal**    
 ```
 sudo usermod -a -G plugdev pi
+sudo usermod -a -G systemd-journal pi
+# plugdev:         Allows members to mount (only with the options nodev and nosuid, for security reasons) and umount removable devices through pmount.
+# systemd-journal: Since Debian 8 (Jessie), members of this group can use the command 'journalctl' and read log files of systemd (in /var/log/journal).
 ```
 
 7. **Make this server IPv4 only, by disabling IPv6; in a Terminal**    
