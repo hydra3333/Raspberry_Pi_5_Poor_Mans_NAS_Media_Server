@@ -15,7 +15,7 @@ With this harware you can readuly serve up standard SAMBA SMB/CIFS file shares
 and media files to devices across the LAN.   
 
 ## Why ?
-Most ordinary people cannot afford expensive new bits like multiple terrabyte NVME drives or Pi Hat's etc,
+Most ordinary people cannot afford expensive new bits like multiple NVME drives or Pi Hat's etc,
 as shown on youtube 'how-to's !  It's great they show and test those things, but money doesn't grow on trees,
 especially if you have kids and/or are retired.    
 
