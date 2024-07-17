@@ -188,7 +188,7 @@ sudo apt install -y curl
 sudo apt install -y wget
 ```
 
-6. Add 'plugdev' right to user pi so that it has no trouble with mounting USB3 external disk(s); in a Terminal     
+6. Add `plugdev` right for user `pi` so that it has no trouble with mounting USB3 external disk(s); in a Terminal     
 ```
 sudo usermod -a -G plugdev pi
 ```
@@ -243,6 +243,11 @@ alias psmem="ps auxf | sort -nr -k 4"
 alias psmem10="ps auxf | sort -nr -k 4 | head -10"
 ```
 exit nano with `Control O` `Control X`.   
+
+10. Reboot the Pi 5 for everything to take effect; in a Terminal 
+```
+sudo reboot now
+```
 
 ### Set the Router so this Pi has a Reserved fixed (permanent) DHCP IP Address Lease
 In this outline the LAN IP Address range is 10.0.0.0/255.255.255.0 with the Pi 5 knowing itself of course on 127.0.0.1,
