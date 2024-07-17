@@ -75,7 +75,7 @@ https://forums.raspberrypi.com/viewtopic.php?t=327444
 Using fstab A Beginner's Guide    
 https://forums.raspberrypi.com/viewtopic.php?t=302752    
 
-## ESSENTIAL: Prepare the disks: security, disk volume labels, folder structures, files    
+## ESSENTIAL: Prepare disks: security, disk volume labels, folder structures, files    
 Assuming we have USB3 disks formatted as NTFS on PCs (often used to create media files)
 we need to prepare every disk to appear and behave in a consistent way.
 
