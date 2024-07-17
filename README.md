@@ -102,8 +102,8 @@ if prompted, allow it to change all folders and files on the disk and ignore all
 On each disk, create one top level folder named like `ROOTFOLDER1` through to `ROOTFOLDER8` to match the unique disk volume label number.
 
 Under the top level folder on the disks, place the media files in a reasonably consistent (including filename capitalisation)
-folder structure of your choice. The same folder names and files may or may not exist on every disk, you can
-spread out the media files and folders across disks and even double them up for backup purposes. eg
+subfolder structure of your choice. The same subfolder names and files may or may not exist on every disk, you can
+spread out the media files and subfolders across disks and even double them up for backup purposes. eg
 ```
 DISK1 -- ROOTFOLDER1 --|--ClassicMovies
                        |--Documentaries
