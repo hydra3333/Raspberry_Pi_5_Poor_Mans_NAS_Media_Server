@@ -140,13 +140,13 @@ Click YES to apply OS customisation.
 Click YES to proceed.    
 
 ### Boot the Raspberry Pi 5 and update the system    
-1. **Order of power up (at least the first time)**
+1. **Order of power up (at least the first time)**    
 - Ensure the Pi 5 is powered off    
 - Plug the SD card into the Pi 5    
 - Power on each of the USB3 disks, wait 15 to 30 seconds for them to power-up and spin-up    
 - Power on the Pi 5    
 
-2. **Once the Pi has finished booting to the desktop (leave it set to autologin)**
+2. **Once the Pi has finished booting to the desktop (leave it set to autologin)**    
 - Click Start, Preferences, Raspberry Pi Configuration    
 - In the Localisation Tab, Set the Locale and then character set UTF-8, Timezone, Keyboard (setting keyboard is important if in non-US non-GB country), WiFi country, then click OK.    
 - If prompted to reboot then click YES and reboot back to the desktop.    
@@ -158,7 +158,7 @@ Click YES to proceed.
 
 Once the Pi has finished booting to the desktop:    
 
-3. **Force PCI Express Gen 3.0 speeds after next boot (8 GT/sec, almost double the speed) on the Pi 5; in a Terminal**
+3. **Force PCI Express Gen 3.0 speeds after next boot (8 GT/sec, almost double the speed) on the Pi 5; in a Terminal**    
 Per https://www.jeffgeerling.com/blog/2023/forcing-pci-express-gen-30-speeds-on-pi-5 
 ```
 sudo nano /boot/firmware/config.txt 
@@ -170,7 +170,7 @@ dtparam=pciex1_gen=3
 ```
 exit nano with `Control O` `Control X`.    
 
-4. **Update the system; in a Terminal**
+4. **Update the system; in a Terminal**    
 ```
 sudo apt -y update
 sudo apt -y full-upgrade
@@ -178,7 +178,7 @@ sudo apt -y dist-upgrade
 ```
 If the Pi tells you to reboot, do so.
 
-5. **Install some software; in a Terminal**
+5. **Install some software; in a Terminal**    
 ```
 # Install disk params checker, eg sudo hdparm -Tt /dev/sda
 sudo apt -y install hdparm
@@ -189,12 +189,12 @@ sudo apt install -y curl
 sudo apt install -y wget
 ```
 
-6. **Add `plugdev` right for user `pi` so that it has no trouble with mounting USB3 external disk(s); in a Terminal**
+6. **Add `plugdev` right for user `pi` so that it has no trouble with mounting USB3 external disk(s); in a Terminal**    
 ```
 sudo usermod -a -G plugdev pi
 ```
 
-7. **Make this server IPv4 only, by disabling IPv6; in a Terminal**
+7. **Make this server IPv4 only, by disabling IPv6; in a Terminal**    
 ```
 sudo sysctl net.ipv6.conf.all.disable_ipv6=1 
 sudo sysctl -p
@@ -203,7 +203,7 @@ echo net.ipv6.conf.all.disable_ipv6=1 | sudo tee -a "/etc/sysctl.conf"
 sudo sysctl -p
 ```
 
-8. **Increase system parameter `fs.inotify.max_user_watches` from default 8192 (used by miniDLNA to monitor changes to filesystems); in a Terminal**
+8. **Increase system parameter `fs.inotify.max_user_watches` from default 8192 (used by miniDLNA to monitor changes to filesystems); in a Terminal**    
 ```
 # max_user_watches=262144
 # Per https://wiki.debian.org/minidlna and https://wiki.archlinux.org/title/ReadyMedia
@@ -224,7 +224,7 @@ echo fs.inotify.max_user_watches=262144 | sudo tee -a "/etc/sysctl.conf"
 sudo sysctl -p
 ```
 
-9. **We choose to create some `alias` shortcut commands to make life easier, by editing script `~/.bashrc`; in a Terminal****
+9. **We choose to create some `alias` shortcut commands to make life easier, by editing script `~/.bashrc`; in a Terminal**    
 Edit the existing file `~/.bashrc`
 ```
 nano ~/.bashrc
@@ -245,7 +245,7 @@ alias psmem10="ps auxf | sort -nr -k 4 | head -10"
 ```
 exit nano with `Control O` `Control X`.   
 
-10. **Reboot the Pi 5 for everything to take effect; in a Terminal**
+10. **Reboot the Pi 5 for everything to take effect; in a Terminal**    
 ```
 sudo reboot now
 ```
