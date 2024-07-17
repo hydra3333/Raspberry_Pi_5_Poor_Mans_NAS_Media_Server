@@ -11,7 +11,7 @@ Together with a Pi 5 and an SD card you can use
 - 1 or 2 (say, 4-port) USB3 hubs plugged into the Pi 5 to connect many old USB3 disks to the Pi    
 - 1 to 8 old USB3 disks plugged into the USB hubs    
 
-With this harware you can readuly serve up standard SAMBA SMB/CIFS file shares
+With this harware you can readily serve up standard SAMBA SMB/CIFS file shares
 and media files to devices across the LAN.   
 
 ## Why ?
