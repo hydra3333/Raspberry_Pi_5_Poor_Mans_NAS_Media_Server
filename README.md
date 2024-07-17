@@ -52,7 +52,7 @@ DISK2 -- ROOTFOLDER2 --|--ClassicMovies
 ```
 Then we can    
 - mount the disks individually in fstab so they appear in a consistent way to the system    
-- use `overlaysf` (inbuilt in debian) to create a virtual overlayed folder of all of those    
+- use `overlaysf` (inbuilt in debian) to create a virtual overlayed folder of all of those
 root folder trees into a single virtual folder tree for presentation to devices on the LAN
 (we could readily use the `mergerfs` package and the process is very similar, however overlayfs is already in the debian kernel)    
 - use `SAMBA` to serve up the individual USB3 disks in read-write mode for PCs on the LAN to copy new files onto    
