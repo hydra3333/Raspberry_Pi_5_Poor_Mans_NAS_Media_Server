@@ -690,7 +690,7 @@ sudo systemctl stop minidlna
 sleep 2s
 ```
 
-4. **Add users to `miniDLNA` Groups, fix ownershups etc, create folders for logs and db at the top of external USB3 disk DISK1; in a Terminal**    
+4. **Add users to `miniDLNA` Groups, fix ownerships etc, create folders for db and log at the top of external USB3 disk DISK1; in a Terminal**    
 ```
 echo ""
 set -x
@@ -727,7 +727,46 @@ sudo chown -c -R pi:minidlna "/mnt/shared/usb3disk1/minidlna/log"
 
 ```
 
+5. **Under COnstruction**    
+```
+minidlna_db_dir="/mnt/shared/usb3disk1/minidlna"
+minidlna_log_dir="/mnt/shared/usb3disk1/minidlna/log"
+minidlna_sh_dir="/mnt/shared/usb3disk1/minidlna"
+minidlna_main_log_file=/mnt/shared/usb3disk1/minidlna/log/minidlna.log
+minidlna_refresh_log_file=/mnt/shared/usb3disk1/minidlna/log/minidlna_refresh.log
+minidlna_refresh_sh_file=/mnt/shared/usb3disk1/minidlna/minidlna_refresh.sh
+minidlna_restart_refresh_sh_file=/mnt/shared/usb3disk1/minidlna/minidlna_restart_refresh.sh
+```
 
+
+
+```
+#
+sudo cp -fv "/etc/minidlna.conf" "/etc/minidlna.conf.original"
+```
+
+```
+# uncomment and/or change line `#friendly_name=` to:
+friendly_name=PINAS64-minidlna
+
+# uncomment and/or change line `#db_dir=/var/cache/minidlna` to:
+db_dir=/mnt/shared/usb3disk1/minidlna
+
+# uncomment and/or change line `#log_dir=/var/log/minidlna` to:
+log_dir=/mnt/shared/usb3disk1/minidlna/log
+
+
+
+
+
+sudo sed -i "s;#inotify=yes;#inotify=yes\ninotify=yes;g" "/etc/minidlna.conf"
+sudo sed -i "s;#strict_dlna=no;#strict_dlna=no\nstrict_dlna=yes;g" "/etc/minidlna.conf"
+sudo sed -i "s;#notify_interval=895;#notify_interval=895\nnotify_interval=900;g" "/etc/minidlna.conf"
+sudo sed -i "s;#max_connections=50;#max_connections=50\nmax_connections=6;g" "/etc/minidlna.conf"
+sudo sed -i "s;#log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=warn;#log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=warn\nlog_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=info;g" "/etc/minidlna.conf"
+sudo sed -i "s;#wide_links=no;wide_links=yes;g" "/etc/minidlna.conf"
+sudo sed -i "s;album_art_names=;#album_art_names=;g" "/etc/minidlna.conf"
+```
 
 
 
