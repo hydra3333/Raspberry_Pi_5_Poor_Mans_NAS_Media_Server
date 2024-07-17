@@ -248,18 +248,18 @@ Put this at the end of it:
 # unalias dir
 alias checktemp='vcgencmd measure_temp'
 alias dir='ls -alLh --color --group-directories-first'
-# Get top process eating cpu
+# Show top process using cpu
 alias pscpu="ps auxf | sort -nr -k 3"
-alias pscpu10="ps auxf | sort -nr -k 3 | head -10"
-# Get top process eating memory
+alias pscpu20="ps auxf | sort -nr -k 3 | head -20"
+# Show top process using memory
 alias psmem="ps auxf | sort -nr -k 4"
-alias psmem10="ps auxf | sort -nr -k 4 | head -10"
+alias psmem20="ps auxf | sort -nr -k 4 | head -20"
 #
 # Use in a Terminal like:
 #    checktemp
 #    dir \etc
-#    pscpu10
-#    psmem10
+#    pscpu20
+#    psmem20
 ```
 exit nano with `Control O` `Control X`.   
 
