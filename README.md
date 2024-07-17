@@ -177,7 +177,7 @@ Then check-for/modify/add the following 2 lines:
 dtparam=pciex1
 dtparam=pciex1_gen=3
 ```
-then reboot to upgrade the connection to Gen 3.0.
+then reboot to Force PCI Express Gen 3.0.
 
 We choose to create some `alias` shortcut commands to make life easier, by editing script `~/.bashrc`. 
 In Terminal, edit the existing file `~/.bashrc`
