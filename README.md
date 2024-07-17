@@ -159,6 +159,9 @@ Once the Pi has finished booting to the desktop
 sudo apt -y update
 sudo apt -y full-upgrade
 sudo apt -y dist-upgrade
+# Install disk params checker, eg sudo hdparm -Tt /dev/sda
+sudo apt -y install hdparm
+#
 ```
 If the Pi tells you to reboot, do so.
 
