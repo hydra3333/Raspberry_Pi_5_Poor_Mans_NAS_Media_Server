@@ -159,8 +159,8 @@ Click YES to proceed.
 Once the Pi has finished booting to the desktop:    
 
 3. **Force PCI Express Gen 3.0 speeds after next boot (8 GT/sec, almost double the speed) on the Pi 5; in a Terminal**
+Per https://www.jeffgeerling.com/blog/2023/forcing-pci-express-gen-30-speeds-on-pi-5 
 ```
-# Per https://www.jeffgeerling.com/blog/2023/forcing-pci-express-gen-30-speeds-on-pi-5 
 sudo nano /boot/firmware/config.txt 
 ```
 then check-for/modify/add the following 2 lines:
