@@ -250,6 +250,12 @@ alias pscpu10="ps auxf | sort -nr -k 3 | head -10"
 # Get top process eating memory
 alias psmem="ps auxf | sort -nr -k 4"
 alias psmem10="ps auxf | sort -nr -k 4 | head -10"
+#
+# Use in a Terminal like:
+#    checktemp
+#    dir \etc
+#    pscpu10
+#    psmem10
 ```
 exit nano with `Control O` `Control X`.   
 
@@ -636,7 +642,7 @@ sudo hostname --all-ip-addresses
 You can now access the defined shares from a Windows machine or from an app that supports the SMB protocol.    
 eg on a Windows 11 PC in Windows Explorer use the IP address of the Pi, eg ...    
 ```
-REM read only virtual folder of overlayed disk folders
+REM read-only virtual folder of overlayed disk folders
 \\10.0.0.18\overlayed_media_root
 REM DISK1 as read-write (copy new media to subfolders here, depending on how full this disk is)
 \\10.0.0.18\individual_disks\DISK1
