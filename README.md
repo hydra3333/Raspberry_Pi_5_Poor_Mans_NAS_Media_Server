@@ -727,24 +727,24 @@ sudo chmod -c a=rwx -R "/mnt/shared/usb3disk1/minidlna/log"
 sudo chown -c -R pi:minidlna "/mnt/shared/usb3disk1/minidlna/log"
 ```
 
-6. **Under COnstruction**    
+6. **Change the config to align with out disk/folder arrangement etc; in a Terminal**    
+
 ```
-minidlna_db_dir="/mnt/shared/usb3disk1/minidlna"
-minidlna_log_dir="/mnt/shared/usb3disk1/minidlna/log"
-minidlna_sh_dir="/mnt/shared/usb3disk1/minidlna"
-minidlna_main_log_file=/mnt/shared/usb3disk1/minidlna/log/minidlna.log
-minidlna_refresh_log_file=/mnt/shared/usb3disk1/minidlna/log/minidlna_refresh.log
-minidlna_refresh_sh_file=/mnt/shared/usb3disk1/minidlna/minidlna_refresh.sh
-minidlna_restart_refresh_sh_file=/mnt/shared/usb3disk1/minidlna/minidlna_restart_refresh.sh
-
-
-
-#
+# backup and edit the miniDLNA config file
 sudo cp -fv "/etc/minidlna.conf" "/etc/minidlna.conf.original"
 sudo nano "/etc/minidlna.conf"
 ```
-
+now in nano,
 ```
+# using these values,
+#minidlna_db_dir="/mnt/shared/usb3disk1/minidlna"
+#minidlna_log_dir="/mnt/shared/usb3disk1/minidlna/log"
+#minidlna_sh_dir="/mnt/shared/usb3disk1/minidlna"
+#minidlna_main_log_file=/mnt/shared/usb3disk1/minidlna/log/minidlna.log
+#minidlna_refresh_log_file=/mnt/shared/usb3disk1/minidlna/log/minidlna_refresh.log
+#minidlna_refresh_sh_file=/mnt/shared/usb3disk1/minidlna/minidlna_refresh.sh
+#minidlna_restart_refresh_sh_file=/mnt/shared/usb3disk1/minidlna/minidlna_restart_refresh.sh
+
 # uncomment and/or change line `#friendly_name=` to:
 friendly_name=PINAS64-minidlna
 
@@ -754,18 +754,45 @@ db_dir=/mnt/shared/usb3disk1/minidlna
 # uncomment and/or change line `#log_dir=/var/log/minidlna` to:
 log_dir=/mnt/shared/usb3disk1/minidlna/log
 
+# uncomment and/or change line `#inotify=yes` to:
+inotify=yes
+
+# uncomment and/or change line `#strict_dlna=no` to:
+strict_dlna=yes
+
+# uncomment and/or change line `#notify_interval=895` to:
+notify_interval=900
+
+# uncomment and/or change line `#max_connections=50` to:
+max_connections=6
+
+# uncomment and/or change line `#log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=warn;` to:
+log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=info
 
 
 
 
-sudo sed -i "s;#inotify=yes;#inotify=yes\ninotify=yes;g" "/etc/minidlna.conf"
-sudo sed -i "s;#strict_dlna=no;#strict_dlna=no\nstrict_dlna=yes;g" "/etc/minidlna.conf"
-sudo sed -i "s;#notify_interval=895;#notify_interval=895\nnotify_interval=900;g" "/etc/minidlna.conf"
-sudo sed -i "s;#max_connections=50;#max_connections=50\nmax_connections=6;g" "/etc/minidlna.conf"
+
 sudo sed -i "s;#log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=warn;#log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=warn\nlog_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=info;g" "/etc/minidlna.conf"
 sudo sed -i "s;#wide_links=no;wide_links=yes;g" "/etc/minidlna.conf"
 sudo sed -i "s;album_art_names=;#album_art_names=;g" "/etc/minidlna.conf"
 ```
+
+
+
+
+**Under COnstruction**    
+```
+minidlna_db_dir="/mnt/shared/usb3disk1/minidlna"
+minidlna_log_dir="/mnt/shared/usb3disk1/minidlna/log"
+minidlna_sh_dir="/mnt/shared/usb3disk1/minidlna"
+minidlna_main_log_file=/mnt/shared/usb3disk1/minidlna/log/minidlna.log
+minidlna_refresh_log_file=/mnt/shared/usb3disk1/minidlna/log/minidlna_refresh.log
+minidlna_refresh_sh_file=/mnt/shared/usb3disk1/minidlna/minidlna_refresh.sh
+minidlna_restart_refresh_sh_file=/mnt/shared/usb3disk1/minidlna/minidlna_restart_refresh.sh
+```
+
+
 
 
 
