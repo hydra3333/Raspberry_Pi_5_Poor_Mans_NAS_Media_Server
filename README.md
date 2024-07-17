@@ -656,4 +656,295 @@ REM DISK2 root folder as read-write (copy new media to subfolders here, dependin
 
 ## Install and configure `miniDLNA` to serve media on the LAN via DLNA
 
+# UNDER CONSTRUCTION
 
+#### NOTE: we install the miniDLNA index db onto USB3 DISK1 rather than the SD card    
+####       since it is faster, and the SD car won't wear out quicker due to index rebuilds    
+
+1. Ensure we un-install any prior `miniDLNA`; in a Terminal    
+```
+sudo systemctl stop minidlna
+sleep 2s
+sudo systemctl disable minidlna
+sleep 2s
+sudo apt purge minidlna -y
+sudo apt autoremove -y
+```
+
+2. Remove any prior config items and index db
+```
+sudo rm -vfR "/etc/minidlna.conf"
+sudo rm -vfR "/var/log/minidlna.log"
+sudo rm -vfR "/run/minidlna"
+# note: the next lines may fail, ignore any fails:
+sudo rm -vfR "/mnt/shared/usb3disk1/minidlna"
+```
+
+3. Install miniDLNA and then stop the service so we can configure it
+```
+sudo apt install -y minidlna
+sleep 2s
+sudo systemctl enable minidlna
+sleep 2s
+sudo systemctl stop minidlna
+sleep 2s
+```
+
+4. Add user pi to miniDLNA Groups, fix ownershups etc, create folders for minidlna logs and db at the top of external USB3 disk DISK1 
+```
+echo ""
+set -x
+sudo usermod -a -G pi minidlna
+sudo usermod -a -G minidlna pi
+sudo usermod -a -G minidlna root
+#
+sudo chmod -c a=rwx -R "/etc/minidlna.conf"
+sudo chown -c -R pi:minidlna "/etc/minidlna.conf"
+#
+sudo mkdir -pv "/mnt/shared/usb3disk1/minidlna"
+sudo chmod -c a=rwx -R "/mnt/shared/usb3disk1/minidlna"
+sudo chown -c -R pi:minidlna "/mnt/shared/usb3disk1/minidlna"
+sudo chmod -c a=rwx -R "/run/minidlna"
+sudo chown -c -R pi:minidlna "/run/minidlna"
+sudo touch "/run/minidlna/minidlna.pid"
+sudo chmod -c a=rwx -R "/run/minidlna/minidlna.pid"
+sudo chown -c -R pi:minidlna "/run/minidlna/minidlna.pid"
+#
+# Can we put the cache on DISK1 too ?
+##sudo chmod -c a=rwx -R "/var/cache/minidlna"
+##sudo chown -c -R pi:minidlna "/var/cache/minidlna"
+sudo mkdir -pv "/mnt/shared/usb3disk1/minidlna/cache"
+sudo chmod -c a=rwx -R "/mnt/shared/usb3disk1/minidlna/cache"
+sudo chown -c -R pi:minidlna "/mnt/shared/usb3disk1/minidlna/cache"
+
+#can we put the log on DISK1 too ?
+##sudo chmod -c a=rwx -R "/var/log/minidlna.log"
+##sudo chown -c -R pi:minidlna "/var/log/minidlna.log"
+sudo mkdir -pv "/mnt/shared/usb3disk1/minidlna/log"
+sudo touch "/mnt/shared/usb3disk1/minidlna/log/minidlna.log"
+sudo chmod -c a=rwx -R "/mnt/shared/usb3disk1/minidlna/log"
+sudo chown -c -R pi:minidlna "/mnt/shared/usb3disk1/minidlna/log"
+
+```
+
+
+
+
+
+
+#### create an outline from an older miniDLNA setup scriipt
+```
+echo ""
+echo "# Change miniDLNA config settings"
+echo ""
+set -x
+minidlna_db_dir="${minidlna_root_folder}"
+minidlna_log_dir="${minidlna_root_folder}"
+minidlna_sh_dir="${minidlna_root_folder}"
+minidlna_main_log_file=${minidlna_log_dir}/minidlna.log
+minidlna_refresh_log_file=${minidlna_log_dir}/minidlna_refresh.log
+minidlna_refresh_sh_file=${minidlna_sh_dir}/minidlna_refresh.sh
+minidlna_restart_refresh_sh_file=~/Desktop/minidlna_restart_refresh.sh
+sudo cp -fv "/etc/minidlna.conf" "/etc/minidlna.conf.old"
+sudo sed -i "s;#user=minidlna;#user=minidlna\n#user=pi;g" "/etc/minidlna.conf"
+sudo sed -i "s;#db_dir=/var/cache/minidlna;#db_dir=/var/cache/minidlna\ndb_dir=${minidlna_db_dir};g" "/etc/minidlna.conf"
+sudo sed -i "s;#log_dir=/var/log/minidlna;#log_dir=/var/log/minidlna\nlog_dir=${minidlna_log_dir};g" "/etc/minidlna.conf"
+sudo sed -i "s;#friendly_name=;#friendly_name=\nfriendly_name=${server_name}-minidlna;g" "/etc/minidlna.conf"
+sudo sed -i "s;#inotify=yes;#inotify=yes\ninotify=yes;g" "/etc/minidlna.conf"
+sudo sed -i "s;#strict_dlna=no;#strict_dlna=no\nstrict_dlna=yes;g" "/etc/minidlna.conf"
+sudo sed -i "s;#notify_interval=895;#notify_interval=895\nnotify_interval=900;g" "/etc/minidlna.conf"
+sudo sed -i "s;#max_connections=50;#max_connections=50\nmax_connections=6;g" "/etc/minidlna.conf"
+sudo sed -i "s;#log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=warn;#log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=warn\nlog_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=info;g" "/etc/minidlna.conf"
+sudo sed -i "s;#wide_links=no;wide_links=yes;g" "/etc/minidlna.conf"
+sudo sed -i "s;album_art_names=;#album_art_names=;g" "/etc/minidlna.conf"
+set +x
+echo ""
+echo "# Change miniDLNA folders SPECIFIC to my media drive(s) sets of folders !!! For me only !!!"
+echo "# Change miniDLNA folders SPECIFIC to my media drive(s) sets of folders !!! For me only !!!"
+echo "# Change miniDLNA folders SPECIFIC to my media drive(s) sets of folders !!! For me only !!!"
+echo ""
+set -x
+sudo sed -i "/^#zzz---zzz/d" "/etc/minidlna.conf"
+sudo sed -i "s;media_dir=/var/lib/minidlna;#media_dir=/var/lib/minidlna\n#zzz---zzz;g" "/etc/minidlna.conf"
+sudo sed -i "s;#zzz---zzz;#zzz---zzz\nmedia_dir=PVA,${root_folder_2}/Series;g" "/etc/minidlna.conf"
+sudo sed -i "s;#zzz---zzz;#zzz---zzz\nmedia_dir=PVA,${root_folder_2}/Railway_Journeys;g" "/etc/minidlna.conf"
+sudo sed -i "s;#zzz---zzz;#zzz---zzz\nmedia_dir=PVA,${root_folder_2}/MusicVideos;g" "/etc/minidlna.conf"
+sudo sed -i "s;#zzz---zzz;#zzz---zzz\nmedia_dir=PVA,${root_folder_2}/Footy;g" "/etc/minidlna.conf"
+sudo sed -i "s;#zzz---zzz;#zzz---zzz\n## for medialibrary2 on SECOND USB3 drive;g" "/etc/minidlna.conf"
+sudo sed -i "s;#zzz---zzz;#zzz---zzz\nmedia_dir=PVA,${root_folder_1}/SciFi;g" "/etc/minidlna.conf"
+sudo sed -i "s;#zzz---zzz;#zzz---zzz\nmedia_dir=PVA,${root_folder_1}/OldSciFi;g" "/etc/minidlna.conf"
+sudo sed -i "s;#zzz---zzz;#zzz---zzz\nmedia_dir=PVA,${root_folder_1}/OldMovies;g" "/etc/minidlna.conf"
+sudo sed -i "s;#zzz---zzz;#zzz---zzz\nmedia_dir=PVA,${root_folder_1}/Documentaries;g" "/etc/minidlna.conf"
+sudo sed -i "s;#zzz---zzz;#zzz---zzz\nmedia_dir=PVA,${root_folder_1}/ClassicMovies;g" "/etc/minidlna.conf"
+sudo sed -i "s;#zzz---zzz;#zzz---zzz\nmedia_dir=PVA,${root_folder_1}/ClassicDocumentaries;g" "/etc/minidlna.conf"
+sudo sed -i "s;#zzz---zzz;#zzz---zzz\nmedia_dir=PVA,${root_folder_1}/CharlieWalsh;g" "/etc/minidlna.conf"
+sudo sed -i "s;#zzz---zzz;#zzz---zzz\nmedia_dir=PVA,${root_folder_1}/BigIdeas;g" "/etc/minidlna.conf"
+sudo sed -i "s;#zzz---zzz;#zzz---zzz\nmedia_dir=PVA,${root_folder_1}/2015.11.29-Jess-21st-birthday-party;g" "/etc/minidlna.conf"
+sudo sed -i "s;#zzz---zzz;#zzz---zzz\n## for medialibrary1 on FIRST USB3 drive;g" "/etc/minidlna.conf"
+sudo cat "/etc/minidlna.conf"
+#sudo diff -U 10 "/etc/minidlna.conf.old" "/etc/minidlna.conf"
+set +x
+echo ""
+sudo rm -vf "${minidlna_main_log_file}"
+sudo rm -vf "${minidlna_refresh_log_file}"
+sudo touch "${minidlna_refresh_log_file}"
+echo ""
+echo "Create the .sh used by crontab to refresh the db every night. ${minidlna_refresh_sh_file}"
+echo ""
+set -x
+sudo rm -vf "${minidlna_refresh_sh_file}"
+sudo touch "${minidlna_refresh_sh_file}"
+sudo chmod -c a=rwx "${minidlna_refresh_sh_file}"
+set +x
+echo "#!/bin/bash" >> "${minidlna_refresh_sh_file}"
+echo "set -x" >> "${minidlna_refresh_sh_file}"
+echo "# ${minidlna_refresh_sh_file}" >> "${minidlna_refresh_sh_file}"
+echo "# used by crontab to refresh the the db every night" >> "${minidlna_refresh_sh_file}"
+echo "sudo systemctl stop minidlna" >> "${minidlna_refresh_sh_file}"
+echo "sleep 2s" >> "${minidlna_refresh_sh_file}"
+echo "sudo systemctl restart minidlna" >> "${minidlna_refresh_sh_file}"
+echo "sleep 2s" >> "${minidlna_refresh_sh_file}"
+echo "echo 'Wait 15 minutes for minidlna to index media files'" >> "${minidlna_refresh_sh_file}"
+echo "echo 'For progress do in another terminal window: cat ${main_log_dir}'" >> "${minidlna_refresh_sh_file}"
+echo "sleep 900s" >> "${minidlna_refresh_sh_file}"
+echo "set +x" >> "${minidlna_refresh_sh_file}"
+echo "# ${minidlna_refresh_sh_file}" >> "${minidlna_refresh_sh_file}"
+set -x
+sudo cat "${minidlna_refresh_sh_file}"
+set +x
+echo ""
+echo "Create the .sh used by a user to manually refresh the minidlna db. ${minidlna_restart_refresh_sh_file}"
+echo ""
+set -x
+sudo rm -vf "${minidlna_restart_refresh_sh_file}"
+sudo touch "${minidlna_restart_refresh_sh_file}"
+sudo chmod -c a=rwx "${minidlna_restart_refresh_sh_file}"
+set +x
+echo "#!/bin/bash" >> "${minidlna_restart_refresh_sh_file}"
+echo "set -x" >> "${minidlna_restart_refresh_sh_file}"
+echo "# ${minidlna_restart_refresh_sh_file}" >> "${minidlna_restart_refresh_sh_file}"
+echo "# used in ~/Desktop for a user to manually refresh the the db" >> "${minidlna_restart_refresh_sh_file}"
+echo "sudo systemctl stop minidlna" >> "${minidlna_restart_refresh_sh_file}"
+echo "sleep 2s" >> "${minidlna_restart_refresh_sh_file}"
+echo "sudo systemctl restart minidlna" >> "${minidlna_restart_refresh_sh_file}"
+echo "sleep 2s" >> "${minidlna_restart_refresh_sh_file}"
+echo "echo 'Wait 15 minutes for minidlna to index media files'" >> "${minidlna_restart_refresh_sh_file}"
+echo "echo 'For progress do in another terminal window: cat ${main_log_dir}'" >> "${minidlna_restart_refresh_sh_file}"
+echo "sleep 900s" >> "${minidlna_restart_refresh_sh_file}"
+echo "#" >> "${minidlna_restart_refresh_sh_file}"
+echo "cat \"${minidlna_main_log_file}\"" >> "${minidlna_restart_refresh_sh_file}"
+echo "#" >> "${minidlna_restart_refresh_sh_file}"
+echo "set +x" >> "${minidlna_restart_refresh_sh_file}"
+echo "# ${minidlna_restart_refresh_sh_file}" >> "${minidlna_restart_refresh_sh_file}"
+set -x
+sudo cat "${minidlna_restart_refresh_sh_file}"
+set +x
+echo ""
+echo "Add the 2:00 am nightly crontab job to re-index miniDLNA (${minidlna_refresh_sh_file})"
+echo ""
+# https://stackoverflow.com/questions/610839/how-can-i-programmatically-create-a-new-cron-job
+#The layout for a cron entry is made up of six components: minute, hour, day of month, month of year, day of week, and the command to be executed.
+# m h  dom mon dow   command
+# * * * * *  command to execute
+# ┬ ┬ ┬ ┬ ┬
+# │ │ │ │ │
+# │ │ │ │ │
+# │ │ │ │ └───── day of week (0 - 7) (0 to 6 are Sunday to Saturday, or use names; 7 is Sunday, the same as 0)
+# │ │ │ └────────── month (1 - 12)
+# │ │ └─────────────── day of month (1 - 31)
+# │ └──────────────────── hour (0 - 23)
+# └───────────────────────── min (0 - 59)
+# https://stackoverflow.com/questions/610839/how-can-i-programmatically-create-a-new-cron-job
+# <minute> <hour> <day> <month> <dow> <tags and command>
+echo "#"
+echo "# crontab List BEFORE contab ADD:"
+echo "#"
+set -x
+sudo crontab -l # before
+crontab -l # before
+set +x
+echo "#"
+echo "# Adding crontab as user pi (no sudo):"
+echo "#"
+# escaped path for use in: sed "/findstring/d"
+EscapedPath=`echo "${minidlna_refresh_sh_file}" | sed 's:/:\\\/:g'`
+set -x
+cd ~/Desktop
+sudo rm -vf "./local_crontab.txt" "./local_crontab_tmp.txt"
+crontab -l > "./local_crontab.txt"
+sed -i "/no crontab for $(whoami)/d" "./local_crontab.txt"
+cat "./local_crontab.txt"
+sed -i "/${EscapedPath}/d" "./local_crontab.txt"
+cat "./local_crontab.txt"
+echo "0 2 * * * ${minidlna_refresh_sh_file} 2>&1 >> ${minidlna_refresh_log_file}" >> "./local_crontab.txt"
+cat "./local_crontab.txt" | sort | uniq  > "./local_crontab_tmp.txt"
+mv -fv "./local_crontab_tmp.txt" "./local_crontab.txt"
+cat "./local_crontab.txt"
+crontab "./local_crontab.txt"
+rm -vf "./local_crontab.txt"
+set +x
+echo "#"
+echo "# crontab List AFTER contab ADD:"
+echo "#"
+set -x
+sudo crontab -l # after
+crontab -l # after
+set +x
+echo "#"
+echo "# syslog AFTER contab ADD:"
+echo "#"
+set -x
+sudo grep CRON /var/log/syslog
+set +x
+echo ""
+echo "# Start miniDLNA: Force a re-load of miniDLNA to ensure it starts re-looking for new files."
+echo ""
+set -x
+sudo ls -al "/run/minidlna"
+sudo systemctl stop minidlna
+sleep 2s
+sudo systemctl restart minidlna
+sleep 2s
+set +x
+echo "#"
+echo "# The minidlna service comes with a small webinterface. "
+echo "# This webinterface is just for informational purposes. "
+echo "# You will not be able to configure anything here. "
+echo "# However, it gives you a nice and short information screen how many files have been found by minidlna. "
+echo "# minidlna comes with it’s own webserver integrated. "
+echo "# This means that no additional webserver is needed in order to use the webinterface."
+echo "# To access the webinterface, open your browser of choice and enter url http://127.0.0.1:8200"
+echo ""
+set -x
+curl -i http://127.0.0.1:8200
+set +x
+echo ""
+# The actual streaming process
+# A short overview how a connection from a client to the configured and running minidlna server could work. 
+# In this scenario we simply use a computer which is in the same local area network than the server. 
+# As the client software we use the Video Lan Client (VLC). 
+# Simple, robust, cross-platform and open source. 
+# After starting VLC, go to the playlist mode by pressing CTRL+L in windows. 
+# You will now see on the left side a category which is called Local Network. 
+# Click on Universal Plug’n’Play which is under the Local Network category. 
+# You will then see a list of available DLNA service within your local network. 
+# In this list you should see your DLNA server. 
+# Navigate through the different directories for music, videos and pictures and select a file to start the streaming process
+echo ""
+#
+set -x
+sudo ls -al "/run/minidlna"
+set +x
+echo ""
+set -x
+sudo ls -al "${minidlna_main_log_file}"
+sudo cat "${minidlna_main_log_file}"
+set +x
+echo ""
+set -x
+sudo ls -al "${minidlna_refresh_log_file}"
+sudo cat "${minidlna_refresh_log_file}"
+set +x
+echo ""
+#
+```
