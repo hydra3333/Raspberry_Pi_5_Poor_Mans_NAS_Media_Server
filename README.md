@@ -736,50 +736,57 @@ sudo nano "/etc/minidlna.conf"
 ```
 now in nano,
 ```
-# using these values,
-#minidlna_db_dir="/mnt/shared/usb3disk1/minidlna"
-#minidlna_log_dir="/mnt/shared/usb3disk1/minidlna/log"
-#minidlna_sh_dir="/mnt/shared/usb3disk1/minidlna"
-#minidlna_main_log_file=/mnt/shared/usb3disk1/minidlna/log/minidlna.log
-#minidlna_refresh_log_file=/mnt/shared/usb3disk1/minidlna/log/minidlna_refresh.log
-#minidlna_refresh_sh_file=/mnt/shared/usb3disk1/minidlna/minidlna_refresh.sh
-#minidlna_restart_refresh_sh_file=/mnt/shared/usb3disk1/minidlna/minidlna_restart_refresh.sh
+# ignore these 3 ...
+##minidlna_refresh_log_file=/mnt/shared/usb3disk1/minidlna/log/minidlna_refresh.log
+##minidlna_refresh_sh_file=/mnt/shared/usb3disk1/minidlna/minidlna_refresh.sh
+##minidlna_restart_refresh_sh_file=/mnt/shared/usb3disk1/minidlna/minidlna_restart_refresh.sh
 
-# Find and uncomment and/or change line `#friendly_name=` to:
+# Find and uncomment and/or change/add line `#friendly_name=` to:
 friendly_name=PINAS64-minidlna
 
-# Find and uncomment and/or change line `#db_dir=/var/cache/minidlna` to:
+# Find and uncomment and/or change/add line `#model_name=` to:
+model_name=PINAS64-miniDLNA
+
+# Find and uncomment and/or change/add line `#merge_media_dirs=` to:
+merge_media_dirs=no
+
+# Find and uncomment and/or change/add line `#enable_thumbnail=` to:
+enable_thumbnail=no
+
+# Find and uncomment and/or change/add line `#db_dir=/var/cache/minidlna` to:
 db_dir=/mnt/shared/usb3disk1/minidlna
 
-# Find and uncomment and/or change line `#log_dir=/var/log/minidlna` to:
+# Find and uncomment and/or change/add line `#log_dir=/var/log/minidlna` to:
 log_dir=/mnt/shared/usb3disk1/minidlna/log
 
-# Find and uncomment and/or change line `#inotify=yes` to:
+# Find and uncomment and/or change/add line `#inotify=yes` to:
 inotify=yes
 
-# Find and uncomment and/or change line `#strict_dlna=no` to:
+# Find and uncomment and/or change/add line `#strict_dlna=no` to:
 strict_dlna=yes
 
-# Find and uncomment and/or change line `#notify_interval=895` to:
+# Find and uncomment and/or change/add line `#notify_interval=895` to:
 notify_interval=900
 
-# Find and uncomment and/or change line `#max_connections=50` to:
-max_connections=6
+# Find and uncomment and/or change/add line `#max_connections=50` to a number expected for this LAN:
+# (many clients open several simultaneous connections while streaming)
+max_connections=24
 
-# Find and uncomment and/or change line `#log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=warn` to:
+# Find and uncomment and/or change/add line `#log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=warn` to:
 log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=info
 
-# Find and uncomment and/or change line `#wide_links=no` to:
+# Find and uncomment and/or change/add line `#wide_links=no` to:
 #wide_links=yes
 
-# Find and uncomment and/or change line `album_art_names=` to comment it out:
+# Find and uncomment and/or change/add line `album_art_names=` to comment it out:
 #album_art_names=
 
-# Find and uncomment and/or change line `media_dir=/var/lib/minidlna` to comment it out:
-#media_dir=/var/lib/minidlna
+# Find and uncomment and/or change/add line `media_dir=/var/lib/minidlna` to comment it out:
+##media_dir=/var/lib/minidlna
 
 # now ADD the line to expose the overlayed media folder ...
-media_dir=PVA,/mnt/shared/overlay
+root_container=PVA,/mnt/shared/overlay
+##media_dir=PVA,/mnt/shared/overlay
 
 # now ADD any lines where wish to expose folders
 # separately to, but as well as in, the overlayed folder tree, eg
