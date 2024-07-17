@@ -690,14 +690,17 @@ sudo systemctl stop minidlna
 sleep 2s
 ```
 
-4. **Add users to `miniDLNA` Groups, fix ownerships etc, create folders for db and log at the top of external USB3 disk DISK1; in a Terminal**    
+4. **Add users to `miniDLNA` Groups and vice versa; in a Terminal**    
 ```
-echo ""
-set -x
 sudo usermod -a -G pi minidlna
 sudo usermod -a -G minidlna pi
 sudo usermod -a -G minidlna root
-#
+sudo usermod -a -G root minidlna
+```
+
+5. **Fix ownerships etc, create folders for db and log at the top of external USB3 disk DISK1; in a Terminal**    
+
+```
 sudo chmod -c a=rwx -R "/etc/minidlna.conf"
 sudo chown -c -R pi:minidlna "/etc/minidlna.conf"
 #
@@ -710,24 +713,21 @@ sudo touch "/run/minidlna/minidlna.pid"
 sudo chmod -c a=rwx -R "/run/minidlna/minidlna.pid"
 sudo chown -c -R pi:minidlna "/run/minidlna/minidlna.pid"
 #
-# Can we put the cache on DISK1 too ?
 ##sudo chmod -c a=rwx -R "/var/cache/minidlna"
 ##sudo chown -c -R pi:minidlna "/var/cache/minidlna"
 sudo mkdir -pv "/mnt/shared/usb3disk1/minidlna/cache"
 sudo chmod -c a=rwx -R "/mnt/shared/usb3disk1/minidlna/cache"
 sudo chown -c -R pi:minidlna "/mnt/shared/usb3disk1/minidlna/cache"
-
-#can we put the log on DISK1 too ?
+#
 ##sudo chmod -c a=rwx -R "/var/log/minidlna.log"
 ##sudo chown -c -R pi:minidlna "/var/log/minidlna.log"
 sudo mkdir -pv "/mnt/shared/usb3disk1/minidlna/log"
 sudo touch "/mnt/shared/usb3disk1/minidlna/log/minidlna.log"
 sudo chmod -c a=rwx -R "/mnt/shared/usb3disk1/minidlna/log"
 sudo chown -c -R pi:minidlna "/mnt/shared/usb3disk1/minidlna/log"
-
 ```
 
-5. **Under COnstruction**    
+6. **Under COnstruction**    
 ```
 minidlna_db_dir="/mnt/shared/usb3disk1/minidlna"
 minidlna_log_dir="/mnt/shared/usb3disk1/minidlna/log"
@@ -736,13 +736,12 @@ minidlna_main_log_file=/mnt/shared/usb3disk1/minidlna/log/minidlna.log
 minidlna_refresh_log_file=/mnt/shared/usb3disk1/minidlna/log/minidlna_refresh.log
 minidlna_refresh_sh_file=/mnt/shared/usb3disk1/minidlna/minidlna_refresh.sh
 minidlna_restart_refresh_sh_file=/mnt/shared/usb3disk1/minidlna/minidlna_restart_refresh.sh
-```
 
 
 
-```
 #
 sudo cp -fv "/etc/minidlna.conf" "/etc/minidlna.conf.original"
+sudo nano "/etc/minidlna.conf"
 ```
 
 ```
