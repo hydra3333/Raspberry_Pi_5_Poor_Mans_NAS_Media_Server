@@ -25,7 +25,9 @@ packages known to interact of themselves in essentially unknown ways with (uncon
 on the internet - at the cost of having to deal with more complexity ... safety first.
 
 ### General Approach
-Say one has 8 old USB3 disks `DISK1` ... `DISK8` all plugged into the (1 or 2) USB3 hubs,
+This assumes you know how to use the nano editor, if not please google it, if using another editor then cool !
+
+If one has, say, 8 old USB3 disks `DISK1` ... `DISK8` all plugged into the (1 or 2) USB3 hubs,
 and disk each has a single root folder containing subfolders of media to be served
 `ROOTFOLDER1` ... `ROOTFOLDER8`    
 ```
@@ -164,6 +166,21 @@ sudo apt -y install hdparm
 #
 ```
 If the Pi tells you to reboot, do so.
+
+Force PCI Express Gen 3.0 speeds (8 GT/sec, almost double the speed) on the Pi 5, per https://www.jeffgeerling.com/blog/2023/forcing-pci-express-gen-30-speeds-on-pi-5    
+In a Terminal
+```
+sudo nano /boot/firmware/config.txt 
+```
+Then check-for/modify/add the following 2 lines:
+```
+dtparam=pciex1
+dtparam=pciex1_gen=3
+```
+then reboot to upgrade the connection to Gen 3.0.
+
+dtparam=pciex1
+dtparam=pciex1_gen=3
 
 We choose to create some `alias` shortcut commands to make life easier, by editing script `~/.bashrc`. 
 In Terminal, edit the existing file `~/.bashrc`
