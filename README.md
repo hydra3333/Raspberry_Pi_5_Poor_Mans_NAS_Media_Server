@@ -12,7 +12,7 @@ Together with a Pi 5 and an SD card you can use
 - 1 to 8 old USB3 disks plugged into the USB hubs    
 
 With this harware you can readuly serve up standard SAMBA SMB/CIFS file shares
-and media files to devices across your LAN.   
+and media files to devices across the LAN.   
 
 ## Why ?
 You could use `OpenMediaVault` or `Plex` more easily, but they connect to the internet to do 'stuff'.
@@ -49,11 +49,11 @@ DISK2 -- ROOTFOLDER2 --|--ClassicMovies
 Then we can    
 - mount the disks individually in fstab so they appear in a consistent way to the system    
 - use `overlaysf` (inbuilt in debian) to create a virtual overlayed folder of all of those    
-root folder trees into a single virtual folder tree for presentation to devices on your LAN
+root folder trees into a single virtual folder tree for presentation to devices on the LAN
 (we could readily use the `mergerfs` package and the process is very similar, however overlayfs is already in the debian kernel)    
 - use `SAMBA` to serve up the individual USB3 disks in read-write mode for PCs on the LAN to copy new files onto    
-- use `SAMBA` to serve up the virtual overlayed folder tree in read-only mode to devices on your LAN    
-- use `DLNA` to serve up the virtual overlayed folder in read-only mode to devices on your LAN (eg PCs, ChromeCasts, TVs)    
+- use `SAMBA` to serve up the virtual overlayed folder tree in read-only mode to devices on the LAN    
+- use `DLNA` to serve up the virtual overlayed folder in read-only mode to devices on the LAN (eg PCs, ChromeCasts, TVs)    
 - use `HD-IDLE` to ensure the USB3 disks all spin down properly between uses and not stay spinning all the time    
 
 One drawback is that if one copies new files onto the individual disks, or modifies existing files on them,
@@ -97,7 +97,7 @@ if prompted, allow it to change all folders and files on the disk and ignore all
 
 On every disk, create a top level folder named like `ROOTFOLDER1` through to `ROOTFOLDER8`, to match the disk volume label number.
 
-Under the top level folder on the disks, place you media files in a reasonably consistent (including filename capitalisation)
+Under the top level folder on the disks, place the media files in a reasonably consistent (including filename capitalisation)
 folder structure of your choice. The same folder names and files may or may not exist on every disk, you can
 spread out the media files and folders across disks and even double them up for backup purposes. eg
 ```
@@ -126,15 +126,15 @@ First ensuring that power switch is off where the Pi's power block plugs in,
 That's the hardware prepared and plugged in.    
 
 In the outline below, we'll assume only 2 USB3 disks. You can add more as you need,
-just keep an eye on your disk naming and folder structures in line with the model above.    
+just keep an eye on the disk naming and folder structures in line with the model above.    
 
 ## Install Raspberry Pi OS with `autologin`    
 Run the `Raspberry Pi Imager` on a PC to put the full 64 bit `Raspberry Pi OS` image to an SD card in the usual way    
 - Choose to "Edit Settings" and then the GENERAL tab.    
 - Set a Hostname you will recognise, eg PINAS64.    
-- Set a username as `pi` (if not `pi` then replace username `pi` in this outline with your chosen username) and
+- Set a username as `pi` (if not `pi` then replace username `pi` in this outline with the chosen username) and
 the password as something you will remember (you will need to enter it later during `SAMBA` setup,
-and change all references of `pi` to your username).    
+and change all references of `pi` to the username).    
 - Set you locale settings and keyboard layout (setting keyboard layout is important if in non-US non-GB country).    
 - Choose the SERVICES tab.    
 - Enable SSH with password authentification.    
@@ -272,7 +272,7 @@ hostname -I
 ```
 The Pi's LAN IP address may be something like 10.0.0.18.    
 
-Login to your router and look at the LAN connected devices, looking for the IP address matching the Pi.    
+Login to the router and look at the LAN connected devices, looking for the IP address matching the Pi.    
 
 Head on to the Router's DHCP management area and allocated a Reserved fixed (permanent) DHCP IP address lease
 for the Pi and apply/save that in the router. Reboot the Pi, then on the Pi start a Terminal and do    
@@ -325,7 +325,7 @@ Start `File Manager` and navigate to each of the partitions, something like:
 - the media root folder is under `/media/pi/DISK1-5TB`    
 - the media root folder is under `/media/pi/DISK2-4TB`
 
-and locate the root folder in each partition which contains your media files 
+and locate the root folder in each partition which contains the media files 
 ... and make a note of these root folder names **alongside** the corresponding PARTUUID.    
 So, you will have noted for each disk UUID, partition PARTUUID. and the root folder name on that partition, eg for
 ```
@@ -476,7 +476,7 @@ sudo nano /etc/default/hd-idle
 START_HD_IDLE=true
 # Adding lines at the end for every disk, using the noted NAME
 # option -d = debug
-##Double check hd-idle works with your hard drive
+##Double check hd-idle works with the hard drive
 ##sudo hd-idle -t ??? -d
 #   #Command line options:
 #   #-a name Set device name of disks for subsequent idle-time parameters -i. This parameter is optional in the sense that there's a default entry for all disks which are not named otherwise by using this parameter. This can also be a symlink (e.g. /dev/disk/by-uuid/...)
