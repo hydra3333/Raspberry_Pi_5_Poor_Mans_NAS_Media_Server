@@ -139,14 +139,14 @@ Click SAVE.
 Click YES to apply OS customisation.    
 Click YES to proceed.    
 
-### Boot the Raspberry Pi 5 and update system software    
-Order of power up (at least the first time)
+### Boot the Raspberry Pi 5 and update the system    
+1. Order of power up (at least the first time)
 - Ensure the Pi 5 is powered off    
 - Plug the SD card into the Pi 5    
 - Power on each of the USB3 disks, wait 15 to 30 seconds for them to power-up and spin-up    
 - Power on the Pi 5    
 
-Once the Pi has finished booting to the desktop (leave it set to autologin)    
+2. Once the Pi has finished booting to the desktop (leave it set to autologin)    
 - Click Start, Preferences, Raspberry Pi Configuration    
 - In the Localisation Tab, Set the Locale and then character set UTF-8, Timezone, Keyboard (setting keyboard is important if in non-US non-GB country), WiFi country, then click OK.    
 - If prompted to reboot then click YES and reboot back to the desktop.    
@@ -156,31 +156,74 @@ Once the Pi has finished booting to the desktop (leave it set to autologin)
 - Click OK    
 - If prompted to reboot then click YES and reboot.    
 
-Once the Pi has finished booting to the desktop    
-- Start a Terminal then update the system using    
-```
-sudo apt -y update
-sudo apt -y full-upgrade
-sudo apt -y dist-upgrade
-# Install disk params checker, eg sudo hdparm -Tt /dev/sda
-sudo apt -y install hdparm
-#
-```
-If the Pi tells you to reboot, do so.
+Once the Pi has finished booting to the desktop:    
 
-Force PCI Express Gen 3.0 speeds (8 GT/sec, almost double the speed) on the Pi 5, per https://www.jeffgeerling.com/blog/2023/forcing-pci-express-gen-30-speeds-on-pi-5    
-In a Terminal
+3. Force PCI Express Gen 3.0 speeds after next boot (8 GT/sec, almost double the speed) on the Pi 5, per https://www.jeffgeerling.com/blog/2023/forcing-pci-express-gen-30-speeds-on-pi-5 ; in a Terminal    
 ```
 sudo nano /boot/firmware/config.txt 
 ```
-Then check-for/modify/add the following 2 lines:
+then check-for/modify/add the following 2 lines:
 ```
 dtparam=pciex1
 dtparam=pciex1_gen=3
 ```
-then reboot to Force PCI Express Gen 3.0.
+exit nano with `Control O` `Control X`.    
 
-We choose to create some `alias` shortcut commands to make life easier, by editing script `~/.bashrc`. 
+4. Update the system; in a Terminal
+```
+sudo apt -y update
+sudo apt -y full-upgrade
+sudo apt -y dist-upgrade
+```
+If the Pi tells you to reboot, do so.
+
+5. Install some software; in a Terminal     
+```
+# Install disk params checker, eg sudo hdparm -Tt /dev/sda
+sudo apt -y install hdparm
+# Install a tool which can be used to turn EOL inside text files from windows type to unix type
+sudo apt install -y dos2unix
+# Install the curl and wget tools to download support files if required
+sudo apt install -y curl
+sudo apt install -y wget
+```
+
+6. Add 'plugdev' right to user pi so that it has no trouble with mounting USB3 external disk(s); in a Terminal     
+```
+sudo usermod -a -G plugdev pi
+```
+
+7. Make this server IPv4 only, by disabling IPv6; in a Terminal     
+```
+sudo sysctl net.ipv6.conf.all.disable_ipv6=1 
+sudo sysctl -p
+sudo sed -i.bak "s;net.ipv6.conf.all.disable_ipv6;#net.ipv6.conf.all.disable_ipv6;g" "/etc/sysctl.conf"
+echo net.ipv6.conf.all.disable_ipv6=1 | sudo tee -a "/etc/sysctl.conf"
+sudo sysctl -p
+```
+
+8. Increase `fs.inotify.max_user_watches` from default 8192 (used by miniDLNA to monitor changes to filesystems); in a Terminal     
+```
+# max_user_watches=262144
+# Per https://wiki.debian.org/minidlna and https://wiki.archlinux.org/title/ReadyMedia
+# To avoid Inotify errors, Increase the number for the system :
+# In /etc/sysctl.conf Add: 'fs.inotify.max_user_watches=262144' in a blank line by itself.
+# Increase system max_user_watches to avoid this error:
+# WARNING: Inotify max_user_watches [8192] is low or close to the number of used watches [2] and I do not have permission to increase this limit.  Please do so manually by writing a higher value into /proc/sys/fs/inotify/max_user_watches.
+# set a new TEMPORARY limit with:
+# sudo sed -i.bak "s;8192;262144;g" "/proc/sys/fs/inotify/max_user_watches" # this fails with no permissions
+# ... So,
+#set a new TEMPORARY limit with:
+sudo cat /proc/sys/fs/inotify/max_user_watches
+sudo sysctl fs.inotify.max_user_watches=262144
+sudo sysctl -p
+# set a new PERMANENT limit with ('sudo tee -a' is used so sudo can get us access to append to the target file):
+sudo sed -i.bak "s;fs.inotify.max_user_watches=;#fs.inotify.max_user_watches=;g" "/etc/sysctl.conf"
+echo fs.inotify.max_user_watches=262144 | sudo tee -a "/etc/sysctl.conf"
+sudo sysctl -p
+```
+
+9. We choose to create some `alias` shortcut commands to make life easier, by editing script `~/.bashrc`. 
 In Terminal, edit the existing file `~/.bashrc`
 ```
 nano ~/.bashrc
