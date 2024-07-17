@@ -60,7 +60,7 @@ One drawback is that if one copies new files onto the individual disks, or modif
 then the Pi needs to be re-booted so that `overlayfs` takes notice of changes. Similarly, the miniDLNA index
 must be updated.    
 Not so good for a true NAS, not the end of the world for a media server with infrequent updates;
-one could easily say "it'll be up tomorrow" ... and setup a nightly with crontab at 4:45 am for    
+one could easily say "it'll be up tomorrow" ... and setup an automatic nightly job with crontab at 4:45 am for    
 - miniDLNA to run a rebuild of its index, then
 - reboot, for overlayfs to notice changes
 
