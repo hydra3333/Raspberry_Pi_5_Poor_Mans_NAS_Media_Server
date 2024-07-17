@@ -233,8 +233,8 @@ sudo sysctl -p
 ```
 
 9. **We choose to create some `alias` shortcut commands to make life easier, by editing script `~/.bashrc`; in a Terminal**    
-Edit the existing file `~/.bashrc`
 ```
+# Edit the existing file '~/.bashrc'
 nano ~/.bashrc
 ```
 Put this at the end of it:
