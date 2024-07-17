@@ -33,7 +33,7 @@ on the internet - at the cost of having to deal with more complexity ... safety 
 This assumes you know how to use the nano editor, if not please google it, if using another editor then cool !
 
 If one has, say, 1 to 8 old USB3 disks with volume labels `DISK1` ... `DISK8` all plugged into the (1 or 2) USB3 hubs,
-and each disk has a single root folder `ROOTFOLDER1` ... `ROOTFOLDER8` containing subfolders of media to be served
+and each disk has a matching single root folder `ROOTFOLDER1` ... `ROOTFOLDER8` containing subfolders of media to be served
     
 ```
 DISK1 -- ROOTFOLDER1 --|--ClassicMovies
