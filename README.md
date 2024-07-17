@@ -202,7 +202,7 @@ echo net.ipv6.conf.all.disable_ipv6=1 | sudo tee -a "/etc/sysctl.conf"
 sudo sysctl -p
 ```
 
-8. Increase `fs.inotify.max_user_watches` from default 8192 (used by miniDLNA to monitor changes to filesystems); in a Terminal     
+8. Increase system parameter `fs.inotify.max_user_watches` from default 8192 (used by miniDLNA to monitor changes to filesystems); in a Terminal     
 ```
 # max_user_watches=262144
 # Per https://wiki.debian.org/minidlna and https://wiki.archlinux.org/title/ReadyMedia
