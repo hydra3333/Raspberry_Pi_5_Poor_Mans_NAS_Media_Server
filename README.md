@@ -179,9 +179,6 @@ dtparam=pciex1_gen=3
 ```
 then reboot to upgrade the connection to Gen 3.0.
 
-dtparam=pciex1
-dtparam=pciex1_gen=3
-
 We choose to create some `alias` shortcut commands to make life easier, by editing script `~/.bashrc`. 
 In Terminal, edit the existing file `~/.bashrc`
 ```
