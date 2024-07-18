@@ -795,7 +795,7 @@ media_dir=PVA,/mnt/shared/overlay/SciFi
 Restart miniDLNA and force a db reload.
 ```
 sudo systemctl minidlna restart 
-sudo service minidlna force-reload
+sudo systemctl minidlna force-reload
 sudo systemctl minidlna status
 ```
 The minidlna service comes with an internal small web server and webinterface.    
