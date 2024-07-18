@@ -735,6 +735,9 @@ sudo nano "/etc/minidlna.conf"
 ```
 now in nano,
 ```
+# Find and comment out the '#media_dir=' line so it looks like this:
+#media_dir=/var/lib/minidlna
+
 # ignore these 3 ...
 ##minidlna_refresh_log_file=/mnt/shared/usb3disk1/minidlna/log/minidlna_refresh.log
 ##minidlna_refresh_sh_file=/mnt/shared/usb3disk1/minidlna/minidlna_refresh.sh
