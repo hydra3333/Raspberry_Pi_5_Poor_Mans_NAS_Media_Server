@@ -684,11 +684,8 @@ sudo rm -vfR "/mnt/shared/usb3disk1/minidlna"
 3. **Install `miniDLNA`, enable, and then stop the service so we can configure it; in a Terminal**    
 ```
 sudo apt install -y minidlna
-sleep 2s
 sudo systemctl enable minidlna
-sleep 2s
-sudo systemctl stop minidlna
-sleep 2s
+sudo systemctl minidlna stop
 ```
 
 4. **Add users to `miniDLNA` Groups and vice versa; in a Terminal**    
@@ -797,9 +794,9 @@ media_dir=PVA,/mnt/shared/overlay/SciFi
 ```
 Restart miniDLNA and force a db reload.
 ```
-sudo systemctl restart minidlna
-sudo service force-reload minidlna
-sudo systemctl status minidlna
+sudo systemctl minidlna restart 
+sudo service minidlna force-reload
+sudo systemctl minidlna status
 ```
 The minidlna service comes with an internal small web server and webinterface.    
 This webinterface is just for informational purposes.    
