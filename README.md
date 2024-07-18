@@ -794,10 +794,19 @@ media_dir=PVA,/mnt/shared/overlay/Music
 media_dir=PVA,/mnt/shared/overlay/OldMovies
 media_dir=PVA,/mnt/shared/overlay/SciFi
 ```
-
-
-
-
+Enable and restart miniDLNA
+```
+sudo systemctl restart minidlna
+sudo systemctl status minidlna
+```
+The minidlna service comes with an internal small web server and webinterface.    
+This webinterface is just for informational purposes.    
+You will not be able to configure anything here.    
+However, it gives you a nice and short information screen how many files have been found by minidlna.    
+To access the webinterface, open your browser of choice and enter url http://127.0.0.1:8200    
+```
+curl -i http://127.0.0.1:8200
+```
 
 **Under COnstruction**    
 ```
