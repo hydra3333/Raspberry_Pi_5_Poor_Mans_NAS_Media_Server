@@ -987,11 +987,9 @@ echo ""
 Nothing to do with the NAS / Media Server.    
 
 ## Commands to Enable the external RTC battery    
-Per    
-https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#real-time-clock-rtc    
-
+Per https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#real-time-clock-rtc    
 The Raspberry Pi 5 includes an RTC module. 
-This can be battery powered via the J5 (BAT) connector on the board located to the right of the USB-C power connector.     
+This can be battery powered via the J5 (BAT) connector on the board located to the right of the USB-C power connector:     
 https://www.raspberrypi.com/documentation/computers/images/j5.png?hash=70853cc7a9a01cd836ed8351ece14d59    
 
 You can set a wake alarm which will switch the board to a very low-power state (approximately 3mA). 
