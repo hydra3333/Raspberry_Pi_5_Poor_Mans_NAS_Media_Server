@@ -761,11 +761,11 @@ db_dir=/mnt/shared/usb3disk1/minidlna/cache
 # Find and uncomment and/or change/add line `#log_dir=/var/log/minidlna` to:
 log_dir=/mnt/shared/usb3disk1/minidlna/log
 
+# inotify=yes and notify_interval=895 work together fopr miniDLNA to discover added and modified files
 # Find and uncomment and/or change/add line `#inotify=yes` to:
 inotify=yes
 # Find and uncomment and/or change/add line `#notify_interval=895` (5 seconds under 15 minutes) to:
 notify_interval=895
-# inotify=yes and notify_interval=895 work together to discover added and modified files
 
 # Find and uncomment and/or change/add line `#strict_dlna=no` to:
 strict_dlna=yes
