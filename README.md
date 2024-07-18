@@ -681,7 +681,7 @@ sudo rm -vfR "/run/minidlna"
 sudo rm -vfR "/mnt/shared/usb3disk1/minidlna"
 ```
 
-3. I**nstall `miniDLNA` and then stop the service so we can configure it; in a Terminal**    
+3. **Install `miniDLNA`, enable, and then stop the service so we can configure it; in a Terminal**    
 ```
 sudo apt install -y minidlna
 sleep 2s
@@ -795,9 +795,10 @@ media_dir=PVA,/mnt/shared/overlay/Music
 media_dir=PVA,/mnt/shared/overlay/OldMovies
 media_dir=PVA,/mnt/shared/overlay/SciFi
 ```
-Enable and restart miniDLNA
+Restart miniDLNA and force a db reload.
 ```
 sudo systemctl restart minidlna
+sudo service minidlna force-reload
 sudo systemctl status minidlna
 ```
 The minidlna service comes with an internal small web server and webinterface.    
