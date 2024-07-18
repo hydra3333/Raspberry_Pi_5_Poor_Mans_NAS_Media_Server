@@ -755,9 +755,6 @@ model_name=PINAS64-miniDLNA
 # Find and uncomment and/or change/add line `#merge_media_dirs=` to:
 merge_media_dirs=no
 
-# Find and uncomment and/or change/add line `#enable_thumbnail=` to:
-enable_thumbnail=no
-
 # Find and uncomment and/or change/add line `#db_dir=/var/cache/minidlna` to:
 db_dir=/mnt/shared/usb3disk1/minidlna/cache
 
