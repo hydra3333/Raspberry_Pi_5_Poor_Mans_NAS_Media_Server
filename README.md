@@ -763,12 +763,12 @@ log_dir=/mnt/shared/usb3disk1/minidlna/log
 
 # Find and uncomment and/or change/add line `#inotify=yes` to:
 inotify=yes
+# Find and uncomment and/or change/add line `#notify_interval=895` (5 seconds under 15 minutes) to:
+notify_interval=895
+# inotify=yes and notify_interval=895 work together to discover added and modified files
 
 # Find and uncomment and/or change/add line `#strict_dlna=no` to:
 strict_dlna=yes
-
-# Find and uncomment and/or change/add line `#notify_interval=895` to:
-notify_interval=900
 
 # Find and uncomment and/or change/add line `#max_connections=50` to a number expected for this LAN:
 # (many clients open several simultaneous connections while streaming)
@@ -786,6 +786,7 @@ root_container=PVA,/mnt/shared/overlay
 
 # now ADD any lines where wish to expose folders
 # separately to, but as well as in, the overlayed folder tree, eg
+# THE ENTRIES BELOW MUST EXACTLY MATCH THE FOLDERS YOU WISH DLNA TO EXPOSE
 media_dir=PVA,/mnt/shared/overlay/ClassicMovies
 media_dir=PVA,/mnt/shared/overlay/Documentaries
 media_dir=PVA,/mnt/shared/overlay/Footy
