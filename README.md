@@ -735,13 +735,16 @@ sudo nano "/etc/minidlna.conf"
 ```
 now in nano,
 ```
-# Find and comment out the '#media_dir=' line so it looks like this:
-#media_dir=/var/lib/minidlna
-
 # ignore these 3 ...
 ##minidlna_refresh_log_file=/mnt/shared/usb3disk1/minidlna/log/minidlna_refresh.log
 ##minidlna_refresh_sh_file=/mnt/shared/usb3disk1/minidlna/minidlna_refresh.sh
 ##minidlna_restart_refresh_sh_file=/mnt/shared/usb3disk1/minidlna/minidlna_restart_refresh.sh
+
+# Find and change line `media_dir=/var/lib/minidlna` to comment it out:
+##media_dir=/var/lib/minidlna
+
+# Find and change line `album_art_names=` to comment it out:
+##album_art_names=
 
 # Find and uncomment and/or change/add line `#friendly_name=` to:
 friendly_name=PINAS64-minidlna
@@ -778,13 +781,7 @@ max_connections=24
 log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=info
 
 # Find and uncomment and/or change/add line `#wide_links=no` to:
-#wide_links=yes
-
-# Find and uncomment and/or change/add line `album_art_names=` to comment it out:
-#album_art_names=
-
-# Find and uncomment and/or change/add line `media_dir=/var/lib/minidlna` to comment it out:
-##media_dir=/var/lib/minidlna
+wide_links=yes
 
 # now ADD the line to expose the overlayed media folder ...
 root_container=PVA,/mnt/shared/overlay
