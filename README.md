@@ -990,157 +990,47 @@ Nothing to do with the NAS / Media Server.
 Per    
 https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#real-time-clock-rtc    
 
-The Raspberry Pi 5 includes an RTC module. This can be battery powered via the J5 (BAT) connector on the board located to the right of the USB-C power connector. 
+The Raspberry Pi 5 includes an RTC module. 
+This can be battery powered via the J5 (BAT) connector on the board located to the right of the USB-C power connector.     
+https://www.raspberrypi.com/documentation/computers/images/j5.png?hash=70853cc7a9a01cd836ed8351ece14d59    
 
-.The J5 battery connector
-image::images/j5.png[alt="The J5 battery connector",width="70%"]
-
-You can set a wake alarm which will switch the board to a very low-power state (approximately 3mA). When the alarm time is reached, the board will power back on. This can be useful for periodic jobs like time-lapse imagery.
-
+You can set a wake alarm which will switch the board to a very low-power state (approximately 3mA). 
+When the alarm time is reached, the board will power back on. 
+This can be useful for periodic jobs like time-lapse imagery.
 To support the low-power mode for wake alarms, edit the bootloader configuration:
-
-[source,console]
-----
-$ sudo -E rpi-eeprom-config --edit
-----
-
-adding the following two lines.
-
-[source,ini]
-----
-POWER_OFF_ON_HALT=1
-WAKE_ON_GPIO=0
-----
-
-You can test the functionality with:
-
-[source,console]
-----
-$ echo +600 | sudo tee /sys/class/rtc/rtc0/wakealarm
-$ sudo halt
-----
-
-That will halt the board into a very low-power state, then wake and restart after 10 minutes.
-
-The RTC also provides the time on boot e.g. in `dmesg`, for use cases that lack access to NTP:
-
-----
-[    1.295799] rpi-rtc soc:rpi_rtc: setting system clock to 2023-08-16T15:58:50 UTC (1692201530)
-----
-
-NOTE: The RTC is still usable even when there is no backup battery attached to the J5 connector. 
-
-=== Add a backup battery
-
-.Lithium-manganese rechargeable RTC battery
-image::images/rtc-battery.jpg[alt="Lithium-manganese rechargeable RTC battery",width="70%"]
-
-The official battery part is a rechargeable lithium manganese coin cell, with a pre-fitted two-pin JST-SH plug and an adhesive mounting pad. This is suitable for powering the RTC when the main power supply for the board is disconnected. Since the current draw when powered down measures in single-digit µA, the retention time measures in months.
-
-NOTE: We do not recommend using a primary (non-rechargeable) lithium cell for the RTC. The RTC backup current consumption is higher than most dedicated RTC modules and will result in a short service life.
-
-WARNING: Do not use a Lithium Ion cell for the RTC.
-
-=== Enable battery charging
-
-The RTC is equipped with a constant-current (3mA) constant-voltage charger.
-
-Charging of the battery is disabled by default. There are `sysfs` files that show the charging voltage and limits:
-
-----
-/sys/devices/platform/soc/soc:rpi_rtc/rtc/rtc0/charging_voltage:0
-/sys/devices/platform/soc/soc:rpi_rtc/rtc/rtc0/charging_voltage_max:4400000
-/sys/devices/platform/soc/soc:rpi_rtc/rtc/rtc0/charging_voltage_min:1300000
-----
-
-To charge the battery at a set voltage, add https://github.com/raspberrypi/firmware/blob/master/boot/overlays/README#L279[`rtc_bbat_vchg`] to `/boot/firmware/config.txt`:
-
-[source,ini]
-----
-dtparam=rtc_bbat_vchg=3000000
-----
-
-Reboot with `sudo reboot` to use the new voltage setting. Check the `sysfs` files to ensure that the charging voltage was correctly set.
-
-=== Disable battery charging
-
-To stop charging, remove any lines that contain https://github.com/raspberrypi/firmware/blob/master/boot/overlays/README#L279[`rtc_bbat_vchg`] from `config.txt`.
-
-
-
-
-
-
-
-
-
-
-
-
-
-The Raspberry Pi 5 introduces a brand new feature – the integrated Real-Time Clock (RTC).
-This small but significant addition brings with it a host of capabilities, and in this blog post, 
-we'll delve into how you can get started with using the RTC on the Raspberry Pi 5.    
-### Choosing the Right Battery:    
-When opting for a battery, caution is advised against using a primary lithium cell due to 
-**potential issues with the trickle charge circuit**.
-The recommended choice is a rechargeable lithium-manganese cell, designed for longevity and optimal performance.
-This rechargeable battery, equipped with a two-pin JST plug and an adhesive mounting pad, ensures
-the RTC continues to function seamlessly when the primary power supply is disconnected.    
-### Commands to Enable and Trickle Charge and Test:    
-The RTC module on the Raspberry Pi 5 is conveniently located near the USB-C power connector, 
-easily powered by a battery through the J5 (BAT) connector.     
-Here is an official Pi5 picture of the J5 (BAT) connector showing `ground` (black) wire goes on the right.    
-https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#real-time-clock-rtc 
-This integration opens up a world of possibilities for tasks that require precise timing and scheduling.    
-#### 1 of 3 Enabling Wake Alarms and Low-Power State:    
-One standout feature is the ability to set wake alarms, allowing the board to enter an ultra-low-power state, 
-consuming only around 3mA. This functionality is particularly valuable for tasks like periodic time-lapse photography. 
-Enabling low-power mode involves a simple modification to the bootloader configuration.    
 ```
 sudo -E rpi-eeprom-config --edit
 ```
-Add the following lines to the configuration:
+adding the following two lines.
 ```
 POWER_OFF_ON_HALT=1
 WAKE_ON_GPIO=0
 ```
-#### 2 of 3 Enabling Trickle Charging:    
-While trickle charging is disabled by default, it can be activated by adding a line to the `/boot/firmware/config.txt` file:
+The RTC is equipped with a **constant-current (3mA) constant-voltage charger**.    
+Charging of the battery is disabled by default.    
+To charge the battery at a set voltage, add `rtc_bbat_vchg` to `/boot/firmware/config.txt`:
 ```
 sudo nano /boot/firmware/config.txt
 ```
-Add the following lines to the end:
+add
 ```
 dtparam=rtc_bbat_vchg=3000000
 ```
-After a reboot, you'll observe the charging voltage changes, indicating that the battery is now receiving trickle charging.
-If you wish to disable trickle charging, simply remove the dtparam line from the `config.txt` file.   
-
-There are `sysfs` files that show the charging voltage setpoint and limits:
+Reboot with `sudo reboot now` to use the new voltage setting.    
+Check the `sysfs` files to ensure that the charging voltage was correctly set.
 ```
 /sys/devices/platform/soc/soc:rpi_rtc/rtc/rtc0/charging_voltage:0
 /sys/devices/platform/soc/soc:rpi_rtc/rtc/rtc0/charging_voltage_max:4400000
 /sys/devices/platform/soc/soc:rpi_rtc/rtc/rtc0/charging_voltage_min:1300000
 ```
-Also try:
+You can test the battery RTC functionality with:
 ```
-vcgencmd pmic_read_adc BATT_V
-```
- #### 3 of 3 Testng the RTC:    
-Test the RTC wake alarm functionality using the commands:
-```
-echo +30 | sudo tee /sys/class/rtc/rtc0/wakealarm
+echo +600 | sudo tee /sys/class/rtc/rtc0/wakealarm
 sudo halt
 ```
-These commands showcase the board's ability to transition into an extremely low-power state, 
-then wake up and restart after a 30-second interval.    
-
-The RTC also provides the time on boot e.g. using the `dmesg` command one sees:    
+That will halt the board into a very low-power state, then wake and restart after 10 minutes.    
+The RTC also provides the time on boot e.g. in `dmesg`, for use cases that lack access to NTP:
 ```
-[  1.295799] rpi-rtc soc:rpi_rtc: setting system clock to 2023-08-16T15:58:50 UTC (1692201530)
+[    1.295799] rpi-rtc soc:rpi_rtc: setting system clock to 2023-08-16T15:58:50 UTC (1692201530)
 ```
-#### RTC Functionality Without a Backup Battery:    
-Importantly, the RTC functionality remains accessible even without a backup battery connected to the J5 connector.
-This feature proves valuable in scenarios where an internet connection for time synchronization through NTP is unavailable.    
-
+NOTE: The RTC is still usable even when there is no backup battery attached to the J5 connector.    
