@@ -446,6 +446,7 @@ This `https://github.com/adelolmo/hd-idle` shows a minimum of release `1.21 / 20
 Remove any prior install of `hd-idle`. In a Terminal,
 ```
 sudo systemctl disable hd-idle
+sudo systemctl stop hd-idle
 # wait 2 seconds, then
 sudo dpkg -l hd-idle
 sudo dpkg -P hd-idle 
