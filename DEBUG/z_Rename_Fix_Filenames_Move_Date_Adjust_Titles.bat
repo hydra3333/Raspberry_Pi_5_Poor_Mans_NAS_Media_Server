@@ -5,6 +5,7 @@
 REM --------- setup paths and exe filenames ----------------------------
 set "root=X:\CONVERT\"
 set "vs_root=C:\SOFTWARE\Vapoursynth-x64\"
+set "destination_mp4_Folder=T:\HDTV\VRDTVSP-Converted\"
 set "scratch_Folder=D:\VRDTVSP-SCRATCH\"
 
 if /I NOT "!root:~-1!" == "\" (set "root=!root!\")
@@ -54,12 +55,13 @@ DEL /F "!tempfile!" >> "!vrdlog!" 2>&1
 
 set "temp_cmd_file=!temp_Folder!temp_cmd_file.bat"
 ECHO !DATE! !TIME! DEL /F "!temp_cmd_file!" >> "!vrdlog!" 2>&1
-DEL /F "!temp_cmd_file!" >> "!vrdlog!" 2>&1```
+DEL /F "!temp_cmd_file!" >> "!vrdlog!" 2>&1
 REM --------- setup LOG file and TEMP filenames ----------------------------
 
-
-set "Path_to_py_smart_sync_media_folders_across_disks=!root!z_smart_sync_media_folders_across_disks.py"
-
+REM --------- setup .PY fully qualified filenames to pre-created files which rename and re-timestamp filenames etc ---------
+set "Path_to_py_z_Rename_Fix_Filenames_Move_Date_Adjust_Titles=!root!z_Rename_Fix_Filenames_Move_Date_Adjust_Titles.py"
+set "Path_to_py_z_fix_timestamps_in_FOLDER_TREES=!root!z_fix_timestamps_in_FOLDER_TREES.py"
+REM --------- setup .VBS and .PS1 and .PY fully qualified filenames to pre-created files which rename and re-timestamp filenames etc ---------
 
 REM ******************************************************************************************************************************************
 REM ******************************************************************************************************************************************
@@ -74,12 +76,23 @@ REM - Move date in filename to end of filename
 REM - Set timestamps (Date Created, Date Modified) to the date in the filename and a (localized TZ time for that date) of 00:00:00
 REM
 
-
 ECHO. >> "!vrdlog!" 2>&1
 ECHO !DATE! !TIME! >> "!vrdlog!" 2>&1
-ECHO "!py_exe!" "!Path_to_py_smart_sync_media_folders_across_disks!" >> "!vrdlog!" 2>&1
-"!py_exe!" "!Path_to_py_smart_sync_media_folders_across_disks!" >> "!vrdlog!" 2>&1
+ECHO "!py_exe!" "!Path_to_py_z_Rename_Fix_Filenames_Move_Date_Adjust_Titles!" >> "!vrdlog!" 2>&1
+"!py_exe!" "!Path_to_py_z_Rename_Fix_Filenames_Move_Date_Adjust_Titles!" >> "!vrdlog!" 2>&1
 ECHO !DATE! !TIME! >> "!vrdlog!" 2>&1
+
+REM ECHO. >> "!vrdlog!" 2>&1
+REM ECHO !DATE! !TIME! >> "!vrdlog!" 2>&1
+REM ECHO "!py_exe!" "!Path_to_py_z_fix_timestamps_in_FOLDER_TREES!" >> "!vrdlog!" 2>&1
+REM "!py_exe!" "!Path_to_py_z_fix_timestamps_in_FOLDER_TREES!"  >> "!vrdlog!" 2>&1
+REM ECHO !DATE! !TIME! >> "!vrdlog!" 2>&1
+
+REM ******************************************************************************************************************************************
+REM ******************************************************************************************************************************************
+REM ******************************************************************************************************************************************
+
+"C:\SOFTWARE\NPP\notepad++.exe" "!vrdlog!"
 
 goto :eof
 

@@ -58,29 +58,21 @@ DEL /F "!temp_cmd_file!" >> "!vrdlog!" 2>&1```
 REM --------- setup LOG file and TEMP filenames ----------------------------
 
 
-set "Path_to_py_smart_sync_media_folders_across_disks=!root!z_smart_sync_media_folders_across_disks.py"
+set "Path_to_py_z_fix_timestamps_in_FOLDER_TREES=!root!z_fix_timestamps_in_FOLDER_TREES.py"
 
 
 REM ******************************************************************************************************************************************
 REM ******************************************************************************************************************************************
 REM ******************************************************************************************************************************************
-REM
-REM Check if filenames are a "safe string" without special characters like !~`!@#$%^&*()+=[]{}\|:;'"<>,?/
-REM If a filename isn't "safe" then rename it so it really is safe
-REM Allowed only characters a-z,A-Z,0-9,-,_,.,space
-REM
-REM - Fix filenames with special characters
-REM - Move date in filename to end of filename
-REM - Set timestamps (Date Created, Date Modified) to the date in the filename and a (localized TZ time for that date) of 00:00:00
-REM
-
 
 ECHO. >> "!vrdlog!" 2>&1
 ECHO !DATE! !TIME! >> "!vrdlog!" 2>&1
-ECHO "!py_exe!" "!Path_to_py_smart_sync_media_folders_across_disks!" >> "!vrdlog!" 2>&1
-"!py_exe!" "!Path_to_py_smart_sync_media_folders_across_disks!" >> "!vrdlog!" 2>&1
+ECHO "!py_exe!" "!Path_to_py_z_fix_timestamps_in_FOLDER_TREES!" >> "!vrdlog!" 2>&1
+"!py_exe!" "!Path_to_py_z_fix_timestamps_in_FOLDER_TREES!" >> "!vrdlog!" 2>&1
+REM "!py_exe!" "!Path_to_py_z_fix_timestamps_in_FOLDER_TREES!"
 ECHO !DATE! !TIME! >> "!vrdlog!" 2>&1
 
+pause
 goto :eof
 
 

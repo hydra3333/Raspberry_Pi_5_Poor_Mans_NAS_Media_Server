@@ -105,11 +105,11 @@ function Execute-MirrorAndSync {
     $warning = @"
     WARNING: 
 
-    You are about to synchronize files from '$sourcePath' into '$destPath'.
+    You are about to Mirror-synchronize files FROM '$sourcePath' INTO '$destPath'.
     This operation WILL OVERWRITE existing files where they have different sizes and
-    WILL DELETE files in the destination which are not present in the source !
+    WILL DELETE filenames in the destination which are not present in the source !
 
-    Final Warning: Do you want to continue with this possibly destuctive action ? (Y/N)
+    Final Warning: Do you want to continue with this possibly destructive action ? (Y/N)
 "@
     Write-Output $warning | Out-Host
     $response = Read-Host "Enter Y to continue or N to abort"
