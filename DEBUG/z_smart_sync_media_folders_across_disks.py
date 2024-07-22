@@ -8,14 +8,14 @@ disks = {
     "F:": r"\ROOTFOLDER3",
     "H:": r"\ROOTFOLDER4",
     "K:": r"\ROOTFOLDER5",
-	"W:": r"\ROOTFOLDER6"
+    "W:": r"\ROOTFOLDER6"
 }
 
 # Define the list of media folders
 media_folders = [
     "2015.11.29-Jess-21st-birthday-party",
     "BigIdeas", 
-	"CharlieWalsh",
+    "CharlieWalsh",
     "ClassicDocumentaries", 
     "ClassicMovies",
     "Documentaries",
@@ -54,6 +54,7 @@ def sync_folders_and_files(disks, media_folders):
     for media_folder in media_folders:
         print(f"*** Start checking media folder {media_folder} across disks ...", flush=True)
         disk_with_files = []
+        root_folder_with_files = []
         for disk, root_folder in disks.items():
             media_folder_path = os.path.join(disk, root_folder, media_folder)
             if os.path.exists(media_folder_path):
@@ -61,12 +62,13 @@ def sync_folders_and_files(disks, media_folders):
                 for _, _, files in os.walk(media_folder_path):
                     if files:
                         disk_with_files.append(disk)
+                        root_folder_with_files.append(root_folder)
                         has_files = True
                         break
                 if not has_files:
-                    print(f"Media folder {media_folder} exists on {disk} but is empty.", flush=True)
+                    print(f"Media folder {media_folder} exists on {disk} ({root_folder}) but is empty.", flush=True)
                 else:
-                    print(f"Media folder {media_folder} exists on {disk} and contains files.", flush=True)
+                    print(f"Media folder {media_folder} exists on {disk} ({root_folder}) and contains files.", flush=True)
         
         if len(disk_with_files) > 1:
             # Multiple disks contain the media folder with files
@@ -80,7 +82,7 @@ def sync_folders_and_files(disks, media_folders):
         
         elif len(disk_with_files) == 1:
             # Only one disk contains the media folder with files
-            print(f"Only one disk {disk_with_files[0]} contains the media folder {media_folder} with files", flush=True)
+            print(f"Only one disk {disk_with_files[0]} ({root_folder_with_files[0]}) contains the media folder {media_folder} with files", flush=True)
             src_disk = disk_with_files[0]
             src_path = os.path.join(src_disk, disks[src_disk], media_folder)
             # Print free space for each disk
@@ -92,7 +94,7 @@ def sync_folders_and_files(disks, media_folders):
             remaining_disks = {disk: root for disk, root in disks.items() if disk != src_disk}
             target_disk = max(remaining_disks.keys(), key=get_free_space)
             print(f"Target disk with max free disk space is '{target_disk}' (excluding source disk '{src_disk}')", flush=True)
-            dst_path = os.path.join(target_disk, disks[target_disk], media_folder)
+            dst_path = os.path.join(target_disk, disks[target_disk], media_folder)    # disks[target_disk] is the rootfolder since the key into disks[] is the target_disk 
             copy_tree(src_path, dst_path)
         
         else:
