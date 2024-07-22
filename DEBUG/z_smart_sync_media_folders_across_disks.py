@@ -7,16 +7,19 @@ disks = {
     "V:": r"\ROOTFOLDER2",
     "F:": r"\ROOTFOLDER3",
     "H:": r"\ROOTFOLDER4",
-    "K:": r"\ROOTFOLDER5"
+    "K:": r"\ROOTFOLDER5",
+	"W:": r"\ROOTFOLDER6"
 }
 
 # Define the list of media folders
 media_folders = [
     "2015.11.29-Jess-21st-birthday-party",
-    "BigIdeas", "CharlieWalsh",
+    "BigIdeas", 
+	"CharlieWalsh",
     "ClassicDocumentaries", 
     "ClassicMovies",
     "Documentaries",
+    "Family_Photos",
     "Footy",
     "HomePics",
     "Movies",
