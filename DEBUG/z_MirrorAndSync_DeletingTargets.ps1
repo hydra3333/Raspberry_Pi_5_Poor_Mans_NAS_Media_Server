@@ -131,108 +131,28 @@ function Execute-MirrorAndSync {
 
 #======================================================================================
 # -------------------
-# Disk 1 to Disk 2 Footy
-$source      = "X:\ROOTFOLDER1\Footy"
-$destination = "V:\ROOTFOLDER2\Footy"
-Execute-MirrorAndSync -sourcePath $source -destPath $destination -PerformAction $true
-# -------------------
-#======================================================================================
-# -------------------
-# Disk 1 to Disk 3 ClassicDocumentaries
-#$source      = "X:\ROOTFOLDER1\ClassicDocumentaries"
-#$destination = "F:\ROOTFOLDER3\ClassicDocumentaries"
+$source      = "X:\ROOTFOLDER1\SciFi"
+$destination = "V:\ROOTFOLDER2\SciFi"
 #Execute-MirrorAndSync -sourcePath $source -destPath $destination -PerformAction $true
+Execute-MirrorAndSync -sourcePath $source -destPath $destination -PerformAction $false
 # -------------------
-# Disk 1 to Disk 3 ClassicMovies
-#$source      = "X:\ROOTFOLDER1\ClassicMovies"
-#$destination = "F:\ROOTFOLDER3\ClassicMovies"
+# -------------------
+$source      = "X:\ROOTFOLDER1\SciFi"
+$destination = "F:\ROOTFOLDER3\SciFi"
 #Execute-MirrorAndSync -sourcePath $source -destPath $destination -PerformAction $true
+Execute-MirrorAndSync -sourcePath $source -destPath $destination -PerformAction $false
 # -------------------
-# Disk 1 to Disk 3 Footy
-#$source      = "X:\ROOTFOLDER1\Footy"
-#$destination = "F:\ROOTFOLDER3\Footy"
+# -------------------
+$source      = "X:\ROOTFOLDER1\SciFi"
+$destination = "H:\ROOTFOLDER4\SciFi"
 #Execute-MirrorAndSync -sourcePath $source -destPath $destination -PerformAction $true
+Execute-MirrorAndSync -sourcePath $source -destPath $destination -PerformAction $false
 # -------------------
-# Disk 1 to Disk 3 SciFi
-#$source      = "X:\ROOTFOLDER1\SciFi"
-#$destination = "F:\ROOTFOLDER3\SciFi"
+# -------------------
+$source      = "X:\ROOTFOLDER1\SciFi"
+$destination = "K:\ROOTFOLDER5\SciFi"
 #Execute-MirrorAndSync -sourcePath $source -destPath $destination -PerformAction $true
-# -------------------
-# Disk 1 to Disk 3 2015.11.29-Jess-21st-birthday-party
-#$source      = "X:\ROOTFOLDER1\2015.11.29-Jess-21st-birthday-party"
-#$destination = "F:\ROOTFOLDER3\2015.11.29-Jess-21st-birthday-party"
-#Execute-MirrorAndSync -sourcePath $source -destPath $destination -PerformAction $true
-# -------------------
-# Disk 1 to Disk 3 Family_Photos
-#$source      = "X:\ROOTFOLDER1\Family_Photos"
-#$destination = "F:\ROOTFOLDER3\Family_Photos"
-#Execute-MirrorAndSync -sourcePath $source -destPath $destination -PerformAction $true
-# -------------------
-#======================================================================================
-# -------------------
-# Disk 1 to Disk 4 ClassicDocumentaries
-#$source      = "X:\ROOTFOLDER1\ClassicDocumentaries"
-#$destination = "H:\ROOTFOLDER4\ClassicDocumentaries"
-#Execute-MirrorAndSync -sourcePath $source -destPath $destination -PerformAction $true
-# -------------------
-# Disk 1 to Disk 4 ClassicMovies
-#$source      = "X:\ROOTFOLDER1\ClassicMovies"
-#$destination = "H:\ROOTFOLDER4\ClassicMovies"
-#Execute-MirrorAndSync -sourcePath $source -destPath $destination -PerformAction $true
-# -------------------
-# Disk 1 to Disk 4 Footy
-#$source      = "X:\ROOTFOLDER1\Footy"
-#$destination = "H:\ROOTFOLDER4\Footy"
-#Execute-MirrorAndSync -sourcePath $source -destPath $destination -PerformAction $true
-# -------------------
-# Disk 1 to Disk 4 SciFi
-#$source      = "X:\ROOTFOLDER1\SciFi"
-#$destination = "H:\ROOTFOLDER4\SciFi"
-#Execute-MirrorAndSync -sourcePath $source -destPath $destination -PerformAction $true
-# -------------------
-# Disk 1 to Disk 4 2015.11.29-Jess-21st-birthday-party
-#$source      = "X:\ROOTFOLDER1\2015.11.29-Jess-21st-birthday-party"
-#$destination = "H:\ROOTFOLDER4\2015.11.29-Jess-21st-birthday-party"
-#Execute-MirrorAndSync -sourcePath $source -destPath $destination -PerformAction $true
-# -------------------
-# Disk 1 to Disk 4 SciFi
-#$source      = "X:\ROOTFOLDER1\Family_Photos"
-#$destination = "H:\ROOTFOLDER4\Family_Photos"
-#Execute-MirrorAndSync -sourcePath $source -destPath $destination -PerformAction $true
-# -------------------
-#======================================================================================
-# -------------------
-# Disk 1 to Disk 2 Footy
-#$source      = "X:\ROOTFOLDER1\Footy"
-#$destination = "V:\ROOTFOLDER2\Footy"
-#Execute-MirrorAndSync -sourcePath $source -destPath $destination -PerformAction $true
-# -------------------
-# Disk 1 to Disk 2 SciFi
-#$source      = "X:\ROOTFOLDER1\SciFi"
-#$destination = "V:\ROOTFOLDER2\SciFi"
-#Execute-MirrorAndSync -sourcePath $source -destPath $destination -PerformAction $true
-# -------------------
-# Disk 1 to Disk 2 2015.11.29-Jess-21st-birthday-party
-#$source      = "X:\ROOTFOLDER1\2015.11.29-Jess-21st-birthday-party"
-#$destination = "V:\ROOTFOLDER2\2015.11.29-Jess-21st-birthday-party"
-#Execute-MirrorAndSync -sourcePath $source -destPath $destination -PerformAction $true
-# -------------------
-# Disk 1 to Disk 2 Family_Photos
-#$source      = "X:\ROOTFOLDER1\Family_Photos"
-#$destination = "V:\ROOTFOLDER2\Family_Photos"
-#Execute-MirrorAndSync -sourcePath $source -destPath $destination -PerformAction $true
-# -------------------
-#======================================================================================
-# -------------------
-# Disk 3 to Disk 1 ClassicMovies
-#$source      = "F:\ROOTFOLDER3\ClassicMovies"
-#$destination = "X:\ROOTFOLDER1\ClassicMovies"
-#Execute-MirrorAndSync -sourcePath $source -destPath $destination -PerformAction $true
-# -------------------
-# Disk 3 to Disk 1 ClassicDocumentaries
-#$source      = "F:\ROOTFOLDER3\ClassicDocumentaries"
-#$destination = "X:\ROOTFOLDER1\ClassicDocumentaries"
-#Execute-MirrorAndSync -sourcePath $source -destPath $destination -PerformAction $true
+Execute-MirrorAndSync -sourcePath $source -destPath $destination -PerformAction $false
 # -------------------
 
 #======================================================================================
