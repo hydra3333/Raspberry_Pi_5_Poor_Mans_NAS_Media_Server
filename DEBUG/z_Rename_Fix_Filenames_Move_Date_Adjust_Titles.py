@@ -373,6 +373,7 @@ def change_filename_layout(new_basename):
     new_basename = case_insensitive_replace(new_basename, "_2049-", ".2049-")
     new_basename = case_insensitive_replace(new_basename, "_2050-", ".2050-")
 
+    new_basename = case_insensitive_replace(new_basename, "_-_", "-")
     new_basename = case_insensitive_replace(new_basename, " - ", "-")
     new_basename = case_insensitive_replace(new_basename, "  ", " ")
     new_basename = case_insensitive_replace(new_basename, "  ", " ")
