@@ -226,7 +226,7 @@ def count_files_and_size(folder_path):
     return file_count, total_size / (1024 * 1024 * 1024)  # Convert size to Gigabytes
 
 if __name__ == "__main__":
-    TERMINAL_WIDTH = 132
+    TERMINAL_WIDTH = 250
     objPrettyPrint = pprint.PrettyPrinter(width=TERMINAL_WIDTH, compact=False, sort_dicts=False)  # facilitates formatting
 
     root_folder_names = [
