@@ -330,4 +330,4 @@ if __name__ == "__main__":
     print(f"media_folders: \n{objPrettyPrint.pformat(media_folders)}")
 
     # Run the synchronization
-    #sync_folders_and_files(disks, media_folders)
+    sync_folders_and_files(disks, media_folders)
