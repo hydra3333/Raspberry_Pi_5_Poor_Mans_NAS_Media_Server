@@ -190,11 +190,11 @@ def get_disks_with_root_folders_and_labels(root_folder_names):
                     continue
         except PermissionError:
             # Skip drives that can't be accessed
-            print(f"PermissionError accessing {drive_letter}")
+            #print(f"PermissionError accessing {drive_letter}")
             #traceback.print_exc()
             continue
         except Exception as e:
-            print(f"Error accessing {drive_letter}: {e}")
+            #print(f"Error accessing {drive_letter}: {e}")
             #traceback.print_exc()
             continue
     # Sort the dictionaries by case-insensitive root folder name
@@ -228,6 +228,8 @@ if __name__ == "__main__":
         'ROOTFOLDER4',
         'ROOTFOLDER5',
         'ROOTFOLDER6',
+        'ROOTFOLDER7',
+        'ROOTFOLDER8',
     ]
     disks, disks_info = get_disks_with_root_folders_and_labels(root_folder_names)
 

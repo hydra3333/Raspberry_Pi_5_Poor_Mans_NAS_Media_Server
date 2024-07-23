@@ -37,7 +37,7 @@ CALL :get_header_String "header"
 REM -- Header ---------------------------------------------------------------------
 
 REM -- Prepare the log file ---------------------------------------------------------------------
-SET vrdlog=G:\HDTV\%~n0-!header!.log
+SET vrdlog=%root%%~n0-!header!.log
 REM ECHO !DATE! !TIME! DEL /F "!vrdlog!"
 DEL /F "!vrdlog!" >NUL 2>&1
 REM -- Prepare the log file ---------------------------------------------------------------------
