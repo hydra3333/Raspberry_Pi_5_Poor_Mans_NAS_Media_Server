@@ -1,52 +1,62 @@
-@ECHO ON
+@ECHO OFF
 @setlocal ENABLEDELAYEDEXPANSION
 @setlocal enableextensions
 
-call :do_replicate_to_target "X:\ROOTFOLDER1"
-call :do_replicate_to_target "V:\ROOTFOLDER2"
-call :do_replicate_to_target "F:\ROOTFOLDER3"
-call :do_replicate_to_target "H:\ROOTFOLDER4"
-call :do_replicate_to_target "K:\ROOTFOLDER5"
-call :do_replicate_to_target "W:\ROOTFOLDER6"
+rem Initialize the variable to store found folders
+set "foundFolders="
+rem Array of drive letters to check
+set "driveLetters=D E F G H I J K L M N O P Q R S T U V W X Y Z"
+rem set he range of numbered root folders to check for
+set rootFolderStartNumber=1
+set rootFolderEndNumber=8
+rem Loop through each drive letter
+for %%d in (%driveLetters%) do (
+    rem Loop through folder numbers 1 to 8
+    for /L %%n in (%rootFolderStartNumber%,1,%rootFolderEndNumber%) do (
+        set "folder=%%d:\ROOTFOLDER%%n"
+		REM echo inner in-loop d=%%d n=%%n checking for folder '!folder!'
+        if exist "!folder!" (
+            rem Append the found folder to the variable
+            set "foundFolders=!foundFolders! "!folder!""
+			REM echo in-loop folder='!folder!' foundFolders='!foundFolders!'
+        )
+    )
+)
+rem Remove leading space
+set "foundFolders=%foundFolders:~1%"
+rem Display the result
+echo REPLICATING SUBFOLDER-TREES ACROSS/UNDER DISK ROOTS: '%foundFolders%'
+
+REM Iterate the found folders and replciate the folder structures elsewhere
+for %%h in (!foundFolders!) do (
+	call :do_replicate_folders_only_to_target "%%~h"
+)
+
+pause
+exit
+
 
 pause
 goto :eof
 
-:do_replicate_to_target
-echo.
-mkdir "%~1"
-echo.
-pause
-IF /I "%~1" NEQ "X:\ROOTFOLDER1" (
-   echo ***** xcopy "X:\ROOTFOLDER1" "%~1" /T /E /Y /F
-   xcopy "X:\ROOTFOLDER1" "%~1" /T /E /Y /F
-)
-IF /I "%~1" NEQ "V:\ROOTFOLDER2" (
-   echo ***** xcopy "V:\ROOTFOLDER2" "%~1" /T /E /Y /F
-   xcopy "V:\ROOTFOLDER2" "%~1" /T /E /Y /F
-)
-IF /I "%~1" NEQ "F:\ROOTFOLDER3" (
-   echo ***** xcopy "F:\ROOTFOLDER3" "%~1" /T /E /Y /F
-   xcopy "F:\ROOTFOLDER3" "%~1" /T /E /Y /F
-)
-IF /I "%~1" NEQ "H:\ROOTFOLDER4" (
-   echo ***** xcopy "H:\ROOTFOLDER4" "%~1" /T /E /Y /F
-   xcopy "H:\ROOTFOLDER4" "%~1" /T /E /Y /F
-)
-IF /I "%~1" NEQ "K:\ROOTFOLDER5" (
-   echo ***** xcopy "K:\ROOTFOLDER5" "%~1" /T /E /Y /F
-   xcopy "K:\ROOTFOLDER5" "%~1" /T /E /Y /F
-)
-IF /I "%~1" NEQ "W:\ROOTFOLDER6" (
-   echo ***** xcopy "W:\ROOTFOLDER6" "%~1" /T /E /Y /F
-   xcopy "W:\ROOTFOLDER6" "%~1" /T /E /Y /F
+:do_replicate_folders_only_to_target
+echo --- Replicating subfolder-trees under disk root "%~1" across/under disk roots: !foundFolders!
+if NOT exist "%~1" do (mkdir "%~1")
+REM for %%i in ("%D1%" "%D2%" "%D3%" "%D4%" "%D5%" "%D6%" "%D7%" "%D8%") do (
+for %%i in (!foundFolders!) do (
+	IF /I "%~1" NEQ "%%~i"  (
+		echo ***** xcopy "%~1" "%%~i\" /T /E /Y /F
+		xcopy "%~1" "%%~i\" /T /E /Y /F
+	)
 )
 REM   /T           Creates directory structure, but does not copy files. Does not
 REM                include empty directories or subdirectories. /T /E includes
 REM   /E           Copies directories and subdirectories, including empty ones.
 REM                Same as /S /E. May be used to modify /T.
-echo.
 goto :eof
+
+
+
 
 
 XCOPY source [destination] [/A | /M] [/D[:date]] [/P] [/S [/E]] [/V] [/W]
@@ -110,3 +120,59 @@ XCOPY source [destination] [/A | /M] [/D[:date]] [/P] [/S [/E]] [/V] [/W]
 
 The switch /Y may be preset in the COPYCMD environment variable.
 This may be overridden with /-Y on the command line.
+
+
+in a dos .bat file, how can I check every mounted drive letter for the existence of 
+a uniquely numbered folder in the drive root eg "X:\ROOTFOLDER1" through to "H:\ROOTFOLDER8"
+and populate a single variable with the those found, which would at the end contain something like
+this including the quotes around each one found:
+"X:\ROOTFOLDER1" "H:\ROOTFOLDER2" "I:\ROOTFOLDER8"  "Z:\ROOTFOLDER8"
+
+
+this .bat
+@ECHO OFF
+@setlocal ENABLEDELAYEDEXPANSION
+@setlocal enableextensions
+rem Initialize the variable to store found folders
+set "foundFolders="
+rem Array of drive letters to check
+set "driveLetters=D E F G H I J K L M N O P Q R S T U V W X Y Z"
+rem set he range of numbered root folders to check for
+set rootFolderStartNumber=1
+set rootFolderEndNumber=8
+rem Loop through each drive letter
+for %%d in (%driveLetters%) do (
+    rem Loop through folder numbers 1 to 8
+    for /L %%n in (%rootFolderStartNumber%,1,%rootFolderEndNumber%) do (
+        set "folder=%%d:\ROOTFOLDER%%n"
+		echo inner in-loop d=%%d n=%%n checking for folder '!folder!'
+        if exist "!folder!" (
+            rem Append the found folder to the variable
+            set "foundFolders=!foundFolders! "%folder%""
+			echo "in-loop folder="!folder!" foundFolders=!foundFolders!"
+        )
+    )
+)
+rem Remove leading space
+set "foundFolders=%foundFolders:~1%"
+rem Display the result
+echo foundFolders="%foundFolders%"
+pause
+exit
+yields this result:
+inner in-loop d=D n=1 checking for folder ''
+inner in-loop d=D n=2 checking for folder ''
+inner in-loop d=D n=3 checking for folder ''
+inner in-loop d=D n=4 checking for folder ''
+inner in-loop d=D n=5 checking for folder ''
+inner in-loop d=D n=6 checking for folder ''
+inner in-loop d=D n=7 checking for folder ''
+inner in-loop d=D n=8 checking for folder ''
+inner in-loop d=E n=1 checking for folder ''
+inner in-loop d=E n=2 checking for folder ''
+inner in-loop d=E n=3 checking for folder ''
+inner in-loop d=E n=4 checking for folder ''
+inner in-loop d=E n=5 checking for folder ''
+inner in-loop d=E n=6 checking for folder ''
+inner in-loop d=E n=7 checking for folder ''
+inner in-loop d=E n=8 checking for folder ''
