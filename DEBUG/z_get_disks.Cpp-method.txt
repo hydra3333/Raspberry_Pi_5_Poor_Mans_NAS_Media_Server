@@ -1,0 +1,138 @@
+I have a python 3 program I will post separately in a future post.
+I would like to extend it to correctly detect disk volume types, eg GPT / MBR / Dynamic Disk.
+We have attempted this before without success.
+I googled and found what looks to be a method to do that,
+created by a microsoft employee in 2006,
+at https://bytes.com/topic/net/537860-dynamic-vs-basic-partitions
+Here is an excerpt from that link:
+
+There is a way in windows to identify a dynamic disk, but it's not straight forward.
+There is no direct API to determine if a disk is Basic or Dynamic, however all dynamic disks will have LDM Information.
+So if a drive has a partion with LDM information on it, then it's going to be a dynamic disk.
+The DeviceIoControl() method with the IOCTL_DISK_GET_DRIVE_LAYOUT_EX control code can be used to get this information.
+We can use DeviceIoControl with IOCTL_DISK_GET_ DRIVE_LAYOUT_EX to get the
+partition types on the drive. As long as we can find one partition with LDM
+related information, we know the disk is a Dynamic Disk.
+
+Does this explanation make sense to you ? 
+If asked, would you be able to successfully use that method in python 3 with ctypes ?
+If not, I can provide a sample c++ program from that link
+which apparently does something similar and identifies the disk type via the LDM method,
+if that would help you identify howto do it correctly.
+
+
+
+
+Here's example code of a C++ Win32 Console application which prints out is the first disk Dynamic/Basic disk; it 
+does not produce the output we we want from my existing python3 program
+hwoever it does outline the method for how to detect a Dynamic disk and
+differentiate it as one of GPT / MBR / Dynamic Disk.
+
+#include "stdafx.h"
+#define _WIN32_WINNT 0x0500
+#include <windows.h>
+#include <winioctl.h>
+// #include <diskguid.h>
+const GUID PARTITION_LDM_D ATA_GUID = {0xAF9B60A0L, 0x1431, 0x4F62, 0xBC,
+0x68, 0x33, 0x11, 0x71, 0x4A, 0x69, 0xAD}; // Logical Disk Manager data
+partition
+#define PHYSICALDRIVE TEXT("PhysicalD rive")
+
+void ErrorExit(LPTST R lpszFunction)
+{
+LPVOID lpMsgBuf;
+DWORD dw = GetLastError();
+
+FormatMessage(
+FORMAT_MESSAGE_ ALLOCATE_BUFFER |
+FORMAT_MESSAGE_ FROM_SYSTEM,
+NULL,
+dw,
+MAKELANGID(LANG _NEUTRAL, SUBLANG_DEFAULT ),
+(LPTSTR) &lpMsgBuf,
+0, NULL );
+
+wprintf(TEXT("% s failed with error %d: %s\n"),
+lpszFunction, dw, lpMsgBuf);
+
+LocalFree(lpMsg Buf);
+ExitProcess(dw) ;
+}
+
+bool IsPartitionDyna mic(PARTITION_I NFORMATION_EX *pPie)
+{
+bool ret = false;
+if (pPie->PartitionSty le == PARTITION_STYLE _MBR)
+{
+ret = pPie->Mbr.PartitionT ype == PARTITION_LDM;
+} else if (pPie->PartitionSty le == PARTITION_STYLE _GPT)
+{
+ret = IsEqualGUID(pPi e->Gpt.PartitionT ype, PARTITION_LDM_D ATA_GUID);
+}
+return ret;
+}
+
+bool IsDiskDynamic(i nt nDiskNo)
+{
+bool ret = false;
+TCHAR szDiskPath[MAX_PATH];
+wsprintf(szDisk Path, TEXT("\\\\.\\%s %u"), PHYSICALDRIVE, nDiskNo);
+HANDLE hDisk = CreateFile(szDi skPath, GENERIC_READ, FILE_SHARE_READ |
+FILE_SHARE_WRIT E, NULL, OPEN_EXISTING, 0, NULL);
+if (hDisk != INVALID_HANDLE_ VALUE) {
+DRIVE_LAYOUT_IN FORMATION_EX *pInfo;
+DWORD dwBytesReturn = 0;
+int estimatedPartit ionCount = 4;
+loop:
+DWORD dwSize = sizeof(DRIVE_LA YOUT_INFORMATIO N_EX) +
+estimatedPartit ionCount * sizeof(PARTITIO N_INFORMATION_E X);
+pInfo = (DRIVE_LAYOUT_I NFORMATION_EX *) new BYTE[dwSize];
+if (DeviceIoContro l(hDisk, IOCTL_DISK_GET_ DRIVE_LAYOUT_EX , NULL, 0,
+(LPVOID) pInfo,
+dwSize,
+&dwBytesRetu rn,
+NULL))
+{
+for (DWORD i = 0; i < pInfo->PartitionCount ; i++)
+{
+if (IsPartitionDyn amic(pInfo->PartitionEnt ry + i))
+{
+ret = true;
+break;
+}
+}
+} else {
+if (GetLastError() == ERROR_INSUFFICI ENT_BUFFER)
+{
+estimatedPartit ionCount *= 2;
+delete pInfo;
+goto loop;
+} else {
+ErrorExit(TEXT( "DeviceIoContro l"));
+}
+}
+CloseHandle(hDi sk);
+delete pInfo;
+} else {
+ErrorExit(TEXT( "CreateFile "));
+}
+return ret;
+}
+
+int _tmain(int argc, _TCHAR* argv[])
+{
+wprintf(TEXT("D isk 0 is %s disk.\n"), IsDiskDynamic(0 ) ? TEXT("Dynamic") :
+TEXT("Basic"));
+return 0;
+}
+
+
+-----------------------------------------------------------------------
+
+First, call GetVolumePathName. 
+Then, call CreateFile to open the volume using the path. 
+Next, use IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS with the volume handle 
+to obtain the disk number and use the disk number to construct the disk path, 
+such as "\?\PhysicalDriveX". 
+Finally, use IOCTL_DISK_GET_DRIVE_LAYOUT_EX to obtain the partition list, 
+and check the PartitionType for each entry in the partition list.
