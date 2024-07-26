@@ -181,18 +181,19 @@ Click YES to proceed.
 Once the Pi has finished booting to the desktop:    
 
 3. **Force PCI Express Gen 3.0 speeds after next boot (8 GT/sec, almost double the speed) on the Pi 5; in a Terminal**    
-Per https://www.jeffgeerling.com/blog/2023/forcing-pci-express-gen-30-speeds-on-pi-5 
+and per https://www.jeffgeerling.com/blog/2023/forcing-pci-express-gen-30-speeds-on-pi-5     
+Edit the firmware's config file:    
 ```
 sudo nano /boot/firmware/config.txt 
 ```
-then check-for/modify/add the following 2 lines:
+then check-for/modify/add the following 2 lines so they are at the end of the config file:
 ```
 dtparam=pciex1
 dtparam=pciex1_gen=3
 ```
 exit nano with `Control O` `Control X`.    
 
-4. **Enable the external RTC battery    ** assuming you bought and installed one
+4. **Enable the external RTC battery, assuming you purchased and installed one**    
 Per https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#real-time-clock-rtc    
 The Raspberry Pi 5 includes an RTC module. 
 This can be battery powered via the J5 (BAT) connector on the board located to the right of the USB-C power connector:     
@@ -200,7 +201,7 @@ https://www.raspberrypi.com/documentation/computers/images/j5.png?hash=70853cc7a
 You can set a wake alarm which will switch the board to a very low-power state (approximately 3mA). 
 When the alarm time is reached, the board will power back on. 
 This can be useful for periodic jobs like time-lapse imagery.
-To support the low-power mode for wake alarms, edit the bootloader configuration:
+To support the low-power mode for wake alarms, edit the bootloader configuration:    
 ```
 sudo -E rpi-eeprom-config --edit
 ```
