@@ -243,19 +243,23 @@ NOTE: The RTC is still usable even when there is no backup battery attached to t
 
 5. **Update the system; in a Terminal**    
 
+Use nano to edit the APT sources for updates:    
 ```
 sudo nano /etc/apt/sources.list
 # Now in nano `uncomment` all of the `deb-src` lines by removing the # at the start of those lines.
 ```
 exit nano with `Control O` `Control X`.    
-Update the system:
+Update the system; in a Terminal:    
 ```
 sudo apt -y update
 sudo apt -y full-upgrade
 sudo apt -y dist-upgrade
 ```
-Reboot the Pi now.
-This will also cause the change above to take effect.
+Reboot the Pi now. In a Terminal:
+```
+sudo reboot now
+```
+This will also cause all of the changes above to take effect.
 
 6. **Run `raspi-config` to configure more system settings; in a Terminal**    
 
