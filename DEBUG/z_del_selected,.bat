@@ -22,6 +22,11 @@ goto :eof
 :del_them_ClassicMovies_B
 @echo on
 del "%~1City_Slickers_II-The_Legend_Of_Curly-s_Gold.2024-05-03.MP4"
+del "%~1Bourne-1.The_Bourne_Identity.2020-11-20.mp4"
+del "%~1Bourne-2._Bourne_Supremacy.2021-03-20.mp4"
+del "%~1Bourne-3.The_Bourne_Ultimatum.2021-03-27.mp4"
+del "%~1Bourne-4.The_Bourne_Legacy.2020-05-21.mp4"
+del "%~1Bourne-5.Bourne-Jason_Bourne.2020-05-28.mp4"
 @echo off
 goto :eof
 
@@ -245,6 +250,18 @@ del "%~1UFO_Full_Episode-12_Court_Martial.mp4"
 del "%~1Unknown_World_1951_Old_Fiction_Movie.1.mp4"
 del "%~1VOYAGE_TO_THE_END_OF_THE_UNIVERSE.mp4"
 del "%~1Zontar_The_Thing_from_Venus_1967.mp4"
+del "%~1SciFi-UFO_Full_Episode-01_Identified.mp4"
+del "%~1SciFi-UFO_Full_Episode-02_Computer_Affair.mp4"
+del "%~1SciFi-UFO_Full_Episode-03_Flight_Path.mp4"
+del "%~1SciFi-UFO_Full_Episode-04-Exposed.mp4"
+del "%~1SciFi-UFO_Full_Episode-05_Survival.mp4"
+del "%~1SciFi-UFO_Full_Episode-06_Conflict.mp4"
+del "%~1SciFi-UFO_Full_Episode-07_The_Dalotek_Affair.mp4"
+del "%~1SciFi-UFO_Full_Episode-08_A_Question_of_Priorities.mp4"
+del "%~1SciFi-UFO_Full_Episode-09_Ordeal.mp4"
+del "%~1SciFi-UFO_Full_Episode-10_The_Responsibility_Seat.mp4"
+del "%~1SciFi-UFO_Full_Episode-11_The_Square_Triangle.mp4"
+del "%~1SciFi-UFO_Full_Episode-12_Court_Martial.mp4"
 @echo off
 goto :eof
 

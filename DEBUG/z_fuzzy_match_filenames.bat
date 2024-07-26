@@ -37,29 +37,26 @@ CALL :get_header_String "header"
 REM -- Header ---------------------------------------------------------------------
 
 REM -- Prepare the log file ---------------------------------------------------------------------
-SET vrdlog=%root%%~n0-!header!.log
+REM SET vrdlog=%root%%~n0-!header!.log
+set "vrdlog=%~dpn0-!header!.log
 REM ECHO !DATE! !TIME! DEL /F "!vrdlog!"
-DEL /F "!vrdlog!" >NUL 2>&1
+REM DEL /F "!vrdlog!" >NUL 2>&1
 REM -- Prepare the log file ---------------------------------------------------------------------
 
 REM --------- setup LOG file and TEMP filenames ----------------------------
 REM base the filenames on the running script filename using %~n0
 SET tempfile=!scratch_Folder!%~n0-!header!-temp.txt
-ECHO !DATE! !TIME! DEL /F "!tempfile!" >> "!vrdlog!" 2>&1
-DEL /F "!tempfile!" >> "!vrdlog!" 2>&1
+DEL /F "!tempfile!"
 
 SET tempfile_stderr=!scratch_Folder!%~n0-!header!-temp_stderr.txt
-ECHO !DATE! !TIME! DEL /F "!tempfile!" >> "!vrdlog!" 2>&1
-DEL /F "!tempfile!" >> "!vrdlog!" 2>&1
+DEL /F "!tempfile!"
 
 set "temp_cmd_file=!temp_Folder!temp_cmd_file.bat"
-ECHO !DATE! !TIME! DEL /F "!temp_cmd_file!" >> "!vrdlog!" 2>&1
-DEL /F "!temp_cmd_file!" >> "!vrdlog!" 2>&1```
+DEL /F "!temp_cmd_file!"
 REM --------- setup LOG file and TEMP filenames ----------------------------
 
 
-set "Path_to_py_z_MirrorAndSync_DeletingTargets=!root!z_MirrorAndSync_DeletingTargets.py"
-
+set "Path_to_py_z_fuzzy_match_filenames=!root!z_fuzzy_match_filenames.py"
 
 REM ******************************************************************************************************************************************
 REM ******************************************************************************************************************************************
@@ -75,15 +72,11 @@ REM - Set timestamps (Date Created, Date Modified) to the date in the filename a
 REM
 
 
-ECHO. >> "!vrdlog!" 2>&1
-ECHO !DATE! !TIME! >> "!vrdlog!" 2>&1
-ECHO "!py_exe!" "!Path_to_py_z_MirrorAndSync_DeletingTargets!" >> "!vrdlog!" 2>&1
-REM "!py_exe!" "!Path_to_py_z_MirrorAndSync_DeletingTargets!" >> "!vrdlog!" 2>&1
-"!py_exe!" "!Path_to_py_z_MirrorAndSync_DeletingTargets!"
-ECHO !DATE! !TIME! >> "!vrdlog!" 2>&1
+ECHO "!py_exe!" "!Path_to_py_z_fuzzy_match_filenames!"
+"!py_exe!" "!Path_to_py_z_fuzzy_match_filenames!"
+dir /b "z_fuzzy_match_results*.csv"
 
 pause
-REM "C:\SOFTWARE\NPP\notepad++.exe" "!vrdlog!"
 goto :eof
 
 

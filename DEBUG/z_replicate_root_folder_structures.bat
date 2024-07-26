@@ -2,6 +2,9 @@
 @setlocal ENABLEDELAYEDEXPANSION
 @setlocal enableextensions
 
+REM DETERMINE WHICH DISK DRIVES HAVE ROOTS ON THEM
+REM like ROOTFOLDER1 to ROOTFOLDER8
+
 rem Initialize the variable to store found folders
 set "foundFolders="
 rem Array of drive letters to check
@@ -27,6 +30,10 @@ set "foundFolders=%foundFolders:~1%"
 rem Display the result
 echo REPLICATING SUBFOLDER-TREES ACROSS/UNDER DISK ROOTS: '%foundFolders%'
 
+REM 
+REM NOW REPLICATE THE FOLDER STRUCTURES ACROSS THE DISKS/ROOT-FOLDERS
+REM 
+
 REM Iterate the found folders and replciate the folder structures elsewhere
 for %%h in (!foundFolders!) do (
 	call :do_replicate_folders_only_to_target "%%~h"
@@ -42,13 +49,14 @@ goto :eof
 :do_replicate_folders_only_to_target
 echo --- Replicating subfolder-trees under disk root "%~1" across/under disk roots: !foundFolders!
 if NOT exist "%~1" do (mkdir "%~1")
-REM for %%i in ("%D1%" "%D2%" "%D3%" "%D4%" "%D5%" "%D6%" "%D7%" "%D8%") do (
+
 for %%i in (!foundFolders!) do (
 	IF /I "%~1" NEQ "%%~i"  (
 		echo ***** xcopy "%~1" "%%~i\" /T /E /Y /F
 		xcopy "%~1" "%%~i\" /T /E /Y /F
 	)
 )
+
 REM   /T           Creates directory structure, but does not copy files. Does not
 REM                include empty directories or subdirectories. /T /E includes
 REM   /E           Copies directories and subdirectories, including empty ones.
