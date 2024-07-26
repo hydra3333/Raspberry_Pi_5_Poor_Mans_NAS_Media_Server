@@ -55,7 +55,7 @@ DISK2 -- ROOTFOLDER2 --|--ClassicMovies
 ### which looks like it will be the bees knees !
 
 
-# STOP READNIG NOW
+# STOP READING NOW
 
 My intended approach was Bollocks because, having written several python programs
 for 'fuzzy matching' of media files in needing to supersede others (eg
