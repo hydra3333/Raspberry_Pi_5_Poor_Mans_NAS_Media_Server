@@ -163,7 +163,7 @@ Click YES to apply OS customisation.
 Click YES to proceed.    
 
 ## Boot the Raspberry Pi 5 and update the system    
-1. **Order of power up (at least the first time)**    
+1. **Order of power up (for this first time)**    
 - Ensure the Pi 5 is powered off    
 - Plug the SD card into the Pi 5    
 - Power on the Pi 5    
