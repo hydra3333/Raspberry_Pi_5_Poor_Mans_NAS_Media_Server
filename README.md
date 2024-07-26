@@ -267,8 +267,6 @@ sudo crontab -e
 
 By following this sequence, you ensure that all files are properly integrated into the MergerFS pool and that SnapRAID is synchronized and consistent with the new data.
 
-```
-
 ### Additional Tips
 
 - **Verify Disk Health**: Before adding the NTFS disk to SnapRAID, ensure it is healthy and free from errors.
