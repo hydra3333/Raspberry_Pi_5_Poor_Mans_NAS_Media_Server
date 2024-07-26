@@ -57,12 +57,12 @@ DISK2 -- ROOTFOLDER2 --|--ClassicMovies
 
 # STOP READNIG NOW
 
-Bollocks becuase, having written several python programs
-for 'fuzzy matching' of files in needingto  supersede others (eg
-`file01_2024.01.001.mp4` with `file_01_new.202.02.03`) with the old file delected,
-and to synchoronizemulti copies of files in folders across disks taking care of
-old/ew/updated files, and deal with read-only `overlaysf` and its issues with
-staging updates etc, I gave up.
+My intended approach was Bollocks because, having written several python programs
+for 'fuzzy matching' of media files in needing to supersede others (eg
+`file01_2024.01.001.mp4` with `file_01_new.202.02.03`) with the old file deleted)
+and to synchoronize multi identical copies of files in folders across disks taking care of
+old/new/updated files, and deal with read-only `overlaysf` due to issues with
+its staging updates etc, I gave up.
 
 In a chat with chatGPT, it put me onto `mergerFS` with `SnapRAID`.
 
@@ -76,11 +76,7 @@ such as if/when a disk dies and needs to be replaced by a new one which
 has been correctly formatted so that the rebuild can then be initiated.
 
 
-
-
-
-
-# SUPERSEDED COMPLETE BOLLOCKS BELOW
+# SUPERSEDED, COMPLETE BOLLOCKS BELOW
 
 
 
