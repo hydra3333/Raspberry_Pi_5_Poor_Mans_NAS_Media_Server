@@ -65,7 +65,7 @@ and to synchoronize multiple identical copies of files in folders across disks t
 old/new/updated files, and deal with read-only `overlaysf` due to issues its with
 staging file updates etc, I gave up.
 
-In a chat with chatGPT, it put me onto `mergerFS` with `SnapRAID`.
+In a chat with chatGPT, it put me onto `mergerFS` running on top of `SnapRAID`.
 
 I have used `mergerFS` before but not as smartly as it could be.    
 
