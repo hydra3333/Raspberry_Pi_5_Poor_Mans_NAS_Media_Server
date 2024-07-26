@@ -50,6 +50,13 @@ DISK2 -- ROOTFOLDER2 --|--ClassicMovies
                        |--OldMovies
                        |--SciFi
 ```
+
+## NOW TESTING `MergerFS` with `SnapRAID`
+# which looks like it will be the bees knees !
+
+# COMPLETE BOLLOCKS BELOW
+
+
 Then we can    
 - mount the disks individually in fstab so they appear in a consistent way to the system    
 - use `overlaysf` (inbuilt in debian) to create a virtual overlayed folder of all of those
