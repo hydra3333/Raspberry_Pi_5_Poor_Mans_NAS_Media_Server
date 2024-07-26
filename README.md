@@ -146,7 +146,7 @@ That's the hardware prepared and plugged in.
 In the outline below, we'll assume only 3 USB3 disks. You can add more as you need,
 just keep an eye on the disk naming and folder structures in line with the model above.    
 
-## Install Raspberry Pi OS with `autologin`    
+## Install Raspberry Pi OS with `autologin` to the SD card    
 Run the `Raspberry Pi Imager` on a PC to put the full 64 bit `Raspberry Pi OS` image to an SD card in the usual way    
 - Choose to "Edit Settings" and then the GENERAL tab.    
 - Set a Hostname you will recognise, eg PINAS64.    
