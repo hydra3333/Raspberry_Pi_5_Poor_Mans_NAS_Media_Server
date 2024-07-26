@@ -58,9 +58,9 @@ DISK2 -- ROOTFOLDER2 --|--ClassicMovies
 # STOP READING NOW
 
 My intended approach was Bollocks because, having written several python programs
-for 'fuzzy matching' of media files in needing to supersede others (eg
-`file01_2024.01.001.mp4` with `file_01_new.202.02.03`) with the old file deleted)
-and to synchoronize multi identical copies of files in folders across disks taking care of
+for 'fuzzy matching' of media files needing for file supersedence (eg
+`file01_2024.01.001.mp4` with `file_01_new.2024.02.03`) with the old file deleted)
+and to synchoronize multiple identical copies of files in folders across disks taking care of
 old/new/updated files, and deal with read-only `overlaysf` due to issues with
 its staging updates etc, I gave up.
 
