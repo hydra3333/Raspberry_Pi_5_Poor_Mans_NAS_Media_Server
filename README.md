@@ -72,7 +72,7 @@ I have used `mergerFS` before but not as smartly as it could be.
 With `SnapRAID` there is a significant known issue with parity data
 created and used by the package when deleting folders and wanting recovery,
 however for my scenario (a relatively lightly changing archive of media files)
-a nightly `sync` and `scrub` (rebuild) yields acceptable data rebuild risk
+a nightly `sync` and `scrub` (parity check/rebuild) yields acceptable data rebuild risk
 such as if/when a disk dies and needs to be replaced by a new one which
 has been correctly formatted so that the rebuild can then be initiated.
 
