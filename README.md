@@ -76,10 +76,360 @@ a nightly `sync` and `scrub` (parity check/rebuild) yields acceptable data rebui
 such as if/when a disk dies and needs to be replaced by a new one which
 has been correctly formatted so that the rebuild can then be initiated.
 
+# JUST SOME NOTES, UPCOMING EXPLORATION
+
+I have a newly released "Raspberry Pi 5" small computer with operating system "Raspberry Pi OS" based on "Debian Bookworm" which is the current latest supported version. 
+The Pi 5 has a Broadcom BCM2712 SoC with four ARM Cortex-A76 CPU cores clocked at 2.4GHz, and has  2 USB3 ports capable of running at full UB3 speed.
+It runs python3 and debian packages compiled for it.
+
+I have 
+- 4 up to eight 8 old external USB3 disks of various types and sizes ranging from 4Tb to 12 Tb.
+- 2 unpowered USB3 hubs connected to the Pi, with 2 and up to 4 of the USB3 disks conected to each USB3 hub
+- a set of "media folders" with standardized names under a root folder on each disk
+- some of the disks have both (a) blank media folders (b) media folders with files
+
+Is there a softare package or something to implement some form of disk reliablilty/backup,
+perhaps similar in outcome to a form of raid or something, which does not depend on all disks
+being be present to continue to operate but does ensure backup copies of files
+(perhaps  multiple copies of files on different disks) across the disks, or something similar to that ?
+
+It would be essential that
+- the disks be able to be mounted and used independently in the normal way if the need arises
+- the disks be pre-formatted as NTFS with a GPT partition, for independent use when attached to a Windows 11 x64 PC
+- the file system appear to the user as one consolidated file system (eappearing to merge the folders under the root folders) with new files able to be copied to it and deleted and moved etc
+
+Note that 'overlayfs' by itself is not acceptable since it does not spread/backup files across disks
+and new/updated files are staged to an area which apparently needs to then be acted on manually.
+
+------------------------
+
+### Random Notes:
+
+#### Setting up SnapRaid initially, per chatGPT    
+Had to question it hard, to get the detail required ... which changes its advice.
+
+To find the exact location of the SnapRAID binary on your installed system, you can use the `which` command:
+     ```bash
+     #This command will return the path to the SnapRAID executable if it is in your system’s PATH.
+     which snapraid
+     #Alternatively, you can use the find command to search for it:
+     sudo find / -name snapraid
+     # eg it may be one of 
+     #   /usr/local/bin/snapraid
+     #   /usr/sbin/snapraid
+     #   /usr/bin/snapraid
+     ```
+Now use the located path in ALL stuff below which uses the folder, eg `crontab`.
+
+#### Configuring Passwordless sudo for snapraid    
+Yes it's a bad thing.  Yes I want it anyway. 
+
+If you want to allow a specific user to run SnapRAID commands with sudo without a password, you need to modify the `sudoers` file:    
+Edit `sudoers` File
+```bash
+ sudo visudo
+```
+Add a line to allow your user to run SnapRAID commands without a password.    
+For example, if your user is 'username' and the snapraid path is correct, add:
+```bash
+username ALL=(ALL) NOPASSWD: /usr/sbin/snapraid
+```
+OR, Add the Rule for All Users:
+```bash
+ALL ALL=(ALL) NOPASSWD: /usr/sbin/snapraid
+```
+This line means:
+```
+ALL      : All users can run as follows
+ALL=(ALL): All users can execute commands as all users includinf root
+NOPASSWD : /usr/sbin/snapraid: No password is required for running /usr/sbin/snapraid```
+```
+Save the file and exit the editor. The changes will be applied immediately.    
+So, when the pi user (or any other user configured in sudoers) runs /usr/sbin/snapraid,
+the the MUST use 'sudo' to do so.
+For example:
+```bash
+sudo /usr/sbin/snapraid
+```
+Since sudo is used, it will check the sudoers configuration to determine if the user
+has permission to run the command and if they can do so without a password.
+
+Passwordless sudo: Configuring sudo to run without a password is optional and can be useful for automated tasks but must be done carefully to avoid security risks.
+That setup ensures that your SnapRAID jobs run automatically with the necessary permissions, and you won’t need to manually enter a password when doing `snapraid` commands.
+
+####A word about `mmap` and `SnapRAID`    
+While `mmap` can offer performance benefits for file access in some scenarios, 
+it's not typically a major factor for media serving via `Samba` and `miniDLNA`. 
+These applications handle large files efficiently using traditional file I/O methods. 
+Therefore, in this setup, `mmap` is unlikely to provide significant benefits, 
+and focusing on disk performance, network speed, and proper configuration of 
+`MergerFS`, `SnapRAID`, `Samba`, and `miniDLNA` will be more impactful for optimizing media file access and streaming.
+
+
+#### Official home pages and GitHub for `MergerFS` and `SnapRAID`:
+
+```
+MergerFS
+   Homepage:          https://github.com/trapexit/mergerfs
+   GitHub Repository: https://github.com/trapexit/mergerfs
+   Other              https://github.com/trapexit/mergerfs/wiki/Real-World-Deployments
+                      https://perfectmediaserver.com/02-tech-stack/mergerfs/
+
+                      https://docs.readthedocs.io/en/latest/intro/getting-started-with-sphinx.html
+SnapRAID
+   Homepage:          https://www.snapraid.it/
+   GitHub Repository: https://github.com/amadvance/snapraid/ ... not https://github.com/snapraid/snapraid
+   Other              https://www.snapraid.it/manual
+                      https://sourceforge.net/projects/snapraid/
+                      https://sourceforge.net/p/snapraid/discussion/1677233/
+```
+
+#### chatGPT advice for adding a new disk to existing `SnapRAID` setup
+
+1. **Prepare the New Disk**:
+- **Move Existing Files**: Move any existing files on the new disk to a folder outside of the new disk's proposed `MergerFS` root.
+```bash
+mkdir /mnt/new_disk/old_files
+mv /mnt/new_disk/* /mnt/new_disk/old_files/
+```
+
+2. **Create MergerFS Top-Level Folder**:
+- **Create Folder**: Create the top-level folder on the new disk.
+```bash
+mkdir /mnt/new_disk/media
+```
+
+3. **Update MergerFS**:
+- **Configure MergerFS**: Add the new disk to the MergerFS pool, eg in `fstab`
+```bash
+/mnt/hdd*:/mnt/sda1 /mergerfs_root mergerfs category.action=mfs,category.create=mfs,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs 0 0
+#
+#https://github.com/trapexit/mergerfs?tab=readme-ov-file#functions--policies--categories
+#CHANGEDFROM THEIR DEFAULTS:
+#moveonenospc=true
+#dropcacheonclose=true
+#cache.readdir=true
+#cache.files=partial
+#category.action=mfs
+#category.create=mfs
+#category.search=all
+#fsname=mergerfs
+#lazy-umount-mountpoint=true
+#branches-mount-timeout=300
+```
+
+4. **Update SnapRAID**:
+- **Add New Disk to SnapRAID**: Add the new disk and its top-level folder to SnapRAID’s configuration, eg
+```bash
+disk d7 /mnt/new_disk/media
+```
+
+5. **Move Files**:
+- **Redistribute Files**: Move files from the folder outside the MergerFS root into the MergerFS pool.
+Spread them across disks so you manually achieve some levelling. eg
+```bash
+sudo rsync -av /mnt/new_disk/old_files/* /mnt/mergerfs_pool/
+```
+
+6. **Sync and Scrub SnapRAID**:
+- **Run Sync**: Update the parity data to include the new files.
+- **Run Scrub**: Verify the integrity of the data and ensure parity consistency.
+```bash
+sudo snapraid sync
+sudo snapraid scrub
+```
+
+7. **Check you had added the cron jobs to sync 2-hourly, and another to scrub and also check everything nightly**
+- **SnapRAID tasks**:
+Since SnapRAID typically requires root privileges, it’s best to add the cron jobs to the root user’s crontab.    
+Add the jobs to the root’s crontab ensures they run with the necessary privileges of root.    
+You can edit the root’s crontab by running:
+```bash
+sudo crontab -e
+```
+```bash
+# Run SnapRAID Sync every 2 hours (use the correct paths below)
+0 */2 * * * /usr/sbin/snapraid sync >> /var/log/snapraid.log 2>&1
+# Run SnapRAID tasks sequentially starting at 3 AM, with each command on a new line,
+#    using ';' each task runs independently of the success of the prior task
+0 3 * * * \
+/usr/sbin/snapraid status >> /var/log/snapraid.log 2>&1 ; \
+/usr/sbin/snapraid sync >> /var/log/snapraid.log 2>&1 ; \
+/usr/sbin/snapraid scrub >> /var/log/snapraid.log 2>&1
+```
+
+**Summary of Adjusted Steps**
+1. Prepare the new disk by moving existing files out of the MergerFS top-level folder.
+2. Create the MergerFS top-level folder on the new disk.
+3. Update the MergerFS configuration to include the new disk.
+4. Add the new disk to SnapRAID's configuration.
+5. Move files into the MergerFS pool.
+6. Run SnapRAID sync and scrub to update and verify the parity data.
+
+By following this sequence, you ensure that all files are properly integrated into the MergerFS pool and that SnapRAID is synchronized and consistent with the new data.
+
+```
+
+### Additional Tips
+
+- **Verify Disk Health**: Before adding the NTFS disk to SnapRAID, ensure it is healthy and free from errors.
+- **Monitor Logs**: Check the MergerFS and SnapRAID logs for any issues during the process.
+- **Backup**: Ensure you have backups of critical data before making significant changes.
+
+By following these steps, you can efficiently add a new disk with existing files to your MergerFS and SnapRAID setup, ensuring that the files are balanced and parity data is correctly updated.
+
+
+
+
+#### Miscellaneous chatGPT Notes
+
+If you need the disks to be mountable independently on Windows 11 from time to time, 
+you'll need to avoid traditional RAID configurations that require all
+disks to be present and synchronized on the Pi 5.
+
+Traditional RAID setups (like RAID 0, 1, 5, 6, 10) typically require the disks
+to be used together and aren't easily separable for independent use on another system.
+
+Here are the options that allow disks to be used independently on Windows 11:
+
+### SnapRAID
+
+SnapRAID is specifically designed for media collections and allows the disks to be mounted and used independently.
+It uses parity files to provide redundancy and recovery capabilities, and since it operates at the file level,
+each disk remains a standard filesystem (e.g., NTFS) that can be mounted and used separately.
+
+My note: With SnapRAID there is a significant known issue with parity data created and used by the package
+when deleting folders and wanting recovery, however for this scenario 
+(a relatively lightly changing archive of media files) 
+a nightly sync and scrub (parity check/rebuild) yields acceptable data rebuild risk
+such as if/when a disk dies and needs to be replaced by a new one which has been correctly
+NTFS formatted with security 'everyone' having 'Full Control' and the root folder created on it
+to be use in an updated fstab for mounts to occur properly ... 
+so that `scrub` a rebuild can then be initiated.
+
+### Using SnapRAID with MergerFS
+
+Combining SnapRAID with MergerFS gives you a consolidated view of your files and redundancy,
+while still allowing each disk to be independently mountable.
+
+1. **MergerFS** provides a union filesystem that allows you to access multiple disks as a single cohesive filesystem.
+2. **SnapRAID** provides redundancy and parity for file recovery, without requiring the disks to be part of a single RAID array.
+
+### Steps to Ensure Independent Disk Use on Windows 11:
+
+1. **Format Disks as NTFS**:
+Format each disk as NTFS with a GPT partition table i.e. a GPT disk not anything else. This ensures they are compatible with both Linux and Windows 11.
+
+2. **Configure SnapRAID**:
+Set up SnapRAID, making sure each disk is listed as a data disk in the SnapRAID configuration
+and spread the parity data across the maximum number of disks that SnapRAID can be configured to use.
+
+3. **Use MergerFS**:
+Use MergerFS to create a pooled view of your files on the Raspberry Pi, ensuring easy access and management.
+** warning** check the documentation on the effects of configuring policies, eg
+https://perfectmediaserver.com/02-tech-stack/mergerfs/ says    
+
+The default create policy is `epmfs`.
+That is a path preserving algorithm.
+With such a policy for mkdir and create with a set of empty drives it will select only 1 drive when the first directory is created.
+Anything, files or directories, created in that first directory will be placed on the same branch because it is preserving paths.
+**This catches a lot of new users off guard** but changing the default would break the setup for many existing users.
+If you do not care about path preservation and wish your **files to be spread across all your drives change to `mfs`**.
+
+Info
+
+Take a moment to read this issue on the mergerfs GitHub if you're a looking for more context on create policies - they can be a bit confusing to begin with.
+
+You might find the best all round option to use in your /etc/fstab entry for mergerfs is category.create=mfs. This will fill all disks at roughly the same rate but not colocate entire "blobs". In otherwords, episodes from the same TV show might end up all over all your disks - in practice this doesn't matter but it might matter to you if you're a neat freak.
+
+If you do want path preservation you'll need to perform the manual act of creating paths on the drives you want the data to land on before transferring your data3.
+
+
+
+4. **Disk Mounting on Windows 11**:
+If you need to use a disk independently, unmount it from the Raspberry Pi and connect it to the Windows 11 machine. Windows will recognize the NTFS filesystem, allowing you to read/write files directly.
+
+### Example Configuration for SnapRAID and MergerFS
+
+**SnapRAID Configuration (snapraid.conf)**:
+```conf
+parity /mnt/disk1/snapraid.parity
+content /mnt/disk1/snapraid.content
+content /mnt/disk2/snapraid.content
+content /mnt/disk3/snapraid.content
+
+data /mnt/disk2
+data /mnt/disk3
+
+exclude *.bak
+```
+
+**MergerFS Mount Command**:
+```bash
+sudo mergerfs -o defaults,category.action=mfs,category.create=mfs,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs /mnt/disk2:/mnt/disk3 /mnt/pool
+```
+**MergerFS fstab**:
+```bash
+/mnt/hdd*:/mnt/sda1 /mergerfs_root mergerfs category.action=mfs,category.create=mfs,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs 0 0
+**MergerFS Mount Command**:
+```
+
+This setup ensures:
+- **File Distribution and Redundancy**: Files are distributed across disks with redundancy provided by SnapRAID.
+- **Independent Disk Usage**: Each disk remains a standard NTFS filesystem that can be independently mounted on Windows 11 if needed.
+- **Consolidated View**: MergerFS provides a single, consolidated view of all your files.
+
+By using SnapRAID in combination with MergerFS, you achieve a balance of redundancy and flexibility, allowing disks to be independently mountable on Windows 11.
+
+
+### Unedited notes
+
+#### readdir caching
+As of version 4.20 Linux supports readdir caching. This can have a significant impact on directory traversal.
+Especially when combined with entry (cache.entry) and attribute (cache.attr) caching. 
+Setting cache.readdir=true will result in requesting readdir caching from the kernel on each opendir. 
+If the kernel doesn't support readdir caching setting the option to true has no effect. 
+This option is configurable at runtime via xattr user.mergerfs.cache.readdir.
+
+
+To have the pool mounted at boot or otherwise accessible from related tools use /etc/fstab.
+
+# <file system>        <mount point>  <type>    <options>             <dump>  <pass>
+```
+/mnt/hdd*:/mnt/ssd    /media          mergerfs  minfreespace=16G      0       0
+```
+will use all mount points in /mnt prefixed with hdd, as well as just ssd
+
+```
+Category	FUSE Functions
+action	    chmod, chown, link, removexattr, rename, rmdir, setxattr, truncate, unlink, utimens
+create	    create, mkdir, mknod, symlink
+search	    access, getattr, getxattr, ioctl (directories), listxattr, open, readlink
+N/A	        fchmod, fchown, futimens, ftruncate, fallocate, fgetattr, fsync, ioctl (files), read, readdir, release, statfs, write, copy_file_range
+```
+
+#### TO INSTALL
+NOTE: for mounting via fstab to work you must have mount.fuse installed. For Ubuntu/Debian it is included in the fuse package ?fuse3?.
+
+```
+sudo apt show fuse3
+sudo apt-cache showpkg fuse3
+sudo apt-cache show fuse3
+sudo apt-cache policy fuse3
+sudo apt show fuse3 
+sudo dpkg -l | grep fuse3
+```
+
+```
+# get and install
+wget https://github.com/trapexit/mergerfs/releases/download/<ver>/mergerfs_<ver>.debian-<rel>_<arch>.deb
+dpkg -i mergerfs_<ver>.debian-<rel>_<arch>.deb
+#
+https://github.com/trapexit/mergerfs/releases/download/2.40.2/mergerfs_2.40.2.debian-bookworm_arm64.deb
+dpkg -i mergerfs_2.40.2.debian-bookworm_arm64.deb
+```
 
 # SUPERSEDED, COMPLETE BOLLOCKS BELOW
-
-
 
 Then we can    
 - mount the disks individually in fstab so they appear in a consistent way to the system    
