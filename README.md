@@ -78,32 +78,31 @@ has been correctly formatted so that the rebuild can then be initiated.
 
 # JUST SOME NOTES, UPCOMING EXPLORATION
 
-I have a newly released "Raspberry Pi 5" small computer with operating system "Raspberry Pi OS" based on "Debian Bookworm" which is the current latest supported version. 
-The Pi 5 has a Broadcom BCM2712 SoC with four ARM Cortex-A76 CPU cores clocked at 2.4GHz, and has  2 USB3 ports capable of running at full UB3 speed.
-It runs python3 and debian packages compiled for it.
+### The question put to ChatGPT
+> I have a newly released "Raspberry Pi 5" small computer with operating system "Raspberry Pi OS" based on "Debian Bookworm" which is the current latest supported version. 
+> The Pi 5 has a Broadcom BCM2712 SoC with four ARM Cortex-A76 CPU cores clocked at 2.4GHz, and has  2 USB3 ports capable of running at full UB3 speed.
+> It runs python3 and debian packages compiled for it.
+>
+> I have 
+> - 4 up to eight 8 old external USB3 disks of various types and sizes ranging from 4Tb to 12 Tb.
+> - 2 unpowered USB3 hubs connected to the Pi, with 2 and up to 4 of the USB3 disks conected to each USB3 hub
+> - a set of "media folders" with standardized names under a root folder on each disk
+> - some of the disks have both (a) blank media folders (b) media folders with files
+> 
+> Is there a softare package or something to implement some form of disk reliablilty/backup,
+> perhaps similar in outcome to a form of raid or something, which does not depend on all disks
+> being be present to continue to operate but does ensure backup copies of files
+> (perhaps  multiple copies of files on different disks) across the disks, or something similar to that ?
+> 
+> It would be essential that
+> - the disks be able to be mounted and used independently in the normal way if the need arises
+> - the disks be pre-formatted as NTFS with a GPT partition, for independent use when attached to a Windows 11 x64 PC
+> - the file system appear to the user as one consolidated file system (eappearing to merge the folders under the root folders) with new files able to be copied to it and deleted and moved etc
+> 
+> Note that 'overlayfs' by itself is not acceptable since it does not spread/backup files across disks
+> and new/updated files are staged to an area which apparently needs to then be acted on manually.
 
-I have 
-- 4 up to eight 8 old external USB3 disks of various types and sizes ranging from 4Tb to 12 Tb.
-- 2 unpowered USB3 hubs connected to the Pi, with 2 and up to 4 of the USB3 disks conected to each USB3 hub
-- a set of "media folders" with standardized names under a root folder on each disk
-- some of the disks have both (a) blank media folders (b) media folders with files
-
-Is there a softare package or something to implement some form of disk reliablilty/backup,
-perhaps similar in outcome to a form of raid or something, which does not depend on all disks
-being be present to continue to operate but does ensure backup copies of files
-(perhaps  multiple copies of files on different disks) across the disks, or something similar to that ?
-
-It would be essential that
-- the disks be able to be mounted and used independently in the normal way if the need arises
-- the disks be pre-formatted as NTFS with a GPT partition, for independent use when attached to a Windows 11 x64 PC
-- the file system appear to the user as one consolidated file system (eappearing to merge the folders under the root folders) with new files able to be copied to it and deleted and moved etc
-
-Note that 'overlayfs' by itself is not acceptable since it does not spread/backup files across disks
-and new/updated files are staged to an area which apparently needs to then be acted on manually.
-
-------------------------
-
-### Random Notes:
+### Random Notes arising from the chatGPT chat:
 
 #### Setting up SnapRaid initially, per chatGPT    
 Had to question it hard, to get the detail required ... which changes its advice.
