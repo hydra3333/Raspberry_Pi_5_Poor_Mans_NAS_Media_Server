@@ -51,7 +51,8 @@ DISK2 -- ROOTFOLDER2 --|--ClassicMovies
                        |--SciFi
 ```
 
-## NOW TESTING `mergerFS` on to of `snapRAID`
+## NOW TESTING `mergerFS` on top of `snapRAID`
+
 ### which looks like it will be the bees knees !
 
 
