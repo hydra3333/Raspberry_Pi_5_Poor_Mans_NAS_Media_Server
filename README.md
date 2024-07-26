@@ -1,5 +1,9 @@
 # WARNING: UNDER CONSTRUCTION
 
+# DO NOT USE
+
+# NOTHING WORKS YET
+
 # Raspberry Pi 5 Poor Persons NAS Media Server    
 
 ## Outline    
@@ -33,23 +37,245 @@ on the internet - at the cost of having to deal with more complexity ... safety 
 This assumes you know how to use the nano editor, if not please google it, if using another editor then cool !
 
 If one has, say, 1 to 8 old USB3 disks with volume labels `DISK1` ... `DISK8` all plugged into the (1 or 2) USB3 hubs,
-and each disk has a matching single root folder `ROOTFOLDER1` ... `ROOTFOLDER8` containing subfolders of media to be served
-    
+and each disk has a matching single root folder `mergerfs_Root_1` ... `mergerfs_Root_8` containing
+subfolders of media to be served (no files are duplicated acorss disks)    
 ```
-DISK1 -- ROOTFOLDER1 --|--ClassicMovies
-                       |--Documentaries
-                       |--Footy-----------|--1997
-                       |                  |--1998
-                       |--SciFi
+DISK1 -- mergerfs_Root_1 --|--ClassicMovies
+                           |--Documentaries
+                           |--Footy-----------|--1997
+                           |                  |--1998
+                           |--SciFi
 
-DISK2 -- ROOTFOLDER2 --|--ClassicMovies
-                       |--Footy-----------|--2000
-                       |                  |--2002
-                       |--Movies
-                       |--Music
-                       |--OldMovies
-                       |--SciFi
+DISK2 -- mergerfs_Root_2 --|--ClassicMovies
+                           |--Footy-----------|--2000
+                           |                  |--2002
+                           |--Movies
+                           |--OldMovies
+
+DISK3 -- mergerfs_Root_3 --|--ClassicMovies
+                           |--Footy-----------|--2003
+                           |                  |--2004
 ```
+
+
+## Acknowledgements    
+
+### thagrol    
+https://forums.raspberrypi.com/viewtopic.php?p=2236572#p2236547    
+
+Building A Pi Based NAS    
+https://forums.raspberrypi.com/viewtopic.php?t=327444    
+
+Using fstab A Beginner's Guide    
+https://forums.raspberrypi.com/viewtopic.php?t=302752    
+
+## ESSENTIAL: Prepare disks: security, disk volume labels, folder structures, files    
+Assuming we have USB3 disks created as GPT disks (not Dynamic Disks) and formatted as NTFS 
+(since Windows PCs are often used to create media files, and WIndows only really likes disks formatted as NTFS)
+we need to prepare every disk to appear and behave in a consistent way.
+
+For every disk, change it's volume label to be like `DISK1` through to `DISK8` and unique to each disk.
+If you are unsure how to do that, try
+https://www.google.com.au/search?q=how+to+change+an+NTFS+disk+volume+label+in+windows+11    
+
+On every disk, in Windows change it's Security so that inbuilt username `everyone` is added with `Full Control` access.
+In Windows File Manager
+- right click on a drive letter
+- choose Properties
+- choose Security tab
+- click the `Edit` button
+- click the `Add` button
+- enter the word `everyone` and click the `OK` button
+- Ensure `Full control` is ticked and click `Apply`;
+if prompted, allow it to change all folders and files on the disk and ignore all errors
+
+On each disk, create one top level folder named like `mergerfs_Root_1` through to `mergerfs_Root_8` to match the unique disk volume label number.
+
+Under the top level folder on the disks, place the media files in a reasonably consistent (including filename capitalisation)
+subfolder structure of your choice. The same subfolder names and files may or may not exist on every disk, you can
+spread out the media files and subfolders across disks and even double them up for backup purposes. eg
+```
+DISK1 -- mergerfs_Root_1 --|--ClassicMovies
+                           |--Documentaries
+                           |--Footy-----------|--1997
+                           |                  |--1998
+                           |--SciFi
+
+DISK2 -- mergerfs_Root_2 --|--ClassicMovies
+                           |--Footy-----------|--2000
+                           |                  |--2002
+                           |--Movies
+                           |--OldMovies
+
+DISK3 -- mergerfs_Root_3 --|--ClassicMovies
+                           |--Footy-----------|--2003
+                           |                  |--2004
+```
+
+In the outline below, we'll assume only 2 USB3 disks. You can add more as you need,
+just keep an eye on the disk naming and folder structures in line with the model above.    
+
+## Install Raspberry Pi OS with `autologin`    
+Run the `Raspberry Pi Imager` on a PC to put the full 64 bit `Raspberry Pi OS` image to an SD card in the usual way    
+- Choose to "Edit Settings" and then the GENERAL tab.    
+- Set a Hostname you will recognise, eg PINAS64.    
+- Set a username as `pi` (if not `pi` then replace username `pi` in this outline with the chosen username) and
+the password as something you will remember (you will need to enter it later during `SAMBA` setup,
+and change all references of `pi` to the username).    
+- Set you locale settings and keyboard layout (setting keyboard layout is important if in non-US non-GB country).    
+- Choose the SERVICES tab.    
+- Enable SSH with password authentification.    
+- Choose the OPTIONS tab.    
+- Disable telementry.    
+Click SAVE.    
+Click YES to apply OS customisation.    
+Click YES to proceed.    
+
+## Prepare the hardware    
+First ensuring that power switch is off where the Pi's power block plugs in,    
+- ensure all USB3 disks are powered off and will remain so until required    
+- plug in the Pi's power cable into the Pi    
+- plug the Pi into a screen with the HDMI cable (sophisticated users may choose do it with `SSH` or `VNC` or `RaspberryPi Connect`)    
+- plug in the USB3 hub(s) into the USB3 slots in the Pi, but leave all disks powered off    
+- check the external USB3 disks are powered off then plug them into the USB3 hubs and leave them powered off    
+
+That's the hardware prepared and plugged in.    
+
+In the outline below, we'll assume only 3 USB3 disks. You can add more as you need,
+just keep an eye on the disk naming and folder structures in line with the model above.    
+
+## Install Raspberry Pi OS with `autologin`    
+Run the `Raspberry Pi Imager` on a PC to put the full 64 bit `Raspberry Pi OS` image to an SD card in the usual way    
+- Choose to "Edit Settings" and then the GENERAL tab.    
+- Set a Hostname you will recognise, eg PINAS64.    
+- Set a username as `pi` (if not `pi` then replace username `pi` in this outline with the chosen username) and
+the password as something you will remember (you will need to enter it later during `SAMBA` setup,
+and change all references of `pi` to the username).    
+- Set you locale settings and keyboard layout (setting keyboard layout is important if in non-US non-GB country).    
+- Choose the SERVICES tab.    
+- Enable SSH with password authentification.    
+- Choose the OPTIONS tab.    
+- Disable telementry.    
+Click SAVE.    
+Click YES to apply OS customisation.    
+Click YES to proceed.    
+
+## Boot the Raspberry Pi 5 and update the system    
+1. **Order of power up (at least the first time)**    
+- Ensure the Pi 5 is powered off    
+- Plug the SD card into the Pi 5    
+- Power on the Pi 5    
+
+2. **Once the Pi has finished booting to the desktop (leave it set to autologin)**    
+- Click Start, Preferences, Raspberry Pi Configuration    
+- In the Localisation Tab, Set the Locale and then character set UTF-8, Timezone, Keyboard (setting keyboard is important if in non-US non-GB country), WiFi country, then click OK.    
+- If prompted to reboot then click YES and reboot back to the desktop.    
+- Click Start, Preferences, Raspberry Pi Configuration    
+- In the System Tab, set Auto Logon ON, Splash Screen OFF    
+- In the Interfaces Tab, sey **VNC ON**, **SSH ON**, **Raspberry Connect OFF**     
+- Click OK    
+- If prompted to reboot then click YES and reboot.    
+
+Once the Pi has finished booting to the desktop:    
+
+3. **Force PCI Express Gen 3.0 speeds after next boot (8 GT/sec, almost double the speed) on the Pi 5; in a Terminal**    
+Per https://www.jeffgeerling.com/blog/2023/forcing-pci-express-gen-30-speeds-on-pi-5 
+```
+sudo nano /boot/firmware/config.txt 
+```
+then check-for/modify/add the following 2 lines:
+```
+dtparam=pciex1
+dtparam=pciex1_gen=3
+```
+exit nano with `Control O` `Control X`.    
+
+4. **Enable the external RTC battery    ** assuming you bought and installed one
+Per https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#real-time-clock-rtc    
+The Raspberry Pi 5 includes an RTC module. 
+This can be battery powered via the J5 (BAT) connector on the board located to the right of the USB-C power connector:     
+https://www.raspberrypi.com/documentation/computers/images/j5.png?hash=70853cc7a9a01cd836ed8351ece14d59    
+You can set a wake alarm which will switch the board to a very low-power state (approximately 3mA). 
+When the alarm time is reached, the board will power back on. 
+This can be useful for periodic jobs like time-lapse imagery.
+To support the low-power mode for wake alarms, edit the bootloader configuration:
+```
+sudo -E rpi-eeprom-config --edit
+```
+add the following two lines.
+```
+POWER_OFF_ON_HALT=1
+WAKE_ON_GPIO=0
+```
+The RTC is equipped with a **constant-current (3mA) constant-voltage charger**.    
+Charging of the battery is disabled by default.    
+To constantly charge the battery at the proper voltage, add `rtc_bbat_vchg` to `/boot/firmware/config.txt`:
+```
+sudo nano /boot/firmware/config.txt
+```
+add
+```
+dtparam=rtc_bbat_vchg=3000000
+```
+exit nano with `Control O` `Control X`.   
+
+**NOTE: Later (not now) after you reboot, recharging with the right voltage setting will take effect.**    
+You can check the `sysfs` files to ensure that the charging voltage was correctly set.
+```
+/sys/devices/platform/soc/soc:rpi_rtc/rtc/rtc0/charging_voltage:0
+/sys/devices/platform/soc/soc:rpi_rtc/rtc/rtc0/charging_voltage_max:4400000
+/sys/devices/platform/soc/soc:rpi_rtc/rtc/rtc0/charging_voltage_min:1300000
+```
+Then you can test the battery RTC functionality with:
+```
+echo +10 | sudo tee /sys/class/rtc/rtc0/wakealarm
+sudo halt
+```
+That will halt the board into a very low-power state, then wake and restart after 10 seconds.    
+The RTC also provides the time on boot e.g. in `dmesg`, for use cases that lack access to NTP:
+```
+[    1.295799] rpi-rtc soc:rpi_rtc: setting system clock to 2023-08-16T15:58:50 UTC (1692201530)
+```
+NOTE: The RTC is still usable even when there is no backup battery attached to the J5 connector.    
+
+5. **Update the system; in a Terminal**    
+
+```
+sudo nano /etc/apt/sources.list
+# Now in nano `uncomment` all of the `deb-src` lines by removing the # at the start of those lines.
+```
+exit nano with `Control O` `Control X`.    
+Update the system:
+```
+sudo apt -y update
+sudo apt -y full-upgrade
+sudo apt -y dist-upgrade
+```
+Reboot the Pi now.
+This will also cause the change above to take effect.
+
+6. **Run `raspi-config` to configure more system settings; in a Terminal**    
+
+```
+sudo raspi-config
+```
+Using the menu ... stuff here
+
+
+
+
+---
+
+
+
+
+
+
+
+
+
+
+
 
 ## NOW TESTING `mergerFS` on top of `snapRAID`
 
@@ -65,7 +291,7 @@ and to synchoronize multiple identical copies of files in folders across disks t
 old/new/updated files, and deal with read-only `overlaysf` due to issues its with
 staging file updates etc, I gave up.
 
-In a chat with chatGPT, it put me onto `mergerFS` running on top of `SnapRAID`.
+In a chat with ChatGPT, it put me onto `mergerFS` running on top of `SnapRAID`.
 
 I have used `mergerFS` before but not as smartly as it could be.    
 
@@ -102,9 +328,9 @@ has been correctly formatted so that the rebuild can then be initiated.
 > Note that 'overlayfs' by itself is not acceptable since it does not spread/backup files across disks
 > and new/updated files are staged to an area which apparently needs to then be acted on manually.
 
-### Random Notes arising from the chatGPT chat:
+### Random Notes arising from the ChatGPT chat:
 
-#### Setting up SnapRaid initially, per chatGPT    
+#### Setting up SnapRaid initially, per ChatGPT    
 Had to question it hard, to get the detail required ... which changes its advice.
 
 To find the exact location of the SnapRAID binary on your installed system, you can use the `which` command:
@@ -183,7 +409,7 @@ SnapRAID
                       https://sourceforge.net/p/snapraid/discussion/1677233/
 ```
 
-#### chatGPT advice for adding a new disk to existing `SnapRAID` setup
+#### ChatGPT advice for adding a new disk to existing `SnapRAID` setup
 
 1. **Prepare the New Disk**:
 - **Move Existing Files**: Move any existing files on the new disk to a folder outside of the new disk's proposed `MergerFS` root.
@@ -278,7 +504,7 @@ By following these steps, you can efficiently add a new disk with existing files
 
 
 
-#### Miscellaneous chatGPT Notes
+#### Miscellaneous ChatGPT Notes
 
 If you need the disks to be mountable independently on Windows 11 from time to time, 
 you'll need to avoid traditional RAID configurations that require all
@@ -426,146 +652,15 @@ https://github.com/trapexit/mergerfs/releases/download/2.40.2/mergerfs_2.40.2.de
 dpkg -i mergerfs_2.40.2.debian-bookworm_arm64.deb
 ```
 
+
+---
+
+
 # SUPERSEDED, COMPLETE BOLLOCKS BELOW
 
-Then we can    
-- mount the disks individually in fstab so they appear in a consistent way to the system    
-- use `overlaysf` (inbuilt in debian) to create a virtual overlayed folder of all of those
-root folder trees into a single virtual folder tree for presentation to devices on the LAN
-(we could readily use the `mergerfs` package and the process is very similar, however overlayfs is already in the debian kernel)    
-- use `SAMBA` to serve up the individual USB3 disks in read-write mode for PCs on the LAN to copy new files onto    
-- use `SAMBA` to serve up the virtual overlayed folder tree in read-only mode to devices on the LAN    
-- use `DLNA` to serve up the virtual overlayed folder in read-only mode to devices on the LAN (eg PCs, ChromeCasts, TVs)    
-- use `HD-IDLE` to ensure the USB3 disks all spin down properly between uses and not stay spinning all the time    
 
-One drawback is that if one copies new files onto the individual disks, or modifies existing files on them,
-then the Pi needs to be re-booted so that `overlayfs` takes notice of changes. Similarly, the miniDLNA index
-must be updated.    
-Not so good for a true NAS, not the end of the world for a media server with infrequent updates;
-one could easily say "it'll be up tomorrow" ... and setup an automatic nightly job with crontab at 4:45 am for    
-- miniDLNA to run a rebuild of its index, then
-- reboot, for overlayfs to notice changes
 
-## Acknowledgements    
-
-### thagrol    
-https://forums.raspberrypi.com/viewtopic.php?p=2236572#p2236547    
-
-Building A Pi Based NAS    
-https://forums.raspberrypi.com/viewtopic.php?t=327444    
-
-Using fstab A Beginner's Guide    
-https://forums.raspberrypi.com/viewtopic.php?t=302752    
-
-## ESSENTIAL: Prepare disks: security, disk volume labels, folder structures, files    
-Assuming we have USB3 disks formatted as NTFS 
-(since Windows PCs are often used to create media files, and WIndows only really likes disks formatted as NTFS)
-we need to prepare every disk to appear and behave in a consistent way.
-
-For every disk, change it's volume label to be like `DISK1` through to `DISK8` and unique to each disk.
-If you are unsure how to do that, try
-https://www.google.com.au/search?q=how+to+change+an+NTFS+disk+volume+label+in+windows+11    
-
-On every disk, change it's Security so that inbuilt username `everyone` is added with `Full Control` access.
-In Windows File Manager
-- right click on a drive letter
-- choose Properties
-- choose Security tab
-- click the `Edit` button
-- click the `Add` button
-- enter the word `everyone` and click the `OK` button
-- Ensure `Full control` is ticked and click `Apply`;
-if prompted, allow it to change all folders and files on the disk and ignore all errors
-
-On each disk, create one top level folder named like `ROOTFOLDER1` through to `ROOTFOLDER8` to match the unique disk volume label number.
-
-Under the top level folder on the disks, place the media files in a reasonably consistent (including filename capitalisation)
-subfolder structure of your choice. The same subfolder names and files may or may not exist on every disk, you can
-spread out the media files and subfolders across disks and even double them up for backup purposes. eg
-```
-DISK1 -- ROOTFOLDER1 --|--ClassicMovies
-                       |--Documentaries
-                       |--Footy-----------|--1997
-                       |                  |--1998
-                       |--SciFi
-
-DISK2 -- ROOTFOLDER2 --|--ClassicMovies
-                       |--Footy-----------|--2000
-                       |                  |--2002
-                       |--Movies
-                       |--Music
-                       |--OldMovies
-                       |--SciFi
-```
-
-## Prepare the hardware    
-First ensuring that power switch is off where the Pi's power block plugs in,    
-- plug in the Pi's power cable into the Pi    
-- plug the Pi into a screen with the HDMI cable (sophisticated users may choose do it with `SSH` or `VNC` or `RaspberryPi Connect`)
-- plug in the USB3 hub(s) into the USB3 slots in the Pi    
-- ensure the external USB3 disks are powered off then plug them into the USB3 hubs    
-
-That's the hardware prepared and plugged in.    
-
-In the outline below, we'll assume only 2 USB3 disks. You can add more as you need,
-just keep an eye on the disk naming and folder structures in line with the model above.    
-
-## Install Raspberry Pi OS with `autologin`    
-Run the `Raspberry Pi Imager` on a PC to put the full 64 bit `Raspberry Pi OS` image to an SD card in the usual way    
-- Choose to "Edit Settings" and then the GENERAL tab.    
-- Set a Hostname you will recognise, eg PINAS64.    
-- Set a username as `pi` (if not `pi` then replace username `pi` in this outline with the chosen username) and
-the password as something you will remember (you will need to enter it later during `SAMBA` setup,
-and change all references of `pi` to the username).    
-- Set you locale settings and keyboard layout (setting keyboard layout is important if in non-US non-GB country).    
-- Choose the SERVICES tab.    
-- Enable SSH with password authentification.    
-- Choose the OPTIONS tab.    
-- Disable telementry.    
-Click SAVE.    
-Click YES to apply OS customisation.    
-Click YES to proceed.    
-
-## Boot the Raspberry Pi 5 and update the system    
-1. **Order of power up (at least the first time)**    
-- Ensure the Pi 5 is powered off    
-- Plug the SD card into the Pi 5    
-- Power on each of the USB3 disks, wait 15 to 30 seconds for them to power-up and spin-up    
-- Power on the Pi 5    
-
-2. **Once the Pi has finished booting to the desktop (leave it set to autologin)**    
-- Click Start, Preferences, Raspberry Pi Configuration    
-- In the Localisation Tab, Set the Locale and then character set UTF-8, Timezone, Keyboard (setting keyboard is important if in non-US non-GB country), WiFi country, then click OK.    
-- If prompted to reboot then click YES and reboot back to the desktop.    
-- Click Start, Preferences, Raspberry Pi Configuration    
-- In the System Tab, set Auto Logion ON, Splash Screen OFF    
-- In the Interfaces Tab, set SSH ON, Raspberry Connect OFF, VNC ON    
-- Click OK    
-- If prompted to reboot then click YES and reboot.    
-
-Once the Pi has finished booting to the desktop:    
-
-3. **Force PCI Express Gen 3.0 speeds after next boot (8 GT/sec, almost double the speed) on the Pi 5; in a Terminal**    
-Per https://www.jeffgeerling.com/blog/2023/forcing-pci-express-gen-30-speeds-on-pi-5 
-```
-sudo nano /boot/firmware/config.txt 
-```
-then check-for/modify/add the following 2 lines:
-```
-dtparam=pciex1
-dtparam=pciex1_gen=3
-```
-exit nano with `Control O` `Control X`.    
-
-4. **Update the system; in a Terminal**    
-```
-sudo apt -y update
-sudo apt -y full-upgrade
-sudo apt -y dist-upgrade
-```
-If the Pi tells you to reboot, do so.
-
-5. **Install some software; in a Terminal**    
+. **Install some software; in a Terminal**    
 ```
 # Install disk params checker, eg sudo hdparm -Tt /dev/sda
 sudo apt -y install hdparm
