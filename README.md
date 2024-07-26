@@ -274,20 +274,12 @@ Using the menu ... stuff here
 ---
 
 
-
-
-
-
-
-
-
-
-
-
-## NOW TESTING `mergerFS` on top of `snapRAID`
+## NOW INVESTIGATING `mergerFS` on top of `snapRAID`
 
 ### which looks like it will be the bees knees !
 
+
+---
 
 # STOP READING NOW
 
