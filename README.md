@@ -89,7 +89,7 @@ has been correctly formatted so that the rebuild can then be initiated.
 > - a set of "media folders" with standardized names under a root folder on each disk
 > - some of the disks have both (a) blank media folders (b) media folders with files
 > 
-> Is there a softare package or something to implement some form of disk reliablilty/backup,
+> Is there a sofwtare package or something to implement some form of disk reliablilty/backup,
 > perhaps similar in outcome to a form of raid or something, which does not depend on all disks
 > being be present to continue to operate but does ensure backup copies of files
 > (perhaps  multiple copies of files on different disks) across the disks, or something similar to that ?
