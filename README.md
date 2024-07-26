@@ -93,34 +93,36 @@ On each disk, create one top level folder named like `mergerfs_Root_1` through t
 
 Under the top level folder on the disks, place the media files in a reasonably consistent (including filename capitalisation)
 subfolder structure of your choice. The same subfolder names and files may or may not exist on every disk, you can
-spread out the media files and subfolders across disks and even double them up for backup purposes. eg
+spread out the media files and subfolders across disks ... but do 
+**DO NOT duplicate ANY files in ANY of the same level folders named identically across ANY of the disks**
+since that may break the software rules. We end up with something like this    
 ```
-DISK1 -- mergerfs_Root_1 --|--ClassicMovies
+DISK1 -- mergerfs_Root_1 --|--ClassicMovies   <- do not have identical filenames in other disks in this folder
                            |--Documentaries
                            |--Footy-----------|--1997
                            |                  |--1998
                            |--SciFi
 
-DISK2 -- mergerfs_Root_2 --|--ClassicMovies
+DISK2 -- mergerfs_Root_2 --|--ClassicMovies   <- do not have identical filenames in other disks in this folder
                            |--Footy-----------|--2000
                            |                  |--2002
                            |--Movies
                            |--OldMovies
 
-DISK3 -- mergerfs_Root_3 --|--ClassicMovies
+DISK3 -- mergerfs_Root_3 --|--ClassicMovies   <- do not have identical filenames in other disks in this folder
                            |--Footy-----------|--2003
                            |                  |--2004
 ```
 
-In the outline below, we'll assume only 2 USB3 disks. You can add more as you need,
-just keep an eye on the disk naming and folder structures in line with the model above.    
+In the outline below, we'll assume only 3 USB3 disks. We can add more as needed,
+just keep an eye on the disk naming and folder structures in line with the example model above.    
 
 ## Install Raspberry Pi OS with `autologin`    
 Run the `Raspberry Pi Imager` on a PC to put the full 64 bit `Raspberry Pi OS` image to an SD card in the usual way    
 - Choose to "Edit Settings" and then the GENERAL tab.    
 - Set a Hostname you will recognise, eg PINAS64.    
 - Set a username as `pi` (if not `pi` then replace username `pi` in this outline with the chosen username) and
-the password as something you will remember (you will need to enter it later during `SAMBA` setup,
+the password as something you will remember (you will need to enter it later during `SAMBA` and other setups,
 and change all references of `pi` to the username).    
 - Set you locale settings and keyboard layout (setting keyboard layout is important if in non-US non-GB country).    
 - Choose the SERVICES tab.    
@@ -133,11 +135,11 @@ Click YES to proceed.
 
 ## Prepare the hardware    
 First ensuring that power switch is off where the Pi's power block plugs in,    
-- ensure all USB3 disks are powered off and will remain so until required    
+- ensure all USB3 disks are powered off and will remain so until required later    
+- plug the Pi into a screen with the HDMI cable (sophisticated users may choose to instead use `SSH` or `VNC` or `RaspberryPi Connect` later)    
 - plug in the Pi's power cable into the Pi    
-- plug the Pi into a screen with the HDMI cable (sophisticated users may choose do it with `SSH` or `VNC` or `RaspberryPi Connect`)    
 - plug in the USB3 hub(s) into the USB3 slots in the Pi, but leave all disks powered off    
-- check the external USB3 disks are powered off then plug them into the USB3 hubs and leave them powered off    
+- plug the external USB3 disks into the USB3 hubs, but leave all disks powered off    
 
 That's the hardware prepared and plugged in.    
 
