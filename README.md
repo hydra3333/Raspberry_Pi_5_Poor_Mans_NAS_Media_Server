@@ -108,16 +108,16 @@ has been correctly formatted so that the rebuild can then be initiated.
 Had to question it hard, to get the detail required ... which changes its advice.
 
 To find the exact location of the SnapRAID binary on your installed system, you can use the `which` command:
-     ```bash
-     #This command will return the path to the SnapRAID executable if it is in your system’s PATH.
-     which snapraid
-     #Alternatively, you can use the find command to search for it:
-     sudo find / -name snapraid
-     # eg it may be one of 
-     #   /usr/local/bin/snapraid
-     #   /usr/sbin/snapraid
-     #   /usr/bin/snapraid
-     ```
+```bash
+#This command will return the path to the SnapRAID executable if it is in your system’s PATH.
+which snapraid
+#Alternatively, you can use the find command to search for it:
+sudo find / -name snapraid
+# eg it may be one of 
+#   /usr/local/bin/snapraid
+#   /usr/sbin/snapraid
+#   /usr/bin/snapraid
+```
 Now use the located path in ALL stuff below which uses the folder, eg `crontab`.
 
 #### Configuring Passwordless sudo for snapraid    
