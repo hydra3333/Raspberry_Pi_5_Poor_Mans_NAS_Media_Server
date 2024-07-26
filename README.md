@@ -156,7 +156,7 @@ has permission to run the command and if they can do so without a password.
 Passwordless sudo: Configuring sudo to run without a password is optional and can be useful for automated tasks but must be done carefully to avoid security risks.
 That setup ensures that your SnapRAID jobs run automatically with the necessary permissions, and you won’t need to manually enter a password when doing `snapraid` commands.
 
-####A word about `mmap` and `SnapRAID`    
+#### A word about `mmap` and `SnapRAID`    
 While `mmap` can offer performance benefits for file access in some scenarios, 
 it's not typically a major factor for media serving via `Samba` and `miniDLNA`. 
 These applications handle large files efficiently using traditional file I/O methods. 
