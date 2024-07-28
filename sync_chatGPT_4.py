@@ -94,6 +94,11 @@ def detect_media_disks_having_a_root_folder(disks_in_order_from_fstab):
     """
     Checks each disk for the presence of root folders like 'mergerfs_Root_*'.
     Returns a dictionary with disk paths as keys and lists of media folders under each root folder, as values.
+    The dictionary structure of those_media_disks_having_a_root_folder is:
+       Key: Disk path (e.g., /mnt/sda1)
+          Value: Itself a Dictionary with:
+       Key: The root folder (e.g., mergerfs_Root_X)
+          Value: A list of top-level media folders under that root folder.
     If multiple root folders are found on a single disk, it raises an error with details.
     """
     those_media_disks_having_a_root_folder = {}
@@ -121,12 +126,19 @@ def detect_media_disks_having_a_root_folder(disks_in_order_from_fstab):
         except Exception as e:
             logging.error(f"Error accessing {disk}: {e}")
             sys.exit(1)  # Exit with a status code indicating an error
+
+
     return those_media_disks_having_a_root_folder
 
 def get_full_set_of_top_level_media_folders(media_disks_having_a_root_folder):
     """
     Aggregates all unique top level media folder names across all detected disks.
     Returns a set of media folder names.
+    The dictionary structure of media_disks_having_a_root_folder is:
+       Key: Disk path (e.g., /mnt/sda1)
+          Value: Itself a Dictionary with:
+       Key: The root folder (e.g., mergerfs_Root_X)
+          Value: A list of top-level media folders under that root folder.
     """
     set_of_top_level_media_folders = set()
     for top_level_media_folders in media_disks_having_a_root_folder.values():
@@ -140,6 +152,11 @@ def find_ffd_for_media(media_disks_having_a_root_folder, full_set_of_top_level_m
     Determines the first found disk (ffd) for each top level media folder in the full set.
     Returns a dictionary mapping each media folder to its ffd.
     The ffd is chosen based on the order of disks as listed in fstab (leftmost first).
+    The dictionary structure of media_disks_having_a_root_folder is:
+       Key: Disk path (e.g., /mnt/sda1)
+          Value: Itself a Dictionary with:
+       Key: The root folder (e.g., mergerfs_Root_X)
+          Value: A list of top-level media folders under that root folder.
     """
     the_ffd_map = {}
     for folder in full_set_of_top_level_media_folders:
@@ -166,13 +183,24 @@ def sync_folders(ffd_for_each_top_level_media_folder, media_disks_having_a_root_
     - Copy files and directories from the source to the target if they are missing in the target.
     - Remove files from the target that are not present in the source.
     - Update files in the target if their size differs from the corresponding files in the source, ignoring timestamps.
+    The dictionary structure of media_disks_having_a_root_folder is:
+       Key: Disk path (e.g., /mnt/sda1)
+          Value: Itself a Dictionary with:
+       Key: The root folder (e.g., mergerfs_Root_X)
+          Value: A list of top-level media folders under that root folder.
     """
     # Loop throough each known top level media folder and its ffd
     # These will be used as the source in an rsync command
     for media_folder, ffd in ffd_for_each_top_level_media_folder.items():
         ffd_folder = None
         #
-        # For A. and B. below, both the construction and usage of media_disks_having_a_root_folder
+        # For A. and B. below:
+        # The dictionary structure of media_disks_having_a_root_folder is:
+        # Key: Disk path (e.g., /mnt/sda1)
+        #    Value: Itself a Dictionary with:
+        # Key: The root folder (e.g., mergerfs_Root_X)
+        #    Value: A list of top-level media folders under that root folder.
+        # Both the construction and usage of media_disks_having_a_root_folder
         # align with its structure, and the logic in sync_folders is consistent with this interpretation.
         # Any confusion arising may have arisen from different parts of the data structure
         # being accessed in different contexts, but they are consistent with the initial construction.
