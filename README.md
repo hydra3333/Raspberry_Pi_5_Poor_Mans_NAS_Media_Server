@@ -307,7 +307,30 @@ The RTC also provides the time on boot e.g. in `dmesg`, for use cases that lack 
 ```
 NOTE: The RTC is still usable even when there is no backup battery attached to the J5 connector.    
 
-**5. Update the system; in a Terminal**    
+**5. Enable `usb_max_current_enable`; in a Terminal**    
+We'll tro to avoid issues with several USB3 disks at boot time.    
+Info in  https://www.raspberrypi.com/documentation/computers/configuration.html    
+Use nano to edit `/boot/firmware/config.txt`.    
+```
+sudo nano /boot/firmware/config.txt
+```
+add
+```
+usb_max_current_enable=1
+```
+exit nano with `Control O` `Control X`. 
+
+**6. Disable USB Autosuspend; in a Terminal**    
+Autosuspend might cause issues with certain USB devices. 
+We can disable it by adding `usbcore.autosuspend=-1` to the file `/boot/firmware/cmdline.txt`.
+```
+sudo nano /boot/firmware/cmdline.txt
+```
+and add a space and then this ` usbcore.autosuspend=-1` at very end of the single line.
+exit nano with `Control O` `Control X`.
+
+
+**7. Update the system; in a Terminal**    
 
 Use nano to edit the APT sources for updates:    
 ```
@@ -327,14 +350,14 @@ sudo reboot now
 ```
 This will also cause all of the changes above to take effect.
 
-**6. Run `raspi-config` to configure more system settings; in a Terminal**    
+**8. Run `raspi-config` to configure more system settings; in a Terminal**    
 
 ```
 sudo raspi-config
 ```
 Using the menu ... stuff here
 
-**7. Install some software; in a Terminal**    
+**9. Install some software; in a Terminal**    
 ```
 # Install disk params checker, eg sudo hdparm -Tt /dev/sda
 sudo apt -y install hdparm
@@ -345,7 +368,7 @@ sudo apt install -y curl
 sudo apt install -y wget
 ```
 
-**8. Add user `pi` into groups `plugdev` and `systemd-journal`; in a Terminal**    
+**10. Add user `pi` into groups `plugdev` and `systemd-journal`; in a Terminal**    
 ```
 sudo usermod -a -G plugdev pi
 sudo usermod -a -G systemd-journal pi
@@ -353,7 +376,7 @@ sudo usermod -a -G systemd-journal pi
 # systemd-journal: Since Debian 8 (Jessie), members of this group can use the command 'journalctl' and read log files of systemd (in /var/log/journal).
 ```
 
-**9. Make this server IPv4 only, by disabling IPv6; in a Terminal**    
+**11. Make this server IPv4 only, by disabling IPv6; in a Terminal**    
 ```
 sudo sysctl net.ipv6.conf.all.disable_ipv6=1 
 sudo sysctl -p
@@ -362,7 +385,7 @@ echo net.ipv6.conf.all.disable_ipv6=1 | sudo tee -a "/etc/sysctl.conf"
 sudo sysctl -p
 ```
 
-**10. Increase system parameter `fs.inotify.max_user_watches` from default 8192 (used by miniDLNA to monitor changes to filesystems); in a Terminal**    
+**12. Increase system parameter `fs.inotify.max_user_watches` from default 8192 (used by miniDLNA to monitor changes to filesystems); in a Terminal**    
 ```
 # max_user_watches=262144
 # Per https://wiki.debian.org/minidlna and https://wiki.archlinux.org/title/ReadyMedia
@@ -383,7 +406,7 @@ echo fs.inotify.max_user_watches=262144 | sudo tee -a "/etc/sysctl.conf"
 sudo sysctl -p
 ```
 
-**11. We choose to create some `alias` shortcut commands to make life easier, by editing script `~/.bashrc`; in a Terminal**    
+**13. We choose to create some `alias` shortcut commands to make life easier, by editing script `~/.bashrc`; in a Terminal**    
 ```
 # Edit the existing file '~/.bashrc'
 nano ~/.bashrc
@@ -410,7 +433,7 @@ alias psmem20="ps auxf | sort -nr -k 4 | head -20"
 ```
 exit nano with `Control O` `Control X`.   
 
-**12. Reboot the Pi 5 for everything to take effect; in a Terminal**    
+**14. Reboot the Pi 5 for everything to take effect; in a Terminal**    
 ```
 sudo reboot
 ```
