@@ -189,6 +189,13 @@ Click YES to proceed.
 ---
 
 ## Prepare the hardware    
+A quick note: we leave disks **strictly** powered off at this point
+because for the first few times the Pi 5 is powered on,
+the process of the Pi 5 seeing and recognising the
+USB3 disks is **fraught with issues** when the USB3 disks are all powered.    
+I have seen it freeze multiple times and not proceed to finishing the boot process.    
+We need to baby the Pi 5 and power them on slowly and carefully, later.    
+
 First ensuring that power switch is off where the Pi's power block plugs in,    
 - ensure all USB3 disks are powered off and will remain so until required later    
 - plug the Pi into a screen with the HDMI cable (sophisticated users may choose to instead use `SSH` or `RaspberryPi Connect` later, `VNC` is unavailable until set `ON` after first boot)    
@@ -196,7 +203,7 @@ First ensuring that power switch is off where the Pi's power block plugs in,
 - plug in the USB3 hub(s) into the USB3 slots in the Pi, but leave all disks powered off    
 - plug the external USB3 disks into the USB3 hubs, but leave all disks powered off    
 
-That's the hardware prepared and plugged in.    
+That's the hardware prepared and plugged in ... and still powered off.    
 
 In the outline below, we'll assume only 3 USB3 disks. You can add more as you need,
 just keep an eye on the disk naming and folder structures in line with the model above.    
