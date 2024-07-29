@@ -155,13 +155,13 @@ DISK3 -- mergerfs_Root_3 --|--ClassicMovies
                            |--SciFi
 ```
 
-In this outline we'll assume only 3 USB3 disks. We can add more as needed,
+In this outline we'll assume we have only the USB3 disks. We can add more as needed,
 just keep an eye on the mandatory 'disk volume label' naming (eg `DISK1`) and its matching
 'root folder' naming (eg `mergerfs_Root_1`) in line with the example model above.    
 
 The 'top level media folder's (eg `Movies`) can be named anything you like, just ensure
-consistency in capitalization across disks and do not use spaces and
-especially not special characters anywhere !   
+consistency in capitalization across disks and do not use `space` characters and
+especially not `special characters` anywhere !   
 
 Later, you could manually shuffle individual 'top level media folder' trees from one disk to another 
 (by copying/moving between the underlying linux disk mounts) to perhaps balance
