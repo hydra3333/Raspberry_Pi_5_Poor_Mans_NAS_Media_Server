@@ -113,7 +113,7 @@ subfolder structure of your choice. The same subfolder names and files could exi
 spread out the media files and subfolders across disks to balance disk usage...    
 
 Note that some 'top level media folder' trees are duplicated across 2 or more disks to make a backup.  
-**There will a regular `sync` process mirroring from 'main' to 'backup' disks.**    
+**There will a regular `sync` process for mirroring 'main' 'top level media folder's onto 'backup' disks.**    
 The 'main' disk is always the 'first found disk' having a nominated 'top level media folder' (eg 'Footy')
 where a 'first found disk' ('ffd') is determined by the leftmost underlying disk in the
 linux fstab entry for 'mergerfs' (these are specified in left to right order).    
