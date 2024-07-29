@@ -33,13 +33,14 @@ This 'roll your own' approach minimises cost, and avoids the pain of getting 'do
 packages known to interact of themselves in essentially unknown ways with (uncontrolled) vendors' servers
 on the internet - at the cost of having to deal with more complexity ... safety first.
 
+---
+
 ## General Approach
 This assumes you know how to use the nano editor, if not please google it, if using another editor then cool !
 
 If one has, say, 1 to 8 old USB3 disks with volume labels `DISK1` ... `DISK8` all plugged into the (1 or 2) USB3 hubs,
 and each disk has a matching single root folder `mergerfs_Root_1` ... `mergerfs_Root_8` containing
-subfolders of media to be served.    
-Note that some folders are duplicated across 2 or more disks to make a backup.
+subfolders of media to be served. Note that some folders are duplicated across 2 or more disks to make a backup.
 ```
 DISK1 -- mergerfs_Root_1 --|--ClassicMovies
                            |--Footy-----------|--1997
@@ -66,6 +67,8 @@ DISK3 -- mergerfs_Root_3 --|--ClassicMovies
                            |--SciFi
 ```
 
+---
+
 ## Acknowledgements    
 
 ### thagrol    
@@ -76,6 +79,8 @@ https://forums.raspberrypi.com/viewtopic.php?t=327444
 
 Using fstab A Beginner's Guide    
 https://forums.raspberrypi.com/viewtopic.php?t=302752    
+
+---
 
 ## ESSENTIAL: Prepare disks: security, disk volume labels, folder structures, files    
 Assuming we have USB3 disks created as GPT disks (not Dynamic Disks) and formatted as NTFS 
@@ -109,12 +114,12 @@ The 'main' disk is always the 'first found disk' having a nominated 'top level m
 where a 'first found disk' ('ffd') is determined by the leftmost underlying disk in the
 linux fstab entry for 'mergerfs' (these are specified in left to right order).
 In the example below, the 'ffd' for top level media folder will be:
-- `ClassicMovies` : DISK1 mergerfs_Root_1
-- `Documentaries` : DISK2 mergerfs_Root_2
-- `Footy        ` : DISK1 mergerfs_Root_1 
-- `Movies       ` : DISK2 mergerfs_Root_2 
-- `OldMovies    ` : DISK3 mergerfs_Root_3
-- `SciFi        ` : DISK2 mergerfs_Root_2 
+- `ClassicMovies` : `DISK1 mergerfs_Root_1`
+- `Documentaries` : `DISK2 mergerfs_Root_2`
+- `Footy        ` : `DISK1 mergerfs_Root_1`
+- `Movies       ` : `DISK2 mergerfs_Root_2`
+- `OldMovies    ` : `DISK3 mergerfs_Root_3`
+- `SciFi        ` : `DISK2 mergerfs_Root_2`    
 and not all of the top level media folders are important enough to have a backup (eg 'Movies', 'OldMovies'). 
 
 ```
@@ -146,8 +151,10 @@ DISK3 -- mergerfs_Root_3 --|--ClassicMovies
 In the outline below, we'll assume only 3 USB3 disks. We can add more as needed,
 just keep an eye on the mandatory 'disk volume label' naming (eg `DISK1`) and its matching
 'root folder' naming (eg `mergerfs_Root_1`) in line with the example model above.    
+
 The 'top level media folder's (eg `Movies`) can be named anything you like, just ensure
 consistency in capitalization across disks and do not use spaces and especially not special characters.   
+
 Later, you could manually shuffle individual 'top level media folder' trees from one disk to another 
 (by copying/moving from and to the underlying linux disk mounts) to perhaps balance
 disk space use etc; the next `sync` process wll automatically detect it and stick
@@ -230,7 +237,7 @@ dtparam=pciex1_gen=3
 ```
 exit nano with `Control O` `Control X`.    
 
-4. **Enable the external RTC battery, assuming you purchased and installed one**    
+**4. Enable the external RTC battery, assuming you purchased and installed one**    
 Per https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#real-time-clock-rtc    
 The Raspberry Pi 5 includes an RTC module. 
 This can be battery powered via the J5 (BAT) connector on the board located to the right of the USB-C power connector:     
@@ -278,7 +285,7 @@ The RTC also provides the time on boot e.g. in `dmesg`, for use cases that lack 
 ```
 NOTE: The RTC is still usable even when there is no backup battery attached to the J5 connector.    
 
-5. **Update the system; in a Terminal**    
+**5. Update the system; in a Terminal**    
 
 Use nano to edit the APT sources for updates:    
 ```
@@ -298,14 +305,14 @@ sudo reboot now
 ```
 This will also cause all of the changes above to take effect.
 
-6. **Run `raspi-config` to configure more system settings; in a Terminal**    
+**6. Run `raspi-config` to configure more system settings; in a Terminal**    
 
 ```
 sudo raspi-config
 ```
 Using the menu ... stuff here
 
-7. **Install some software; in a Terminal**    
+**7. Install some software; in a Terminal**    
 ```
 # Install disk params checker, eg sudo hdparm -Tt /dev/sda
 sudo apt -y install hdparm
@@ -316,7 +323,7 @@ sudo apt install -y curl
 sudo apt install -y wget
 ```
 
-8. **Add user `pi` into groups `plugdev` and `systemd-journal`; in a Terminal**    
+**8. Add user `pi` into groups `plugdev` and `systemd-journal`; in a Terminal**    
 ```
 sudo usermod -a -G plugdev pi
 sudo usermod -a -G systemd-journal pi
@@ -324,7 +331,7 @@ sudo usermod -a -G systemd-journal pi
 # systemd-journal: Since Debian 8 (Jessie), members of this group can use the command 'journalctl' and read log files of systemd (in /var/log/journal).
 ```
 
-9. **Make this server IPv4 only, by disabling IPv6; in a Terminal**    
+**9. Make this server IPv4 only, by disabling IPv6; in a Terminal**    
 ```
 sudo sysctl net.ipv6.conf.all.disable_ipv6=1 
 sudo sysctl -p
@@ -333,7 +340,7 @@ echo net.ipv6.conf.all.disable_ipv6=1 | sudo tee -a "/etc/sysctl.conf"
 sudo sysctl -p
 ```
 
-10. **Increase system parameter `fs.inotify.max_user_watches` from default 8192 (used by miniDLNA to monitor changes to filesystems); in a Terminal**    
+**10. Increase system parameter `fs.inotify.max_user_watches` from default 8192 (used by miniDLNA to monitor changes to filesystems); in a Terminal**    
 ```
 # max_user_watches=262144
 # Per https://wiki.debian.org/minidlna and https://wiki.archlinux.org/title/ReadyMedia
@@ -354,7 +361,7 @@ echo fs.inotify.max_user_watches=262144 | sudo tee -a "/etc/sysctl.conf"
 sudo sysctl -p
 ```
 
-11. **We choose to create some `alias` shortcut commands to make life easier, by editing script `~/.bashrc`; in a Terminal**    
+**11. We choose to create some `alias` shortcut commands to make life easier, by editing script `~/.bashrc`; in a Terminal**    
 ```
 # Edit the existing file '~/.bashrc'
 nano ~/.bashrc
@@ -381,7 +388,7 @@ alias psmem20="ps auxf | sort -nr -k 4 | head -20"
 ```
 exit nano with `Control O` `Control X`.   
 
-12. **Reboot the Pi 5 for everything to take effect; in a Terminal**    
+**12. Reboot the Pi 5 for everything to take effect; in a Terminal**    
 ```
 sudo reboot now
 ```
@@ -389,12 +396,24 @@ sudo reboot now
 
 
 
+
+
+
+
 ---
 
 
-## NOW INVESTIGATING `mergerFS` on top of `snapRAID`
+## NOW INVESTIGATING `mergerFS` by itself
 
 ### which looks like it will be the bees knees !
+### since we discovered 
+
+#### `snapRAID` definitely has limitations    
+- specifically including needing LARGE disks dedicated to parity    
+- and deleting folders can affect parity
+
+#### RAID means you cannot remove any disk and mount it elsewhere eg on windows 11    
+unlike this approach where any one disk can be removed formr the Pi and mounted elsewhere
 
 
 ---
