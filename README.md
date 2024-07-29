@@ -105,8 +105,8 @@ In Windows File Manager
 - Ensure `Full control` is ticked and click `Apply`;
 if prompted, allow it to change all folders and files on the disk and ignore all errors
 
-On each disk, create one root folder named like `mergerfs_Root_1` through to `mergerfs_Root_8`
-so that the number matches the unique disk volume label number (eg `1` for `DISK1`).
+On each disk, create one root folder named like `mergerfs_Root_1` 
+so that the number matches the unique disk volume label number (eg `1` for `DISK1` and so on).
 
 Under the root folder on the disks, place the media files in a reasonably consistent (including filename capitalisation)
 subfolder structure of your choice. The same subfolder names and files could exist on every disk or you could
