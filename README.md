@@ -431,14 +431,15 @@ sudo mkdir -v -m a=rwx /mnt/shared
 sudo chmod -R -v a+rwx /mnt/shared
 ```
 
-**2. power on ONE of the disks**
-To see the journal of what is happening while we wait, use these commands
+**2. Power on ONE of the disks**    
+To see what is happening while we wait, use these commands
 ```
 sudo dmesg
 sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
 sudo blkid
 ```
-Eventually, you should see the disk appear (you see the disk label) similar to this:
+Eventually, we "should" see the disk appear (notice a line with the disk label appears)
+similar to the below (in this case `DISK7-8Tb`):
 ```
 sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
 ```
@@ -456,19 +457,19 @@ Anyway, save these things.
 PARTUUID                             NAME      LABEL
 27891019-f894-4e9b-b326-5f9d10c5c2cf sda1      DISK7-8Tb
 ```
-Very carefully, note    
-- note the disk number in the disk label (`7` in `DISK7-8Tb`)     
-- note the disk PARTUUID (`27891019-f894-4e9b-b326-5f9d10c5c2cf` in this case)    
+Very carefully, note:    
+- the disk number in the disk's label (`7` in `DISK7-8Tb`)     
+- the disk's PARTUUID (`27891019-f894-4e9b-b326-5f9d10c5c2cf` in this case)    
 
 Now create a mount point for this new disk.
-Ensure the number in the text 'usb3disk\*' below the number **exactly** matches the disk number you noted ebove (eg `7` in this case) 
+Ensure that the number in the text 'usb3disk\*' shown below **exactly** matches the disk number you noted ebove (eg `7` in this case).    
 ```
 sudo mkdir -v -m a=rwx /mnt/shared/usb3disk7
 sudo chmod -R -v a+rwx /mnt/shared/usb3disk7
-`
+```
 
 
-Make a backup of and then `edit /etc/fstab`
+Make a backup of `/etc/fstab` and then edit it    
 ```
 sudo cp -fv /etc/fstab /etc/fstab.bak
 sudo nano  /etc/fstab
