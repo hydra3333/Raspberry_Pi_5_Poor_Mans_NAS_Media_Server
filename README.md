@@ -127,7 +127,7 @@ is `DISK1,DISK2,DISK3` - then the 'ffd' for each 'top level media folder' will b
 - `OldMovies    ` : `DISK3 mergerfs_Root_3`
 - `SciFi        ` : `DISK2 mergerfs_Root_2`    
 
-wjilst also noting that all of the top level media folders are important enough to have a backup (eg 'Movies', 'OldMovies'). 
+Also note that all of the 'top level media folders' are important enough to have a backup (eg 'Movies', 'OldMovies'). 
 
 ```
 DISK1 -- mergerfs_Root_1 --|--ClassicMovies
