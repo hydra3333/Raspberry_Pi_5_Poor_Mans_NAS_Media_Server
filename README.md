@@ -191,7 +191,7 @@ Click YES to proceed.
 ## Prepare the hardware    
 First ensuring that power switch is off where the Pi's power block plugs in,    
 - ensure all USB3 disks are powered off and will remain so until required later    
-- plug the Pi into a screen with the HDMI cable (sophisticated users may choose to instead use `SSH` or `RaspberryPi Connect` later, `VNC` unavailable until set `ON` after first boot)    
+- plug the Pi into a screen with the HDMI cable (sophisticated users may choose to instead use `SSH` or `RaspberryPi Connect` later, `VNC` is unavailable until set `ON` after first boot)    
 - plug in the Pi's power cable into the Pi    
 - plug in the USB3 hub(s) into the USB3 slots in the Pi, but leave all disks powered off    
 - plug the external USB3 disks into the USB3 hubs, but leave all disks powered off    
