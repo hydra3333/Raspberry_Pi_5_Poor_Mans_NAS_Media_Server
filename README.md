@@ -110,12 +110,12 @@ On each disk, create one root folder named like `mergerfs_Root_1` through to `me
 Under the root folder on the disks, place the media files in a reasonably consistent (including filename capitalisation)
 subfolder structure of your choice. The same subfolder names and files could exist on every disk or you could
 spread out the media files and subfolders across disks to balance disk usage...    
-Note that some 'top level media folder' trees are duplicated across 2 or more disks to make a **backup**.    
-**There will a regular `sync` process from 'main' to 'backup' disks.**    
+Note that some 'top level media folder' trees are duplicated across 2 or more disks to make a backup.  
+**There will a regular `sync` process mirroring from 'main' to 'backup' disks.**    
 The 'main' disk is always the 'first found disk' having a nominated 'top level media folder' (eg 'Footy')
 where a 'first found disk' ('ffd') is determined by the leftmost underlying disk in the
 linux fstab entry for 'mergerfs' (these are specified in left to right order).
-In the example below, the 'ffd' for top level media folder will be:
+In the example below, the 'ffd' for each 'top level media folder' will be:
 - `ClassicMovies` : `DISK1 mergerfs_Root_1`
 - `Documentaries` : `DISK2 mergerfs_Root_2`
 - `Footy        ` : `DISK1 mergerfs_Root_1`
@@ -150,17 +150,18 @@ DISK3 -- mergerfs_Root_3 --|--ClassicMovies
                            |--SciFi
 ```
 
-In the outline below, we'll assume only 3 USB3 disks. We can add more as needed,
+In this outline we'll assume only 3 USB3 disks. We can add more as needed,
 just keep an eye on the mandatory 'disk volume label' naming (eg `DISK1`) and its matching
 'root folder' naming (eg `mergerfs_Root_1`) in line with the example model above.    
 
 The 'top level media folder's (eg `Movies`) can be named anything you like, just ensure
-consistency in capitalization across disks and do not use spaces and especially not special characters.   
+consistency in capitalization across disks and do not use spaces and
+especially not special characters anywhere !   
 
 Later, you could manually shuffle individual 'top level media folder' trees from one disk to another 
-(by copying/moving from and to the underlying linux disk mounts) to perhaps balance
-disk space use etc; the next `sync` process wll automatically detect it and stick
-with its 'fdd' rule.    
+(by copying/moving between the underlying linux disk mounts) to perhaps balance
+disk space usage etc; the next `sync` process wll automatically detect it and stick
+with its 'fdd' rule in single-directional mirroring from 'ffd' to 'backup's.    
 
 ---
 
