@@ -409,11 +409,12 @@ sudo reboot now
 ### since we discovered 
 
 #### `snapRAID` definitely has limitations    
-- specifically including needing LARGE disks dedicated to parity    
+- although any one disk can be removed from the Pi and mounted elsewhere, 
+- snapraid requires LARGE disks dedicated only to parity    
 - and deleting folders can affect parity
 
 #### RAID means you cannot remove any disk and mount it elsewhere eg on windows 11    
-unlike this approach where any one disk can be removed formr the Pi and mounted elsewhere
+- unlike this 'mergerfs-alone' approach where any one disk can be removed from the Pi and mounted elsewhere    
 
 
 ---
