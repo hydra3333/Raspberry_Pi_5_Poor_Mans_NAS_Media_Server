@@ -40,7 +40,8 @@ This assumes you know how to use the nano editor, if not please google it, if us
 
 If one has, say, 1 to 8 old USB3 disks with volume labels `DISK1` ... `DISK8` all plugged into the (1 or 2) USB3 hubs,
 and each disk has a matching single root folder `mergerfs_Root_1` ... `mergerfs_Root_8` containing
-subfolders of media to be served. Note that some folders are duplicated across 2 or more disks to make a backup.
+subfolders of media to be served.    
+Note that some 'top level media folder's are duplicated across 2 or more other disks as backups.
 ```
 DISK1 -- mergerfs_Root_1 --|--ClassicMovies
                            |--Footy-----------|--1997
@@ -82,7 +83,8 @@ https://forums.raspberrypi.com/viewtopic.php?t=302752
 
 ---
 
-## ESSENTIAL: Prepare disks: security, disk volume labels, folder structures, files    
+## ESSENTIAL PREPARATION:    
+## Prepare disks: security, disk volume labels, folder structures, files    
 Assuming we have USB3 disks created as GPT disks (not Dynamic Disks) and formatted as NTFS 
 (since Windows PCs are often used to create media files, and WIndows only really likes disks formatted as NTFS)
 we need to prepare every disk to appear and behave in a consistent way.
@@ -160,6 +162,8 @@ Later, you could manually shuffle individual 'top level media folder' trees from
 disk space use etc; the next `sync` process wll automatically detect it and stick
 with its 'fdd' rule.    
 
+---
+
 ## Install Raspberry Pi OS with `autologin`    
 Run the `Raspberry Pi Imager` on a PC to put the full 64 bit `Raspberry Pi OS` image to an SD card in the usual way    
 - Choose to "Edit Settings" and then the GENERAL tab.    
@@ -176,6 +180,8 @@ Click SAVE.
 Click YES to apply OS customisation.    
 Click YES to proceed.    
 
+---
+
 ## Prepare the hardware    
 First ensuring that power switch is off where the Pi's power block plugs in,    
 - ensure all USB3 disks are powered off and will remain so until required later    
@@ -188,6 +194,8 @@ That's the hardware prepared and plugged in.
 
 In the outline below, we'll assume only 3 USB3 disks. You can add more as you need,
 just keep an eye on the disk naming and folder structures in line with the model above.    
+
+---
 
 ## Install Raspberry Pi OS with `autologin` to the SD card    
 Run the `Raspberry Pi Imager` on a PC to put the full 64 bit `Raspberry Pi OS` image to an SD card in the usual way    
@@ -205,7 +213,8 @@ Click SAVE.
 Click YES to apply OS customisation.    
 Click YES to proceed.    
 
-## Boot the Raspberry Pi 5 and update the system    
+---
+
 ## Boot the Raspberry Pi 5 and update the system    
 **1. Order of power up (for this first time)**    
 - Ensure the Pi 5 is powered off    
@@ -393,6 +402,7 @@ exit nano with `Control O` `Control X`.
 sudo reboot now
 ```
 
+---
 
 
 
