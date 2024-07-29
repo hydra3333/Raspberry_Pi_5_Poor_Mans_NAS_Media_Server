@@ -111,11 +111,13 @@ so that the number matches the unique disk volume label number (eg `1` for `DISK
 Under the root folder on the disks, place the media files in a reasonably consistent (including filename capitalisation)
 subfolder structure of your choice. The same subfolder names and files could exist on every disk or you could
 spread out the media files and subfolders across disks to balance disk usage...    
+
 Note that some 'top level media folder' trees are duplicated across 2 or more disks to make a backup.  
 **There will a regular `sync` process mirroring from 'main' to 'backup' disks.**    
 The 'main' disk is always the 'first found disk' having a nominated 'top level media folder' (eg 'Footy')
 where a 'first found disk' ('ffd') is determined by the leftmost underlying disk in the
 linux fstab entry for 'mergerfs' (these are specified in left to right order).    
+
 So, in the example below - assuming the LtoR mount order in the fstab entry for `mergerfs`
 is `DISK1,DISK2,DISK3` - then the 'ffd' for each 'top level media folder' will be:
 - `ClassicMovies` : `DISK1 mergerfs_Root_1`
@@ -124,7 +126,8 @@ is `DISK1,DISK2,DISK3` - then the 'ffd' for each 'top level media folder' will b
 - `Movies       ` : `DISK2 mergerfs_Root_2`
 - `OldMovies    ` : `DISK3 mergerfs_Root_3`
 - `SciFi        ` : `DISK2 mergerfs_Root_2`    
-and not all of the top level media folders are important enough to have a backup (eg 'Movies', 'OldMovies'). 
+
+wjilst also noting that all of the top level media folders are important enough to have a backup (eg 'Movies', 'OldMovies'). 
 
 ```
 DISK1 -- mergerfs_Root_1 --|--ClassicMovies
