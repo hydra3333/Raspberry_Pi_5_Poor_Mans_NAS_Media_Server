@@ -435,8 +435,9 @@ sudo chmod -R -v a+rwx /mnt/shared
 To see what is happening while we wait, use these commands
 ```
 sudo dmesg
-sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
 sudo blkid
+sudo df
+sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
 ```
 Eventually, we "should" see the disk appear (notice a line with the disk label appears)
 similar to the below (in this case `DISK7-8Tb`):
@@ -451,7 +452,7 @@ UUID                                 PARTUUID                             NAME  
 9BE2-1346                            c454855e-01                          mmcblk0p1 vfat     512M /boot/firmware bootfs
 12974fe2-889e-4060-b497-1d6ac3fbbb4b c454855e-02                          mmcblk0p2 ext4    29.2G /              rootfs
 ```
-Sometimes it gets auto mounted, sometimes it doesn't, hey it's linux.
+Sometimes it gets automounted, sometimes it doesn't, hey it's linux.
 Anyway, save these things.
 ```
 PARTUUID                             NAME      LABEL
@@ -475,23 +476,35 @@ sudo cp -fv /etc/fstab /etc/fstab.bak
 sudo nano  /etc/fstab
 ```
 At the end of the file, save a future mount point for it like this,
-being careful that the number in 'usb3disk*' (eg `usb3disk7`) exactly matches
-the number in the new disk's disk label shown by the `sudo lsblk` eg (`DISK7-8Tb`):
+being careful to ensure that:    
+- the number in 'usb3disk\*' (eg `usb3disk7`) exactly matches the number in the
+new disk's disk label as shown by `sudo lsblk` eg (`DISK7-8Tb` in this case)
+- the PARTUUID is **extractly** the unique PARTUUID you noted above for this specific disk
 ```
 PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /mnt/shared/usb3disk7 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail 0 0
 ```
 exit nano with `Control O` `Control X`.
 
-Now use reload the newly updated fstab, and test the automount from fstab; in a Terminal:
+Now use reload the newly updated `fstab`, and test the automount but using fstab; in a Terminal:
 ```
 sudo systemctl daemon-reload
 sudo mount -a
+sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
 ```
-Sometimes the auto mount will fail ... thanks linux ! So just shutdown gracefully, it may take a couple of minutes this time.
+Sometimes the automount will fail ... thanks linux !    
+So, just shutdown gracefully, it may take a couple of minutes to shut down due to the new disk attachement.
 ```
 sudo shutdown
 ```
 Then power-on the Pi and it "should" mount ok during the reboot process.
+
+Once the Pi powered on, look for the mounted disk; in a terminal:    
+```
+sudo dmesg
+sudo blkid
+sudo df
+sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
+```
 
 
 ---
