@@ -89,10 +89,10 @@ Assuming we have USB3 disks created as GPT disks (not Dynamic Disks) and formatt
 (since Windows PCs are often used to create media files, and WIndows only really likes disks formatted as NTFS)
 we need to prepare every disk to appear and behave in a consistent way.
 
-For every disk, change it's disk volume label to be like `DISK1`  **in strict numerical sequence** through to `DISK8` and unique to each disk.
-If you are unsure how to do that, try
+For every disk, change it's disk volume label to be like `DISK1`  **in strict numerical sequence** through to `DISK8` 
+and ensue they are definitely unique to each disk. If you are unsure how to do that, try    
 https://www.google.com.au/search?q=how+to+change+an+NTFS+disk+volume+label+in+windows+11    
-(Later, the 'top level media folder' naming must match this disk volume label name).    
+(Later, the 'root folder' naming must match the disk volume label number).    
 
 On every disk, in Windows change it's Security so that inbuilt username `everyone` is added with `Full Control` access.
 In Windows File Manager
