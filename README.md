@@ -329,7 +329,6 @@ sudo nano /boot/firmware/cmdline.txt
 and add a space and then this ` usbcore.autosuspend=-1` at very end of the single line.
 exit nano with `Control O` `Control X`.
 
-
 **7. Update the system; in a Terminal**    
 
 Use nano to edit the APT sources for updates:    
