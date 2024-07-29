@@ -498,14 +498,22 @@ sudo shutdown
 ```
 Then power-on the Pi and it "should" mount ok during the reboot process.
 
-Once the Pi powered on, look for the mounted disk; in a terminal:    
+Once the Pi powered on, look for the mounted disk; in a Terminal:    
 ```
-sudo dmesg
+#sudo dmesg
 sudo blkid
 sudo df
 sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
 ```
-
+and notice it is listed as mounted:
+```
+UUID                                 PARTUUID                             NAME      FSTYPE   SIZE MOUNTPOINT            LABEL
+                                                                          sda                7.3T                
+121E55501E552E4B                     27891019-f894-4e9b-b326-5f9d10c5c2cf sda1      ntfs     7.3T /mnt/shared/usb3disk7 DISK7-8Tb
+                                                                          mmcblk0           29.7G                
+9BE2-1346                            c454855e-01                          mmcblk0p1 vfat     512M /boot/firmware        bootfs
+12974fe2-889e-4060-b497-1d6ac3fbbb4b c454855e-02                          mmcblk0p2 ext4    29.2G /                     rootfs
+```
 
 ---
 
