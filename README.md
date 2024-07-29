@@ -38,7 +38,7 @@ on the internet - at the cost of having to deal with more complexity ... safety 
 ## General Approach
 This assumes you know how to use the nano editor, if not please google it, if using another editor then cool !
 
-If one has, say, 1 to 8 old USB3 disks with volume labels `DISK1` ... `DISK8` all plugged into the (1 or 2) USB3 hubs,
+If one has, say, 1 to 8 old USB3 disks with volume labels `DISK1` ... `DISK8` all plugged into the one or two USB3 hubs,
 and each disk has a matching single root folder `mergerfs_Root_1` ... `mergerfs_Root_8` containing
 subfolders of media to be served.    
 Note that some 'top level media folder's are duplicated across 2 or more other disks as backups.
