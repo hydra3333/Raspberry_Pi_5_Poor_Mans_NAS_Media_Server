@@ -90,7 +90,7 @@ Assuming we have USB3 disks created as GPT disks (not Dynamic Disks) and formatt
 we need to prepare every disk to appear and behave in a consistent way.
 
 For every disk, change it's disk volume label to be like `DISK1`  **in strict numerical sequence** through to `DISK8` 
-and ensue they are definitely unique to each disk. If you are unsure how to do that, try    
+and ensure they are definitely unique across disks. If you are unsure how to do that, try    
 https://www.google.com.au/search?q=how+to+change+an+NTFS+disk+volume+label+in+windows+11    
 (Later, the 'root folder' naming must match the disk volume label number).    
 
