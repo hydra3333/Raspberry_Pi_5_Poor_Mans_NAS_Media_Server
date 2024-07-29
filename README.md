@@ -117,7 +117,7 @@ The 'main' disk is always the 'first found disk' having a nominated 'top level m
 where a 'first found disk' ('ffd') is determined by the leftmost underlying disk in the
 linux fstab entry for 'mergerfs' (these are specified in left to right order).    
 So, in the example below - assuming the LtoR mount order in the fstab entry for `mergerfs`
-is `DISK1`,`DISK2`,`DISK3` - then the 'ffd' for each 'top level media folder' will be:
+is `DISK1,DISK2,DISK3` - then the 'ffd' for each 'top level media folder' will be:
 - `ClassicMovies` : `DISK1 mergerfs_Root_1`
 - `Documentaries` : `DISK2 mergerfs_Root_2`
 - `Footy        ` : `DISK1 mergerfs_Root_1`
