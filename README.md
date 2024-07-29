@@ -200,12 +200,12 @@ Click YES to proceed.
 
 ## Boot the Raspberry Pi 5 and update the system    
 ## Boot the Raspberry Pi 5 and update the system    
-1. **Order of power up (for this first time)**    
+**1. Order of power up (for this first time)**    
 - Ensure the Pi 5 is powered off    
 - Plug the SD card into the Pi 5    
 - Power on the Pi 5    
 
-2. **Once the Pi has finished booting to the desktop (leave it set to autologin)**    
+**2. Once the Pi has finished booting to the desktop (leave it set to autologin)**    
 - Click Start, Preferences, Raspberry Pi Configuration    
 - In the Localisation Tab, Set the Locale and then character set UTF-8, Timezone, Keyboard (setting keyboard is important if in non-US non-GB country), WiFi country, then click OK.    
 - If prompted to reboot then click YES and reboot back to the desktop.    
@@ -217,7 +217,7 @@ Click YES to proceed.
 
 Once the Pi has finished booting to the desktop:    
 
-3. **Force PCI Express Gen 3.0 speeds after next boot (8 GT/sec, almost double the speed) on the Pi 5; in a Terminal**    
+**3. Force PCI Express Gen 3.0 speeds after next boot (8 GT/sec, almost double the speed) on the Pi 5; in a Terminal**    
 and per https://www.jeffgeerling.com/blog/2023/forcing-pci-express-gen-30-speeds-on-pi-5     
 Edit the firmware's config file:    
 ```
