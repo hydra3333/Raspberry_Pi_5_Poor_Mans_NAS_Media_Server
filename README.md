@@ -38,25 +38,33 @@ This assumes you know how to use the nano editor, if not please google it, if us
 
 If one has, say, 1 to 8 old USB3 disks with volume labels `DISK1` ... `DISK8` all plugged into the (1 or 2) USB3 hubs,
 and each disk has a matching single root folder `mergerfs_Root_1` ... `mergerfs_Root_8` containing
-subfolders of media to be served (no files are duplicated acorss disks)    
+subfolders of media to be served.    
+Note that some folders are duplicated across 2 or more disks to make a backup.
 ```
 DISK1 -- mergerfs_Root_1 --|--ClassicMovies
+                           |--Footy-----------|--1997
+                           |                  |--1998
+                           |                  |--2003
+                           |                  |--2004
+
+DISK2 -- mergerfs_Root_2 --|--ClassicMovies
                            |--Documentaries
                            |--Footy-----------|--1997
                            |                  |--1998
+                           |                  |--2003
+                           |                  |--2004
+                           |--Movies
                            |--SciFi
 
-DISK2 -- mergerfs_Root_2 --|--ClassicMovies
-                           |--Footy-----------|--2000
-                           |                  |--2002
-                           |--Movies
-                           |--OldMovies
-
 DISK3 -- mergerfs_Root_3 --|--ClassicMovies
-                           |--Footy-----------|--2003
+                           |--Documentaries
+                           |--Footy-----------|--1997
+                           |                  |--1998
+                           |                  |--2003
                            |                  |--2004
+                           |--OldMovies
+                           |--SciFi
 ```
-
 
 ## Acknowledgements    
 
@@ -74,9 +82,10 @@ Assuming we have USB3 disks created as GPT disks (not Dynamic Disks) and formatt
 (since Windows PCs are often used to create media files, and WIndows only really likes disks formatted as NTFS)
 we need to prepare every disk to appear and behave in a consistent way.
 
-For every disk, change it's volume label to be like `DISK1` through to `DISK8` and unique to each disk.
+For every disk, change it's disk volume label to be like `DISK1` through to `DISK8` and unique to each disk.
 If you are unsure how to do that, try
 https://www.google.com.au/search?q=how+to+change+an+NTFS+disk+volume+label+in+windows+11    
+(Later, The 'top level media folder' names, later, must match this disk volume label name).    
 
 On every disk, in Windows change it's Security so that inbuilt username `everyone` is added with `Full Control` access.
 In Windows File Manager
@@ -89,33 +98,60 @@ In Windows File Manager
 - Ensure `Full control` is ticked and click `Apply`;
 if prompted, allow it to change all folders and files on the disk and ignore all errors
 
-On each disk, create one top level folder named like `mergerfs_Root_1` through to `mergerfs_Root_8` to match the unique disk volume label number.
+On each disk, create one root folder named like `mergerfs_Root_1` through to `mergerfs_Root_8` to match the unique disk volume label number.
 
-Under the top level folder on the disks, place the media files in a reasonably consistent (including filename capitalisation)
-subfolder structure of your choice. The same subfolder names and files may or may not exist on every disk, you can
-spread out the media files and subfolders across disks ... but do 
-**DO NOT duplicate ANY files in ANY of the same level folders named identically across ANY of the disks**
-since that may break the software rules. We end up with something like this    
+Under the root folder on the disks, place the media files in a reasonably consistent (including filename capitalisation)
+subfolder structure of your choice. The same subfolder names and files could exist on every disk or you could
+spread out the media files and subfolders across disks to balance disk usage...    
+Note that some 'top level media folder' trees are duplicated across 2 or more disks to make a **backup**.    
+**There will a regular `sync` process from 'main' to 'backup' disks.**    
+The 'main' disk is always the 'first found disk' having a nominated 'top level media folder' (eg 'Footy')
+where a 'first found disk' ('ffd') is determined by the leftmost underlying disk in the
+linux fstab entry for 'mergerfs' (these are specified in left to right order).
+In the example below, the 'ffd' for top level media folder will be:
+- `ClassicMovies` : DISK1 mergerfs_Root_1
+- `Documentaries` : DISK2 mergerfs_Root_2
+- `Footy        ` : DISK1 mergerfs_Root_1 
+- `Movies       ` : DISK2 mergerfs_Root_2 
+- `OldMovies    ` : DISK3 mergerfs_Root_3
+- `SciFi        ` : DISK2 mergerfs_Root_2 
+and not all of the top level media folders are important enough to have a backup (eg 'Movies', 'OldMovies'). 
+
 ```
-DISK1 -- mergerfs_Root_1 --|--ClassicMovies   <- do not have identical filenames in other disks in this folder
+DISK1 -- mergerfs_Root_1 --|--ClassicMovies
+                           |--Footy-----------|--1997
+                           |                  |--1998
+                           |                  |--2003
+                           |                  |--2004
+
+DISK2 -- mergerfs_Root_2 --|--ClassicMovies
                            |--Documentaries
                            |--Footy-----------|--1997
                            |                  |--1998
+                           |                  |--2003
+                           |                  |--2004
+                           |--Movies
                            |--SciFi
 
-DISK2 -- mergerfs_Root_2 --|--ClassicMovies   <- do not have identical filenames in other disks in this folder
-                           |--Footy-----------|--2000
-                           |                  |--2002
-                           |--Movies
-                           |--OldMovies
-
-DISK3 -- mergerfs_Root_3 --|--ClassicMovies   <- do not have identical filenames in other disks in this folder
-                           |--Footy-----------|--2003
+DISK3 -- mergerfs_Root_3 --|--ClassicMovies
+                           |--Documentaries
+                           |--Footy-----------|--1997
+                           |                  |--1998
+                           |                  |--2003
                            |                  |--2004
+                           |--OldMovies
+                           |--SciFi
 ```
 
 In the outline below, we'll assume only 3 USB3 disks. We can add more as needed,
-just keep an eye on the disk naming and folder structures in line with the example model above.    
+just keep an eye on the mandatory 'disk volume label' naming (eg `DISK1`) and its matching
+'root folder' naming (eg `mergerfs_Root_1`) in line with the example model above.    
+The 'top level media folder's (eg `Movies`) can be named anything you like, just ensure
+consistency in capitalization across disks and do not use spaces and especially not special characters.   
+Later, you could manually shuffle individual 'top level media folder' trees from one disk to another 
+(by copying/moving from and to the underlying linux disk mounts) to perhaps balance
+disk space use etc; the next `sync` process wll automatically detect it and stick
+with its 'fdd' rule.    
 
 ## Install Raspberry Pi OS with `autologin`    
 Run the `Raspberry Pi Imager` on a PC to put the full 64 bit `Raspberry Pi OS` image to an SD card in the usual way    
