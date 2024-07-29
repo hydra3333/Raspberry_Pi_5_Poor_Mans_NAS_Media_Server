@@ -92,7 +92,7 @@ we need to prepare every disk to appear and behave in a consistent way.
 For every disk, change it's disk volume label to be like `DISK1`  **in strict numerical sequence** through to `DISK8` 
 and ensure they are definitely unique across disks. If you are unsure how to do that, try    
 https://www.google.com.au/search?q=how+to+change+an+NTFS+disk+volume+label+in+windows+11    
-(Later, the 'root folder' naming must match the disk volume label number).    
+(Later, the 'root folder's like `mergerfs_Root_*`  **must match** the disk volume label number).    
 
 On every disk, in Windows change it's Security so that inbuilt username `everyone` is added with `Full Control` access.
 In Windows File Manager
