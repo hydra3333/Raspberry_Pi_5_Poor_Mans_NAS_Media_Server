@@ -259,14 +259,14 @@ dtparam=rtc_bbat_vchg=3000000
 ```
 exit nano with `Control O` `Control X`.   
 
-**NOTE: Later (not now) after you reboot, recharging with the right voltage setting will take effect.**    
+**NOTE: Later (not now) after you reboot, trickle recharging with the right voltage setting will take effect.**    
 You can check the `sysfs` files to ensure that the charging voltage was correctly set.
 ```
 /sys/devices/platform/soc/soc:rpi_rtc/rtc/rtc0/charging_voltage:0
 /sys/devices/platform/soc/soc:rpi_rtc/rtc/rtc0/charging_voltage_max:4400000
 /sys/devices/platform/soc/soc:rpi_rtc/rtc/rtc0/charging_voltage_min:1300000
 ```
-Then you can test the battery RTC functionality with:
+If you like you could test the battery RTC functionality with:
 ```
 echo +10 | sudo tee /sys/class/rtc/rtc0/wakealarm
 sudo halt
