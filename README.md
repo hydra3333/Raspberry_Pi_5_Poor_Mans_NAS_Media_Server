@@ -412,15 +412,85 @@ exit nano with `Control O` `Control X`.
 
 **12. Reboot the Pi 5 for everything to take effect; in a Terminal**    
 ```
-sudo reboot now
+sudo reboot
 ```
 
 ---
+# Tell the Pi about the new Disks
+
+You will need to do this for every new disk, one at a time.
+It can take a while !
+
+When the Pi is booted to the desktop, start a Terminal.
+
+**1. Create a folder to ccontain the mount points**    
+Before creating the first of the mount points,
+create a top level folder to contain the new mount points.
+```
+sudo mkdir -v -m a=rwx /mnt/shared
+sudo chmod -R -v a+rwx /mnt/shared
+```
+
+**2. power on ONE of the disks**
+To see the journal of what is happening while we wait, use these commands
+```
+sudo dmesg
+sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
+sudo blkid
+```
+Eventually, you should see the disk appear (you see the disk label) similar to this:
+```
+sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
+```
+```
+UUID                                 PARTUUID                             NAME      FSTYPE   SIZE MOUNTPOINT     LABEL
+                                                                          sda                7.3T                
+121E55501E552E4B                     27891019-f894-4e9b-b326-5f9d10c5c2cf sda1      ntfs     7.3T                DISK7-8Tb
+                                                                          mmcblk0           29.7G                
+9BE2-1346                            c454855e-01                          mmcblk0p1 vfat     512M /boot/firmware bootfs
+12974fe2-889e-4060-b497-1d6ac3fbbb4b c454855e-02                          mmcblk0p2 ext4    29.2G /              rootfs
+```
+Sometimes it gets auto mounted, sometimes it doesn't, hey it's linux.
+Anyway, save these things.
+```
+PARTUUID                             NAME      LABEL
+27891019-f894-4e9b-b326-5f9d10c5c2cf sda1      DISK7-8Tb
+```
+Very carefully, note    
+- note the disk number in the disk label (`7` in `DISK7-8Tb`)     
+- note the disk PARTUUID (`27891019-f894-4e9b-b326-5f9d10c5c2cf` in this case)    
+
+Now create a mount point for this new disk.
+Ensure the number in the text 'usb3disk\*' below the number **exactly** matches the disk number you noted ebove (eg `7` in this case) 
+```
+sudo mkdir -v -m a=rwx /mnt/shared/usb3disk7
+sudo chmod -R -v a+rwx /mnt/shared/usb3disk7
+`
 
 
+Make a backup of and then `edit /etc/fstab`
+```
+sudo cp -fv /etc/fstab /etc/fstab.bak
+sudo nano  /etc/fstab
+```
+At the end of the file, save a future mount point for it like this,
+being careful that the number in 'usb3disk*' (eg `usb3disk7`) exactly matches
+the number in the new disk's disk label shown by the `sudo lsblk` eg (`DISK7-8Tb`):
+```
+PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /mnt/shared/usb3disk7 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail 0 0
+```
+exit nano with `Control O` `Control X`.
 
-
-
+Now use reload the newly updated fstab, and test the automount from fstab; in a Terminal:
+```
+sudo systemctl daemon-reload
+sudo mount -a
+```
+Sometimes the auto mount will fail ... thanks linux ! So just shutdown gracefully, it may take a couple of minutes this time.
+```
+sudo shutdown
+```
+Then power-on the Pi and it "should" mount ok during the reboot process.
 
 
 ---
