@@ -469,7 +469,7 @@ sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
 ```
 UUID                                 PARTUUID                             NAME      FSTYPE   SIZE MOUNTPOINT     LABEL
                                                                           sda                7.3T                
-121E55501E552E4B                     27891019-f894-4e9b-b326-5f9d10c5c2cf sda1      ntfs     7.3T                DISK7-8Tb
+121E55501E552E4B                     27891019-f894-4e9b-b326-5f9d10c5c2cf sda1      ntfs3    7.3T                DISK7-8Tb
                                                                           mmcblk0           29.7G                
 9BE2-1346                            c454855e-01                          mmcblk0p1 vfat     512M /boot/firmware bootfs
 12974fe2-889e-4060-b497-1d6ac3fbbb4b c454855e-02                          mmcblk0p2 ext4    29.2G /              rootfs
@@ -503,7 +503,7 @@ being careful to ensure that:
 new disk's disk label as shown by `sudo lsblk` eg (`DISK7-8Tb` in this case)
 - the PARTUUID is **extractly** the unique PARTUUID you noted above for this specific disk
 ```
-PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /mnt/shared/usb3disk7 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail 0 0
+PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /mnt/shared/usb3disk7 ntfs3 defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail 0 0
 ```
 exit nano with `Control O` `Control X`.
 
@@ -531,7 +531,7 @@ and notice it is listed as mounted:
 ```
 UUID                                 PARTUUID                             NAME      FSTYPE   SIZE MOUNTPOINT            LABEL
                                                                           sda                7.3T                
-121E55501E552E4B                     27891019-f894-4e9b-b326-5f9d10c5c2cf sda1      ntfs     7.3T /mnt/shared/usb3disk7 DISK7-8Tb
+121E55501E552E4B                     27891019-f894-4e9b-b326-5f9d10c5c2cf sda1      ntfs3    7.3T /mnt/shared/usb3disk7 DISK7-8Tb
                                                                           mmcblk0           29.7G                
 9BE2-1346                            c454855e-01                          mmcblk0p1 vfat     512M /boot/firmware        bootfs
 12974fe2-889e-4060-b497-1d6ac3fbbb4b c454855e-02                          mmcblk0p2 ext4    29.2G /                     rootfs
@@ -1056,10 +1056,10 @@ sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
 UUID                                 PARTUUID                             NAME        FSTYPE  SIZE MOUNTPOINT          LABEL
                                                                           sda                 3.6T                     
                                      c8c72b90-6c8a-4631-9704-a3816695a6dc ├─sda1              128M                     
-96DA1D13DA1CF0EB                     a175d2d3-c2f6-44d4-a5fc-209363280c89 └─sda2      ntfs    3.6T /media/pi/DISK2-4TB DISK2-4TB
+96DA1D13DA1CF0EB                     a175d2d3-c2f6-44d4-a5fc-209363280c89 └─sda2      ntfs3   3.6T /media/pi/DISK2-4TB DISK2-4TB
                                                                           sdb                 4.5T                     
                                      c542d01e-9ac9-486f-98cb-4521e0fe54f8 ├─sdb1              128M                     
-C4D05ABAD05AB302                     2d5599a2-aa11-4aad-9f75-7fca2078b38b └─sdb2      ntfs    4.5T /media/pi/DISK1-5TB DISK1-5TB
+C4D05ABAD05AB302                     2d5599a2-aa11-4aad-9f75-7fca2078b38b └─sdb2      ntfs3   4.5T /media/pi/DISK1-5TB DISK1-5TB
                                                                           mmcblk0            29.7G                     
 9BE2-1346                            9fd862b3-01                          ├─mmcblk0p1 vfat    512M /boot/firmware      bootfs
 12974fe2-889e-4060-b497-1d6ac3fbbb4b 9fd862b3-02                          └─mmcblk0p2 ext4   29.2G /                   rootfs
@@ -1067,8 +1067,8 @@ C4D05ABAD05AB302                     2d5599a2-aa11-4aad-9f75-7fca2078b38b └─
 In that output, identify lines showing mount names for the USB3 disks, eg something like these:
 ```
 UUID                                 PARTUUID                             NAME        FSTYPE  SIZE MOUNTPOINT          LABEL
-C4D05ABAD05AB302                     2d5599a2-aa11-4aad-9f75-7fca2078b38b └─sdb2      ntfs    4.5T /media/pi/DISK1-5TB DISK1-5TB
-96DA1D13DA1CF0EB                     a175d2d3-c2f6-44d4-a5fc-209363280c89 └─sda2      ntfs    3.6T /media/pi/DISK2-4TB DISK2-4TB
+C4D05ABAD05AB302                     2d5599a2-aa11-4aad-9f75-7fca2078b38b └─sdb2      ntfs3   4.5T /media/pi/DISK1-5TB DISK1-5TB
+96DA1D13DA1CF0EB                     a175d2d3-c2f6-44d4-a5fc-209363280c89 └─sda2      ntfs3   3.6T /media/pi/DISK2-4TB DISK2-4TB
 ```
 From each relevant partition we identify, look for the disk UUID, PARTUUID, NAME (eg `sda`) and save these somewhere, as we NEED the PARTUUIDs later.
 
@@ -1147,8 +1147,8 @@ So in our example it becomes
 # Careful: "nofail" will cause the process to continue with no errors (avoiding a boot hand when a disk does not mount)
 #          however the subsequently dependent mounts will fails as will the overlayfs mount
 #             ... but at least we have booted, not halting boot with a failed fstab entry, and can fix that !
-PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /mnt/shared/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail 0 0
-PARTUUID=a175d2d3-c2f6-44d4-a5fc-209363280c89 /mnt/shared/usb3disk2 ntfs x-systemd.requires=/mnt/shared/usb3disk1,defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail 0 0
+PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /mnt/shared/usb3disk1 ntfs3 defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail 0 0
+PARTUUID=a175d2d3-c2f6-44d4-a5fc-209363280c89 /mnt/shared/usb3disk2 ntfs3 x-systemd.requires=/mnt/shared/usb3disk1,defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail 0 0
 # Create the overlayfs virtual folder, by overlaying the 2 root folders. 
 # The overlayfs lowerdir folders in order Left to Right takes precedence when duplicate files are found.
 overlay /mnt/shared/overlay overlay lowerdir=/mnt/shared/usb3disk1/ROOTFOLDER1:/mnt/shared/usb3disk2/ROOTFOLDER2,defaults,auto,noatime,nodiratime,nofail,users,ro,exec,x-systemd.mount-timeout=60,x-systemd.requires=/mnt/shared/usb3disk2,noatime,nodiratime,nofail 0 0
