@@ -1,4 +1,5 @@
 import os
+import sys
 import subprocess
 from pathlib import Path
 import glob
@@ -8,35 +9,50 @@ import pprint
 
 # Configuration
 DEBUG_IS_ON = False  # Set to True to enable debug printing
+objPrettyPrint = None
+#
 
-def init_PrettyPrinter(TERMINAL_WIDTH)
+def init_PrettyPrinter(TERMINAL_WIDTH):
     # Set up prettyprint for formatting
     objPrettyPrint = pprint.PrettyPrinter(width=TERMINAL_WIDTH, compact=False, sort_dicts=False)  # facilitates formatting
-    return objPrettyPrint
+    return
 
-def init_logging(log_filename)
+def init_logging(log_filename):
     # Set up logging
     logging.basicConfig(filename=log_filename,
                         level=logging.DEBUG if DEBUG_IS_ON else logging.INFO,
                         format='%(asctime)s %(levelname)s: %(message)s')
 
-def debug_log_and_print(message):
+def debug_log_and_print(message, data=None):
     """
     Logs and prints a message with optional data, if DEBUG is on.
     """
     if DEBUG_IS_ON:
         logging.debug(message)
-        print(f"DEBUG: {message}")
+        print(f"DEBUG: {message}", flush=True)
+        if data is not None:
+            logging.debug(objPrettyPrint.pformat(data))
+            print(f"DEBUG:\n{objPrettyPrint.pformat(data)}", flush=True)
+
+def error_log_and_print(message, data=None):
+    """
+    Logs and prints a message with optional data, if DEBUG is on.
+    """
+    logging.error(message)
+    print(f"ERROR: {message}", flush=True)
+    if data is not None:
+        logging.error(objPrettyPrint.pformat(data))
+        print(f"ERROR:\n{objPrettyPrint.pformat(data)}", flush=True)
 
 def log_and_print(message, data=None):
     """
     Logs and prints a message with optional data.
     """
     logging.info(message)
-    print(message)
+    print(message, flush=True)
     if data is not None:
-        logging.info(pprint.pformat(data))
-        objPrettyPrint.pprint(data)
+        logging.info(objPrettyPrint.pformat(data))
+        print(f"{objPrettyPrint.pformat(data)}", flush=True)
 
 def get_free_disk_space(path):
     """
@@ -108,14 +124,14 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
                         the_mergerfs_disks_in_LtoR_order_from_fstab.append({'disk_mount_point': disk, 'free_disk_space': free_disk_space})
                 # If more than 1 mergerfs line is found, it's a conflict
                 if len(the_mergerfs_disks_in_LtoR_order_from_fstab) > 1:
-                    logging.error("Multiple mergerfs lines found in 'fstab'. Aborting.")
+                    error_log_and_print("Multiple mergerfs lines found in 'fstab'. Aborting.")
                     sys.exit(1)  # Exit with a status code indicating an error
     except Exception as e:
-        logging.error(f"Error reading /etc/fstab: {e}")
+        error_log_and_print(f"Error reading /etc/fstab: {e}")
         sys.exit(1)  # Exit with a status code indicating an error
 
     if len(the_mergerfs_disks_in_LtoR_order_from_fstab) < 1:
-        logging.error(f"ZERO Detected 'mergerfs' underlying disks in LtoR order from 'fstab': {the_mergerfs_disks_in_LtoR_order_from_fstab}")
+        error_log_and_print(f"ZERO detected 'mergerfs' underlying disks in LtoR order from 'fstab': {the_mergerfs_disks_in_LtoR_order_from_fstab}")
         sys.exit(1)  # Exit with a status code indicating an error
 
     debug_log_and_print(f"Detected 'mergerfs' underlying disks in LtoR order from fstab '{fstab_mergerfs_line}': {the_mergerfs_disks_in_LtoR_order_from_fstab}")
@@ -173,7 +189,7 @@ def detect_mergerfs_disks_having_a_root_folder(mergerfs_disks_in_LtoR_order_from
                 if len(candidate_root_folders) > 1:
                     error_message = (f"Error: disk_mount_point {disk_mount_point} has multiple root folders: {candidate_root_folders}."
                                      "Each disk_mount_point should only have one root folder like 'mergerfs_Root_*'.")
-                    logging.error(error_message)
+                    error_log_and_print(error_message)
                     sys.exit(1)  # Exit with a status code indicating an error
                 elif len(candidate_root_folders) == 1:
                     found_root_folder = candidate_root_folders[0]
@@ -201,11 +217,11 @@ def detect_mergerfs_disks_having_a_root_folder(mergerfs_disks_in_LtoR_order_from
                 else:
                     pass
         except Exception as e:
-            logging.error(f"Error accessing {disk_mount_point}: {e}")
+            error_log_and_print(f"Error accessing {disk_mount_point}: {e}")
             sys.exit(1)  # Exit with a status code indicating an error
 
     if len(those_mergerfs_disks_having_a_root_folder) < 1:
-        logging.error(f"ZERO Detected 'mergerfs' underlying disks having a root folder AND top_level_media_folders: {mergerfs_disks_in_LtoR_order_from_fstab}")
+        error_log_and_print(f"ZERO Detected 'mergerfs' underlying disks having a root folder AND top_level_media_folders: {mergerfs_disks_in_LtoR_order_from_fstab}")
         sys.exit(1)  # Exit with a status code indicating an error
 
     debug_log_and_print(f"Detected 'mergerfs' underlying disks having a root folder AND top level media folders: {those_mergerfs_disks_having_a_root_folder}")

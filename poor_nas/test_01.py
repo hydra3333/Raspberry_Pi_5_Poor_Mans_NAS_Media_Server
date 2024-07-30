@@ -1,4 +1,5 @@
 import os
+import sys
 import subprocess
 from pathlib import Path
 import glob
@@ -67,8 +68,8 @@ def generate_crosstab_report(unique_top_level_media_folders, mergerfs_disks_in_L
     headers.append("Total")
 
     # Log and print the header
-    log_and_print("Crosstab Report for Top Level Media Folders:")
-    log_and_print(" | ".join(headers))
+    common_functions.log_and_print("Crosstab Report for Top Level Media Folders:")
+    common_functions.log_and_print(" | ".join(headers))
     
     # Prepare the rows for each top level media folder
     for media_folder, data in unique_top_level_media_folders.items():
@@ -89,7 +90,7 @@ def generate_crosstab_report(unique_top_level_media_folders, mergerfs_disks_in_L
             else:
                 row.append("N/A")
         row.append(f"{total_files} files, {total_disk_space} bytes")
-        log_and_print(" | ".join(row))
+        common_functions.log_and_print(" | ".join(row))
 
     # Totals row
     total_row = ["Total"]
@@ -98,31 +99,41 @@ def generate_crosstab_report(unique_top_level_media_folders, mergerfs_disks_in_L
         free_space = disk['free_disk_space']
         total_row.append(f"Free: {free_space} bytes")
     total_row.append("")  # Placeholder for the final column
-    log_and_print(" | ".join(total_row))
-    log_and_print("End of Crosstab Report.")
+    common_functions.log_and_print(" | ".join(total_row))
+    common_functions.log_and_print("End of Crosstab Report.")
 
 def main():
     """
     Main function
     """
-    DEBUG_IS_ON = True
-    init_PrettyPrinter(250)
-    init_logging(r'./logile.log')
+    print(f"X: about to set DEBUG_IS_ON", flush=True)
+    common_functions.DEBUG_IS_ON = True
+    print(f"X: about to init_PrettyPrinter", flush=True)
+    common_functions.init_PrettyPrinter(250)
+    print(f"X: about to init_logging", flush=True)
+    common_functions.init_logging(r'./logile.log')
+    print(f"X: test message after init functions executed", flush=True)
 
     # Step 1: Get mergerfs disks in LtoR order from fstab
-    mergerfs_disks_in_LtoR_order_from_fstab = get_mergerfs_disks_in_LtoR_order_from_fstab()
-    log_and_print("MergerFS Disks in Left-to-Right Order from /etc/fstab:", mergerfs_disks_in_LtoR_order_from_fstab)
+    print(f"X: before call common_functions.get_mergerfs_disks_in_LtoR_order_from_fstab()", flush=True)
+    mergerfs_disks_in_LtoR_order_from_fstab = common_functions.get_mergerfs_disks_in_LtoR_order_from_fstab()
+    print(f"X: after call common_functions.get_mergerfs_disks_in_LtoR_order_from_fstab()", flush=True)
+    common_functions.log_and_print("MergerFS Disks in Left-to-Right Order from /etc/fstab:", mergerfs_disks_in_LtoR_order_from_fstab)
     
     # Step 2: Detect mergerfs disks having a root folder
-    mergerfs_disks_having_a_root_folder = detect_mergerfs_disks_having_a_root_folder(mergerfs_disks_in_LtoR_order_from_fstab)
-    log_and_print("MergerFS Disks Having a Root Folder:", mergerfs_disks_having_a_root_folder)
+    print(f"X: before call common_functions.detect_mergerfs_disks_having_a_root_folder()", flush=True)
+    mergerfs_disks_having_a_root_folder = common_functions.detect_mergerfs_disks_having_a_root_folder(mergerfs_disks_in_LtoR_order_from_fstab)
+    print(f"X: after call common_functions.detect_mergerfs_disks_having_a_root_folder()", flush=True)
+    common_functions.log_and_print("MergerFS Disks Having a Root Folder:", mergerfs_disks_having_a_root_folder)
     
     # Step 3: Get unique top level media folders and update ffd information
-    unique_top_level_media_folders, mergerfs_disks_having_a_root_folder = get_unique_top_level_media_folders(
+    print(f"X: before call common_functions.get_unique_top_level_media_folders()", flush=True)
+    unique_top_level_media_folders, mergerfs_disks_having_a_root_folder = common_functions.get_unique_top_level_media_folders(
         mergerfs_disks_in_LtoR_order_from_fstab,
         mergerfs_disks_having_a_root_folder
     )
-    log_and_print("Unique Top-Level Media Folders:", unique_top_level_media_folders)
+    print(f"X: after call common_functions.get_unique_top_level_media_folders()", flush=True)
+    common_functions.log_and_print("Unique Top-Level Media Folders:", unique_top_level_media_folders)
     
     # Step 4: Generate and log the crosstab report
     #generate_crosstab_report(unique_top_level_media_folders, mergerfs_disks_in_LtoR_order_from_fstab, mergerfs_disks_having_a_root_folder)
