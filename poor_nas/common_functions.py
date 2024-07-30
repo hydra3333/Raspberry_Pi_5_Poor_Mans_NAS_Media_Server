@@ -195,7 +195,7 @@ def detect_mergerfs_disks_having_a_root_folder(mergerfs_disks_in_LtoR_order_from
         try:
             disk_mount_point_path = Path(disk_mount_point)
             if disk_mount_point_path.is_dir():
-                candidate_root_folders = [d.name for d in disk_mount_point_path.iterdir() if d.is_dir() and re.match(r'^mergerfs_Root_[1-8]$', d.name)]
+                candidate_root_folders = [d.name for d in sorted(disk_mount_point_path.iterdir()) if d.is_dir() and re.match(r'^mergerfs_Root_[1-8]$', d.name)]
                 # Check for multiple root folders on the same disk
                 if len(candidate_root_folders) > 1:
                     error_log_and_print(f"Each disk_mount_point should only have only one root folder like 'mergerfs_Root_*'.")
@@ -205,7 +205,7 @@ def detect_mergerfs_disks_having_a_root_folder(mergerfs_disks_in_LtoR_order_from
                     found_root_folder = candidate_root_folders[0]
                     found_root_folder_path = disk_mount_point_path / found_root_folder
                     found_top_level_media_folders_list = []
-                    for top_level_media_folder in found_root_folder_path.iterdir():
+                    for top_level_media_folder in sorted(found_root_folder_path.iterdir()):
                         if top_level_media_folder.is_dir():
                             number_of_files = sum([len(files) for r, d, files in os.walk(top_level_media_folder)])
                             disk_space_used = sum([os.path.getsize(os.path.join(r, file)) for r, d, files in os.walk(top_level_media_folder) for file in files])
