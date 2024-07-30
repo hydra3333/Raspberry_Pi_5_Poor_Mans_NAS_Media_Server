@@ -68,8 +68,8 @@ def generate_crosstab_report(unique_top_level_media_folders, mergerfs_disks_in_L
     headers.append("Total")
 
     # Log and print the header
-    log_and_print("Crosstab Report for Top Level Media Folders:")
-    log_and_print(" | ".join(headers))
+    common_functions.log_and_print("Crosstab Report for Top Level Media Folders:")
+    common_functions.log_and_print(" | ".join(headers))
     
     # Prepare the rows for each top level media folder
     for media_folder, data in unique_top_level_media_folders.items():
@@ -90,7 +90,7 @@ def generate_crosstab_report(unique_top_level_media_folders, mergerfs_disks_in_L
             else:
                 row.append("N/A")
         row.append(f"{total_files} files, {total_disk_space} bytes")
-        log_and_print(" | ".join(row))
+        common_functions.log_and_print(" | ".join(row))
 
     # Totals row
     total_row = ["Total"]
@@ -99,8 +99,8 @@ def generate_crosstab_report(unique_top_level_media_folders, mergerfs_disks_in_L
         free_space = disk['free_disk_space']
         total_row.append(f"Free: {free_space} bytes")
     total_row.append("")  # Placeholder for the final column
-    log_and_print(" | ".join(total_row))
-    log_and_print("End of Crosstab Report.")
+    common_functions.log_and_print(" | ".join(total_row))
+    common_functions.log_and_print("End of Crosstab Report.")
 
 def main():
     """
@@ -113,19 +113,20 @@ def main():
     common_functions.init_PrettyPrinter(TERMINAL_WIDTH)
     common_functions.init_logging(r'./logile.log')
 
-    #common_functions.log_and_print('-' * TERMINAL_WIDTH)
+    common_functions.log_and_print('-' * TERMINAL_WIDTH)
+    common_functions.log_and_print("Starting 'crosstab_filecount'.")
 
     # Step 1: Get mergerfs disks in LtoR order from fstab
     common_functions.log_and_print("Finding MergerFS Disks in Left-to-Right Order from /etc/fstab ...")
     mergerfs_disks_in_LtoR_order_from_fstab = common_functions.get_mergerfs_disks_in_LtoR_order_from_fstab()
-    common_functions.log_and_print("MergerFS Disks in Left-to-Right Order from /etc/fstab:", data=mergerfs_disks_in_LtoR_order_from_fstab)
-    common_functions.log_and_print('-' * TERMINAL_WIDTH)
+    #common_functions.log_and_print("MergerFS Disks in Left-to-Right Order from /etc/fstab:", data=mergerfs_disks_in_LtoR_order_from_fstab)
+    #common_functions.log_and_print('-' * TERMINAL_WIDTH)
     
     # Step 2: Detect mergerfs disks having a root folder
     common_functions.log_and_print("Finding MergerFS Disks Having a Root Folder ...")
     mergerfs_disks_having_a_root_folder = common_functions.detect_mergerfs_disks_having_a_root_folder(mergerfs_disks_in_LtoR_order_from_fstab)
-    common_functions.log_and_print("MergerFS Disks Having a Root Folder:", data=mergerfs_disks_having_a_root_folder)
-    common_functions.log_and_print('-' * TERMINAL_WIDTH)
+    #common_functions.log_and_print("MergerFS Disks Having a Root Folder:", data=mergerfs_disks_having_a_root_folder)
+    #common_functions.log_and_print('-' * TERMINAL_WIDTH)
     
     # Step 3: Get unique top level media folders and update ffd information
     common_functions.log_and_print("Finding Unique Top-Level Media Folders")
@@ -133,13 +134,15 @@ def main():
         mergerfs_disks_in_LtoR_order_from_fstab,
         mergerfs_disks_having_a_root_folder
         )
-    common_functions.log_and_print("Unique Top-Level Media Folders:", data=unique_top_level_media_folders)
-    common_functions.log_and_print('-' * TERMINAL_WIDTH)
+    #common_functions.log_and_print("Unique Top-Level Media Folders:", data=unique_top_level_media_folders)
+    #common_functions.log_and_print('-' * TERMINAL_WIDTH)
 
-    log_and_print("Unique Top-Level Media Folders:", unique_top_level_media_folders)
-    
     # Step 4: Generate and log the crosstab report
+    common_functions.log_and_print("Generating crosstab_report ...")
     generate_crosstab_report(unique_top_level_media_folders, mergerfs_disks_in_LtoR_order_from_fstab, mergerfs_disks_having_a_root_folder)
+
+    common_functions.log_and_print("Finished 'crosstab_filecount'.")
+    common_functions.log_and_print('-' * TERMINAL_WIDTH)
 
 if __name__ == "__main__":
     main()
