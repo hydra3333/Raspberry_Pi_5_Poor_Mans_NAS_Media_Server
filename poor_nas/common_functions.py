@@ -33,7 +33,7 @@ def debug_log_and_print(message, data=None):
         print(f"DEBUG: {message}", flush=True)
         if data is not None:
             logging.debug(objPrettyPrint.pformat(data))
-            print(f"{objPrettyPrint.pformat(data)}", flush=True)
+            print(objPrettyPrint.pformat(data), flush=True)
 
 def error_log_and_print(message, data=None):
     """
@@ -43,7 +43,7 @@ def error_log_and_print(message, data=None):
     print(f"ERROR: {message}", flush=True)
     if data is not None:
         logging.error(objPrettyPrint.pformat(data))
-        print(f"{objPrettyPrint.pformat(data)}", flush=True)
+        print(objPrettyPrint.pformat(data), flush=True)
 
 def log_and_print(message, data=None):
     """
@@ -53,7 +53,7 @@ def log_and_print(message, data=None):
     print(message, flush=True)
     if data is not None:
         logging.info(objPrettyPrint.pformat(data))
-        print(f"{objPrettyPrint.pformat(data)}", flush=True)
+        print(objPrettyPrint.pformat(data), flush=True)
 
 def get_free_disk_space(path):
     """
@@ -141,10 +141,10 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
         sys.exit(1)  # Exit with a status code indicating an error
 
     if (number_of_mergerfs_lines < 1) or (len(the_mergerfs_disks_in_LtoR_order_from_fstab) < 1) :
-        error_log_and_print(f"ZERO detected 'mergerfs' underlying disks in LtoR order from 'fstab': {the_mergerfs_disks_in_LtoR_order_from_fstab}")
+        error_log_and_print(f"ZERO detected 'mergerfs' underlying disks in LtoR order from 'fstab':\n\n\n\n", data=the_mergerfs_disks_in_LtoR_order_from_fstab)
         sys.exit(1)  # Exit with a status code indicating an error
 
-    debug_log_and_print(f"Detected 'mergerfs' underlying disks in LtoR order from fstab '{fstab_mergerfs_line}': {the_mergerfs_disks_in_LtoR_order_from_fstab}")
+    debug_log_and_print(f"Detected 'mergerfs' underlying disks in LtoR order from fstab '{fstab_mergerfs_line}'", data=the_mergerfs_disks_in_LtoR_order_from_fstab)
     return the_mergerfs_disks_in_LtoR_order_from_fstab
 
 def detect_mergerfs_disks_having_a_root_folder(mergerfs_disks_in_LtoR_order_from_fstab):
