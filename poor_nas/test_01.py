@@ -135,6 +135,7 @@ def main():
         )
     common_functions.log_and_print("Unique Top-Level Media Folders:", data=unique_top_level_media_folders)
     common_functions.log_and_print('-' * TERMINAL_WIDTH)
+
     # Step 4: Generate and log the crosstab report
     #generate_crosstab_report(unique_top_level_media_folders, mergerfs_disks_in_LtoR_order_from_fstab, mergerfs_disks_having_a_root_folder)
 
