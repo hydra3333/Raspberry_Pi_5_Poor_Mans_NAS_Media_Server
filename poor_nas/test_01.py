@@ -106,33 +106,23 @@ def main():
     """
     Main function
     """
-    print(f"X: about to set DEBUG_IS_ON", flush=True)
     common_functions.DEBUG_IS_ON = True
-    print(f"X: about to init_PrettyPrinter", flush=True)
     common_functions.init_PrettyPrinter(250)
-    print(f"X: about to init_logging", flush=True)
     common_functions.init_logging(r'./logile.log')
-    print(f"X: test message after init functions executed", flush=True)
 
     # Step 1: Get mergerfs disks in LtoR order from fstab
-    print(f"X: before call common_functions.get_mergerfs_disks_in_LtoR_order_from_fstab()", flush=True)
     mergerfs_disks_in_LtoR_order_from_fstab = common_functions.get_mergerfs_disks_in_LtoR_order_from_fstab()
-    print(f"X: after call common_functions.get_mergerfs_disks_in_LtoR_order_from_fstab()", flush=True)
     common_functions.log_and_print("MergerFS Disks in Left-to-Right Order from /etc/fstab:", mergerfs_disks_in_LtoR_order_from_fstab)
     
     # Step 2: Detect mergerfs disks having a root folder
-    print(f"X: before call common_functions.detect_mergerfs_disks_having_a_root_folder()", flush=True)
     mergerfs_disks_having_a_root_folder = common_functions.detect_mergerfs_disks_having_a_root_folder(mergerfs_disks_in_LtoR_order_from_fstab)
-    print(f"X: after call common_functions.detect_mergerfs_disks_having_a_root_folder()", flush=True)
     common_functions.log_and_print("MergerFS Disks Having a Root Folder:", mergerfs_disks_having_a_root_folder)
     
     # Step 3: Get unique top level media folders and update ffd information
-    print(f"X: before call common_functions.get_unique_top_level_media_folders()", flush=True)
     unique_top_level_media_folders, mergerfs_disks_having_a_root_folder = common_functions.get_unique_top_level_media_folders(
         mergerfs_disks_in_LtoR_order_from_fstab,
         mergerfs_disks_having_a_root_folder
     )
-    print(f"X: after call common_functions.get_unique_top_level_media_folders()", flush=True)
     common_functions.log_and_print("Unique Top-Level Media Folders:", unique_top_level_media_folders)
     
     # Step 4: Generate and log the crosstab report

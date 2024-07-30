@@ -14,6 +14,7 @@ objPrettyPrint = None
 
 def init_PrettyPrinter(TERMINAL_WIDTH):
     # Set up prettyprint for formatting
+    global objPrettyPrint
     objPrettyPrint = pprint.PrettyPrinter(width=TERMINAL_WIDTH, compact=False, sort_dicts=False)  # facilitates formatting
     return
 
@@ -32,7 +33,7 @@ def debug_log_and_print(message, data=None):
         print(f"DEBUG: {message}", flush=True)
         if data is not None:
             logging.debug(objPrettyPrint.pformat(data))
-            print(f"DEBUG:\n{objPrettyPrint.pformat(data)}", flush=True)
+            print(f"{objPrettyPrint.pformat(data)}", flush=True)
 
 def error_log_and_print(message, data=None):
     """
@@ -42,7 +43,7 @@ def error_log_and_print(message, data=None):
     print(f"ERROR: {message}", flush=True)
     if data is not None:
         logging.error(objPrettyPrint.pformat(data))
-        print(f"ERROR:\n{objPrettyPrint.pformat(data)}", flush=True)
+        print(f"{objPrettyPrint.pformat(data)}", flush=True)
 
 def log_and_print(message, data=None):
     """
@@ -89,14 +90,20 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
         # Keep the valid mergerfs underlying disks in LtoR order
         # so we can use it later to determine the 'ffd', aka 'first found disk', for each 'top media folder' by parsing this list
         fstab_mergerfs_line = ''
+        number_of_mergerfs_lines = 0
         for line in fstab_lines:
             # Example line (without the #) we are looking for
-            # "/mnt/hdd*:/mnt/sda1:/mnt/sda2 /mergerfs_root mergerfs category.action=ff,category.create=ff,category.delete=all,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs 0 0"
+            # ... when delete, only delete the first found, backup copies of a file are unaffected
+            # ...     /srv/usb3disk* /mergerfs_root mergerfs category.action=ff,category.create=ff,category.delete=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs 0 0
+            # ... when delete, only delete it and all backup copies of a file
+            # ...     /srv/usb3disk* /mergerfs_root mergerfs category.action=ff,category.create=ff,category.delete=all,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs 0 0
             # Skip comments and empty lines
+            debug_log_and_print(f"A line was read from /etc/fstab:", data=line)
             if line.startswith('#') or not line.strip():
                 continue
             fields = line.split()
             if any('mergerfs' in field.lower() for field in fields):  # Identify mergerfs entries
+                number_of_mergerfs_lines = number_of_mergerfs_lines + 1
                 fstab_mergerfs_line = line.strip()
                 debug_log_and_print(f"MergerFS line found: {line.strip()}")
                 # fields[0] should contain one or more and/or globbed, underlying file system mount points used by mergerfs
@@ -107,14 +114,16 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
                 for disk in split_disks:
                     if '*' in disk:
                         # Handle wildcard globbing pattern (eg /mnt/hdd*)
-                        expanded_paths = glob.glob(disk)
+                        expanded_paths = sorted(glob.glob(disk))
+                        debug_log_and_print(f"MergerFS line Handling wildcard globbing pattern ... expanded_paths:", data=expanded_paths)
                         the_mergerfs_disks_in_LtoR_order_from_fstab.extend(
                             [{'disk_mount_point': p, 'free_disk_space': get_free_disk_space(p)} for p in expanded_paths]
                         )
                     elif '{' in disk and '}' in disk:
                         # Handle curly brace globbing pattern (eg /mnt/{hdd1,hdd2})
                         pattern = re.sub(r'\{(.*?)\}', r'(\1)', disk)
-                        expanded_paths = glob.glob(pattern)
+                        expanded_paths = sorted(glob.glob(pattern))
+                        debug_log_and_print(f"MergerFS line Handling wcurly brace globbing pattern... expanded_paths:", data=expanded_paths)
                         the_mergerfs_disks_in_LtoR_order_from_fstab.extend(
                             [{'disk_mount_point': p, 'free_disk_space': get_free_disk_space(p)} for p in expanded_paths]
                         )
@@ -122,15 +131,16 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
                         # Handle plain (eg /mnt/hdd1 underlying file system mount point
                         free_disk_space = get_free_disk_space(disk)
                         the_mergerfs_disks_in_LtoR_order_from_fstab.append({'disk_mount_point': disk, 'free_disk_space': free_disk_space})
-                # If more than 1 mergerfs line is found, it's a conflict
-                if len(the_mergerfs_disks_in_LtoR_order_from_fstab) > 1:
-                    error_log_and_print("Multiple mergerfs lines found in 'fstab'. Aborting.")
-                    sys.exit(1)  # Exit with a status code indicating an error
     except Exception as e:
         error_log_and_print(f"Error reading /etc/fstab: {e}")
         sys.exit(1)  # Exit with a status code indicating an error
 
-    if len(the_mergerfs_disks_in_LtoR_order_from_fstab) < 1:
+    # If more than 1 mergerfs line is found, it's a conflict
+    if number_of_mergerfs_lines > 1:
+        error_log_and_print("Multiple mergerfs lines found in 'fstab'. Aborting.")
+        sys.exit(1)  # Exit with a status code indicating an error
+
+    if (number_of_mergerfs_lines < 1) or (len(the_mergerfs_disks_in_LtoR_order_from_fstab) < 1) :
         error_log_and_print(f"ZERO detected 'mergerfs' underlying disks in LtoR order from 'fstab': {the_mergerfs_disks_in_LtoR_order_from_fstab}")
         sys.exit(1)  # Exit with a status code indicating an error
 
