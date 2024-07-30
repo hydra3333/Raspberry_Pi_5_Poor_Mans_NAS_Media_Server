@@ -723,7 +723,12 @@ mkdir /mnt/new_disk/media
 3. **Update MergerFS**:
 - **Configure MergerFS**: Add the new disk to the MergerFS pool, eg in `fstab`
 ```bash
-/mnt/hdd*:/mnt/sda1 /mergerfs_root mergerfs category.action=mfs,category.create=mfs,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs 0 0
+# Example line (without the #) we are looking for
+# ... when delete, only delete the first found, backup copies of a file are unaffected
+# ...     /srv/usb3disk* /mergerfs_root mergerfs category.action=ff,category.create=ff,category.delete=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs 0 0
+# ... when delete, only delete it and all backup copies of a file
+# ...     /srv/usb3disk* /mergerfs_root mergerfs category.action=ff,category.create=ff,category.delete=all,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs 0 0
+# Skip comments and empty lines
 #
 #https://github.com/trapexit/mergerfs?tab=readme-ov-file#functions--policies--categories
 #CHANGEDFROM THEIR DEFAULTS:
