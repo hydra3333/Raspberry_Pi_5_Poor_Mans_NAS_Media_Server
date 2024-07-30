@@ -445,12 +445,29 @@ It can take a while !
 
 When the Pi is booted to the desktop, start a Terminal.
 
-**1. Create a folder to ccontain the mount points**    
+**1. Create folders to ccontain the mount points**    
 Before creating the first of the mount points,
-create a top level folder to contain the new mount points.
+create the required folders to contain the new mount points.
+Even if we have less than 8 disks, create the others anyway so that later we can easily add more disks.
 ```
-sudo mkdir -v -m a=rwx /mnt/shared
-sudo chmod -R -v a+rwx /mnt/shared
+sudo mkdir -v -m a=rwx /srv
+sudo chmod -R -v a+rwx /srv
+#
+# for mergerfs to present the consolidated underlying file systems
+sudo mkdir -v -m a=rwx /srv/mediafs
+#
+# for underlying file system for mergerfs
+sudo mkdir -v -m a=rwx /srv/usb3disk1
+sudo mkdir -v -m a=rwx /srv/usb3disk2
+sudo mkdir -v -m a=rwx /srv/usb3disk3
+sudo mkdir -v -m a=rwx /srv/usb3disk4
+sudo mkdir -v -m a=rwx /srv/usb3disk5
+sudo mkdir -v -m a=rwx /srv/usb3disk6
+sudo mkdir -v -m a=rwx /srv/usb3disk7
+sudo mkdir -v -m a=rwx /srv/usb3disk8
+#
+# /srv will be shared 'rw' by SAMBA to provide access to the underlying file systems (particularly the 'ffd's)
+# /srv/mediafs will be shared 'rw' by SAMBA to provide access to the mergerfs merged disks
 ```
 
 **2. Power on ONE of the disks**    
@@ -484,14 +501,19 @@ Very carefully, note:
 - the disk number in the disk's label (`7` in `DISK7-8Tb`)     
 - the disk's PARTUUID (`27891019-f894-4e9b-b326-5f9d10c5c2cf` in this case)    
 
-Now create a mount point for this new disk.
+Now recall the mount point we already created for this new disk.
 Ensure that the number in the text 'usb3disk\*' shown below **exactly** matches the disk number you noted ebove (eg `7` in this case).    
+One of the below:
 ```
-sudo mkdir -v -m a=rwx /mnt/shared/usb3disk7
-sudo chmod -R -v a+rwx /mnt/shared/usb3disk7
+# /srv/usb3disk1
+# /srv/usb3disk2
+# /srv/usb3disk3
+# /srv/usb3disk4
+# /srv/usb3disk5
+# /srv/usb3disk6
+# /srv/usb3disk7
+# /srv/usb3disk8
 ```
-
-
 Make a backup of `/etc/fstab` and then edit it    
 ```
 sudo cp -fv /etc/fstab /etc/fstab.bak
@@ -501,9 +523,9 @@ At the end of the file, save a future mount point for it like this,
 being careful to ensure that:    
 - the number in 'usb3disk\*' (eg `usb3disk7`) exactly matches the number in the
 new disk's disk label as shown by `sudo lsblk` eg (`DISK7-8Tb` in this case)
-- the PARTUUID is **extractly** the unique PARTUUID you noted above for this specific disk
+- the PARTUUID is **exactly** the unique PARTUUID you noted above for this specific disk
 ```
-PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /mnt/shared/usb3disk7 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail 0 0
+PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /srv/usb3disk7 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail 0 0
 ```
 exit nano with `Control O` `Control X`.
 
@@ -531,7 +553,7 @@ and notice it is listed as mounted:
 ```
 UUID                                 PARTUUID                             NAME      FSTYPE   SIZE MOUNTPOINT            LABEL
                                                                           sda                7.3T                
-121E55501E552E4B                     27891019-f894-4e9b-b326-5f9d10c5c2cf sda1      ntfs     7.3T /mnt/shared/usb3disk7 DISK7-8Tb
+121E55501E552E4B                     27891019-f894-4e9b-b326-5f9d10c5c2cf sda1      ntfs     7.3T /srv/usb3disk7 DISK7-8Tb
                                                                           mmcblk0           29.7G                
 9BE2-1346                            c454855e-01                          mmcblk0p1 vfat     512M /boot/firmware        bootfs
 12974fe2-889e-4060-b497-1d6ac3fbbb4b c454855e-02                          mmcblk0p2 ext4    29.2G /                     rootfs
@@ -1105,20 +1127,20 @@ Start a Terminal and create some folders etc
 ```
 # create a new mount point for SAMBA sharing
 cd ~
-sudo mkdir -v -m a=rwx /mnt/shared
+sudo mkdir -v -m a=rwx /srv
 
 # create new 'standardized' mount points for the external USB3 disks    
-sudo mkdir -v -m a=rwx /mnt/shared/usb3disk1
-sudo mkdir -v -m a=rwx /mnt/shared/usb3disk2
+sudo mkdir -v -m a=rwx /srv/usb3disk1
+sudo mkdir -v -m a=rwx /srv/usb3disk2
 
 # create a new 'overlayfs' mount point for 'virtual overlayed folder' sharing via SAMBA and dlna and set protections
-sudo mkdir -v -m a=rwx /mnt/shared/overlay
-sudo chown -R -v pi:   /mnt/shared/overlay
-sudo chmod -R -v a+rwx /mnt/shared/overlay
+sudo mkdir -v -m a=rwx /srv/overlay
+sudo chown -R -v pi:   /srv/overlay
+sudo chmod -R -v a+rwx /srv/overlay
 
 # ensure the 'shared' tree has the right ownership and permissions
-sudo chown -R -v pi:  /mnt/shared
-sudo chmod -R -v a+rwx /mnt/shared
+sudo chown -R -v pi:  /srv
+sudo chmod -R -v a+rwx /srv
 ```
 
 ## Backup and Edit `/etc/fstab` so disks are mounted consistently     
@@ -1147,11 +1169,11 @@ So in our example it becomes
 # Careful: "nofail" will cause the process to continue with no errors (avoiding a boot hand when a disk does not mount)
 #          however the subsequently dependent mounts will fails as will the overlayfs mount
 #             ... but at least we have booted, not halting boot with a failed fstab entry, and can fix that !
-PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /mnt/shared/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail 0 0
-PARTUUID=a175d2d3-c2f6-44d4-a5fc-209363280c89 /mnt/shared/usb3disk2 ntfs x-systemd.requires=/mnt/shared/usb3disk1,defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail 0 0
+PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /srv/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail 0 0
+PARTUUID=a175d2d3-c2f6-44d4-a5fc-209363280c89 /srv/usb3disk2 ntfs x-systemd.requires=/srv/usb3disk1,defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail 0 0
 # Create the overlayfs virtual folder, by overlaying the 2 root folders. 
 # The overlayfs lowerdir folders in order Left to Right takes precedence when duplicate files are found.
-overlay /mnt/shared/overlay overlay lowerdir=/mnt/shared/usb3disk1/ROOTFOLDER1:/mnt/shared/usb3disk2/ROOTFOLDER2,defaults,auto,noatime,nodiratime,nofail,users,ro,exec,x-systemd.mount-timeout=60,x-systemd.requires=/mnt/shared/usb3disk2,noatime,nodiratime,nofail 0 0
+overlay /srv/overlay overlay lowerdir=/srv/usb3disk1/ROOTFOLDER1:/srv/usb3disk2/ROOTFOLDER2,defaults,auto,noatime,nodiratime,nofail,users,ro,exec,x-systemd.mount-timeout=60,x-systemd.requires=/srv/usb3disk2,noatime,nodiratime,nofail 0 0
 #
 ```
 
@@ -1168,7 +1190,7 @@ sudo df  |  grep "overlay\|disk"
 
 If the mounts do not match what you specified in `etc/fstab`, then something is astray !  Check what you have done above.    
 
-In a Terminal do an `ls -al` on each of the mounts, eg on `/mnt/shared/usb3disk1`, and also on the `/mnt/shared/overlay` folder to check they are visible.    
+In a Terminal do an `ls -al` on each of the mounts, eg on `/srv/usb3disk1`, and also on the `/srv/overlay` folder to check they are visible.    
 
 **If the files in the mounts do not match what you expect from `/etc/fstab`, then something is astray !  Check what has been done above.**    
 
@@ -1328,7 +1350,7 @@ Below are the definition of the 2 new shares. Add them to the end of `/etc/samba
 # DEFINE THE SHARES
 [overlayed_media_root]
 comment = RO access to overlayed root folders on USB3 disks using overlayfs
-path = /mnt/shared/overlay
+path = /srv/overlay
 available = yes
 force user = pi
 writeable = no
@@ -1345,7 +1367,7 @@ wide links = yes
 
 [individual_disks]
 comment = rw access to individual USB3 disks
-path = /mnt/shared
+path = /srv
 available = yes
 force user = pi
 writeable = yes
@@ -1425,7 +1447,7 @@ sudo rm -vfR "/etc/minidlna.conf"
 sudo rm -vfR "/var/log/minidlna.log"
 sudo rm -vfR "/run/minidlna"
 # note: the next lines may fail, ignore any fails:
-sudo rm -vfR "/mnt/shared/usb3disk1/minidlna"
+sudo rm -vfR "/srv/usb3disk1/minidlna"
 ```
 
 3. **Install `miniDLNA`, enable, and then stop the service so we can configure it; in a Terminal**    
@@ -1449,9 +1471,9 @@ sudo usermod -a -G root minidlna
 sudo chmod -c a=rwx -R         "/etc/minidlna.conf"
 sudo chown -c -R pi:minidlna   "/etc/minidlna.conf"
 #
-sudo mkdir -pv                 "/mnt/shared/usb3disk1/minidlna"
-sudo chmod -c a=rwx -R         "/mnt/shared/usb3disk1/minidlna"
-sudo chown -c -R pi:minidlna   "/mnt/shared/usb3disk1/minidlna"
+sudo mkdir -pv                 "/srv/usb3disk1/minidlna"
+sudo chmod -c a=rwx -R         "/srv/usb3disk1/minidlna"
+sudo chown -c -R pi:minidlna   "/srv/usb3disk1/minidlna"
 #
 sudo chmod -c a=rwx -R         "/run/minidlna"
 sudo chown -c -R pi:minidlna   "/run/minidlna"
@@ -1460,14 +1482,14 @@ sudo touch                     "/run/minidlna/minidlna.pid"
 sudo chmod -c a=rwx -R         "/run/minidlna/minidlna.pid"
 sudo chown -c -R pi:minidlna   "/run/minidlna/minidlna.pid"
 #
-sudo mkdir -pv                 "/mnt/shared/usb3disk1/minidlna/cache"
-sudo chmod -c a=rwx -R         "/mnt/shared/usb3disk1/minidlna/cache"
-sudo chown -c -R pi:minidlna   "/mnt/shared/usb3disk1/minidlna/cache"
+sudo mkdir -pv                 "/srv/usb3disk1/minidlna/cache"
+sudo chmod -c a=rwx -R         "/srv/usb3disk1/minidlna/cache"
+sudo chown -c -R pi:minidlna   "/srv/usb3disk1/minidlna/cache"
 #
-sudo mkdir -pv                 "/mnt/shared/usb3disk1/minidlna/log"
-sudo touch                     "/mnt/shared/usb3disk1/minidlna/log/minidlna.log"
-sudo chmod -c a=rwx -R         "/mnt/shared/usb3disk1/minidlna/log"
-sudo chown -c -R pi:minidlna   "/mnt/shared/usb3disk1/minidlna/log"
+sudo mkdir -pv                 "/srv/usb3disk1/minidlna/log"
+sudo touch                     "/srv/usb3disk1/minidlna/log/minidlna.log"
+sudo chmod -c a=rwx -R         "/srv/usb3disk1/minidlna/log"
+sudo chown -c -R pi:minidlna   "/srv/usb3disk1/minidlna/log"
 ```
 
 6. **Change the config to align with out disk/folder arrangement etc; in a Terminal**    
@@ -1480,9 +1502,9 @@ sudo nano "/etc/minidlna.conf"
 now in nano,
 ```
 # ignore these 3 ...
-##minidlna_refresh_log_file=/mnt/shared/usb3disk1/minidlna/log/minidlna_refresh.log
-##minidlna_refresh_sh_file=/mnt/shared/usb3disk1/minidlna/minidlna_refresh.sh
-##minidlna_restart_refresh_sh_file=/mnt/shared/usb3disk1/minidlna/minidlna_restart_refresh.sh
+##minidlna_refresh_log_file=/srv/usb3disk1/minidlna/log/minidlna_refresh.log
+##minidlna_refresh_sh_file=/srv/usb3disk1/minidlna/minidlna_refresh.sh
+##minidlna_restart_refresh_sh_file=/srv/usb3disk1/minidlna/minidlna_restart_refresh.sh
 
 # Find and change line `media_dir=/var/lib/minidlna` to comment it out:
 ##media_dir=/var/lib/minidlna
@@ -1500,10 +1522,10 @@ model_name=PINAS64-miniDLNA
 merge_media_dirs=no
 
 # Find and uncomment and/or change/add line `#db_dir=/var/cache/minidlna` to:
-db_dir=/mnt/shared/usb3disk1/minidlna/cache
+db_dir=/srv/usb3disk1/minidlna/cache
 
 # Find and uncomment and/or change/add line `#log_dir=/var/log/minidlna` to:
-log_dir=/mnt/shared/usb3disk1/minidlna/log
+log_dir=/srv/usb3disk1/minidlna/log
 
 # inotify=yes and notify_interval=895 work together fopr miniDLNA to discover added and modified files
 # Find and uncomment and/or change/add line `#inotify=yes` to:
@@ -1525,19 +1547,19 @@ log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=info
 wide_links=yes
 
 # now ADD the line to expose the overlayed media folder ...
-root_container=PVA,/mnt/shared/overlay
-##media_dir=PVA,/mnt/shared/overlay
+root_container=PVA,/srv/overlay
+##media_dir=PVA,/srv/overlay
 
 # now ADD any lines where wish to expose folders
 # separately to, but as well as in, the overlayed folder tree, eg
 # THE ENTRIES BELOW MUST EXACTLY MATCH THE FOLDERS YOU WISH DLNA TO EXPOSE
-media_dir=PVA,/mnt/shared/overlay/ClassicMovies
-media_dir=PVA,/mnt/shared/overlay/Documentaries
-media_dir=PVA,/mnt/shared/overlay/Footy
-media_dir=PVA,/mnt/shared/overlay/Movies
-media_dir=PVA,/mnt/shared/overlay/Music
-media_dir=PVA,/mnt/shared/overlay/OldMovies
-media_dir=PVA,/mnt/shared/overlay/SciFi
+media_dir=PVA,/srv/overlay/ClassicMovies
+media_dir=PVA,/srv/overlay/Documentaries
+media_dir=PVA,/srv/overlay/Footy
+media_dir=PVA,/srv/overlay/Movies
+media_dir=PVA,/srv/overlay/Music
+media_dir=PVA,/srv/overlay/OldMovies
+media_dir=PVA,/srv/overlay/SciFi
 ```
 Restart miniDLNA and force a db reload.
 ```
@@ -1545,7 +1567,7 @@ sudo systemctl stop minidlna
 sudo systemctl restart minidlna 
 sudo systemctl force-reload minidlna 
 sudo systemctl status minidlna | tail -n 50
-tail -n 50 /mnt/shared/usb3disk1/minidlna/log/minidlna.log
+tail -n 50 /srv/usb3disk1/minidlna/log/minidlna.log
 ```
 The minidlna service comes with an internal small web server and webinterface.    
 This webinterface is just for informational purposes.    
@@ -1558,9 +1580,9 @@ curl -i http://127.0.0.1:8200
 
 **Under COnstruction**    
 ```
-minidlna_refresh_sh_file=/mnt/shared/usb3disk1/minidlna/minidlna_refresh.sh
-minidlna_refresh_log_file=/mnt/shared/usb3disk1/minidlna/log/minidlna_refresh.log
-minidlna_restart_refresh_sh_file=/mnt/shared/usb3disk1/minidlna/minidlna_restart_refresh.sh
+minidlna_refresh_sh_file=/srv/usb3disk1/minidlna/minidlna_refresh.sh
+minidlna_refresh_log_file=/srv/usb3disk1/minidlna/log/minidlna_refresh.log
+minidlna_restart_refresh_sh_file=/srv/usb3disk1/minidlna/minidlna_restart_refresh.sh
 ```
 
 
