@@ -50,7 +50,8 @@ def log_and_print(message, data=None):
     Logs and prints a message with optional data.
     """
     logging.info(message)
-    print(message, flush=True)
+    #print(message, flush=True)
+    print(f"{message}", flush=True)
     if data is not None:
         logging.info(objPrettyPrint.pformat(data))
         print(objPrettyPrint.pformat(data), flush=True)
@@ -137,11 +138,11 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
 
     # If more than 1 mergerfs line is found, it's a conflict
     if number_of_mergerfs_lines > 1:
-        error_log_and_print("Multiple mergerfs lines found in 'fstab'. Aborting.")
+        error_log_and_print(f"Multiple mergerfs lines found in 'fstab'. Aborting.")
         sys.exit(1)  # Exit with a status code indicating an error
 
     if (number_of_mergerfs_lines < 1) or (len(the_mergerfs_disks_in_LtoR_order_from_fstab) < 1) :
-        error_log_and_print(f"ZERO detected 'mergerfs' underlying disks in LtoR order from 'fstab':\n\n\n\n", data=the_mergerfs_disks_in_LtoR_order_from_fstab)
+        error_log_and_print(f"ZERO detections of 'mergerfs' underlying disks in LtoR order from 'fstab':", data=the_mergerfs_disks_in_LtoR_order_from_fstab)
         sys.exit(1)  # Exit with a status code indicating an error
 
     debug_log_and_print(f"Detected 'mergerfs' underlying disks in LtoR order from fstab '{fstab_mergerfs_line}'", data=the_mergerfs_disks_in_LtoR_order_from_fstab)
@@ -197,9 +198,8 @@ def detect_mergerfs_disks_having_a_root_folder(mergerfs_disks_in_LtoR_order_from
                 candidate_root_folders = [d.name for d in disk_mount_point_path.iterdir() if d.is_dir() and re.match(r'^mergerfs_Root_[1-8]$', d.name)]
                 # Check for multiple root folders on the same disk
                 if len(candidate_root_folders) > 1:
-                    error_message = (f"Error: disk_mount_point {disk_mount_point} has multiple root folders: {candidate_root_folders}."
-                                     "Each disk_mount_point should only have one root folder like 'mergerfs_Root_*'.")
-                    error_log_and_print(error_message)
+                    error_log_and_print(f"Each disk_mount_point should only have only one root folder like 'mergerfs_Root_*'.")
+                    error_log_and_print(f"Error: disk_mount_point {disk_mount_point} has multiple root folders:", data=candidate_root_folders)
                     sys.exit(1)  # Exit with a status code indicating an error
                 elif len(candidate_root_folders) == 1:
                     found_root_folder = candidate_root_folders[0]
@@ -223,7 +223,7 @@ def detect_mergerfs_disks_having_a_root_folder(mergerfs_disks_in_LtoR_order_from
                             'root_folder_path': found_root_folder_path,
                             'top_level_media_folders': found_top_level_media_folders_list
                         }
-                        debug_log_and_print(f"disk_mount_point {disk_mount_point} has root folder '{found_root_folder}' with top level media folders: {found_top_level_media_folders_list}")
+                        debug_log_and_print(f"disk_mount_point '{disk_mount_point}' has root folder '{found_root_folder}' with top level media folders:", data=found_top_level_media_folders_list)
                 else:
                     pass
         except Exception as e:
@@ -231,10 +231,10 @@ def detect_mergerfs_disks_having_a_root_folder(mergerfs_disks_in_LtoR_order_from
             sys.exit(1)  # Exit with a status code indicating an error
 
     if len(those_mergerfs_disks_having_a_root_folder) < 1:
-        error_log_and_print(f"ZERO Detected 'mergerfs' underlying disks having a root folder AND top_level_media_folders: {mergerfs_disks_in_LtoR_order_from_fstab}")
+        error_log_and_print(f"ZERO Detected 'mergerfs' underlying disks having a root folder AND top_level_media_folders:", data=mergerfs_disks_in_LtoR_order_from_fstab)
         sys.exit(1)  # Exit with a status code indicating an error
 
-    debug_log_and_print(f"Detected 'mergerfs' underlying disks having a root folder AND top level media folders: {those_mergerfs_disks_having_a_root_folder}")
+    debug_log_and_print(f"Detected 'mergerfs' underlying disks having a root folder AND top level media folders:", data=those_mergerfs_disks_having_a_root_folder)
     return those_mergerfs_disks_having_a_root_folder
 
 def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, mergerfs_disks_having_a_root_folder):

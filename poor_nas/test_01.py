@@ -112,18 +112,18 @@ def main():
 
     # Step 1: Get mergerfs disks in LtoR order from fstab
     mergerfs_disks_in_LtoR_order_from_fstab = common_functions.get_mergerfs_disks_in_LtoR_order_from_fstab()
-    common_functions.log_and_print("MergerFS Disks in Left-to-Right Order from /etc/fstab:", mergerfs_disks_in_LtoR_order_from_fstab)
+    common_functions.log_and_print("MergerFS Disks in Left-to-Right Order from /etc/fstab:", data=mergerfs_disks_in_LtoR_order_from_fstab)
     
     # Step 2: Detect mergerfs disks having a root folder
     mergerfs_disks_having_a_root_folder = common_functions.detect_mergerfs_disks_having_a_root_folder(mergerfs_disks_in_LtoR_order_from_fstab)
-    common_functions.log_and_print("MergerFS Disks Having a Root Folder:", mergerfs_disks_having_a_root_folder)
+    common_functions.log_and_print("YYYY MergerFS Disks Having a Root Folder:", data=mergerfs_disks_having_a_root_folder)
     
     # Step 3: Get unique top level media folders and update ffd information
     unique_top_level_media_folders, mergerfs_disks_having_a_root_folder = common_functions.get_unique_top_level_media_folders(
         mergerfs_disks_in_LtoR_order_from_fstab,
         mergerfs_disks_having_a_root_folder
     )
-    common_functions.log_and_print("Unique Top-Level Media Folders:", unique_top_level_media_folders)
+    common_functions.log_and_print("ZZZZ Unique Top-Level Media Folders:", data=unique_top_level_media_folders)
     
     # Step 4: Generate and log the crosstab report
     #generate_crosstab_report(unique_top_level_media_folders, mergerfs_disks_in_LtoR_order_from_fstab, mergerfs_disks_having_a_root_folder)
