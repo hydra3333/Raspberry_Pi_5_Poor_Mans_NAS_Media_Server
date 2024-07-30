@@ -89,6 +89,7 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
         # Keep the valid mergerfs underlying disks in LtoR order
         # so we can use it later to determine the 'ffd', aka 'first found disk', for each 'top media folder' by parsing this list
         fstab_mergerfs_line = ''
+        number_of_mergerfs_lines = 0
         for line in fstab_lines:
             # Example line (without the #) we are looking for
             # ... when delete, only delete the first found, backup copies of a file are unaffected
@@ -100,6 +101,7 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
                 continue
             fields = line.split()
             if any('mergerfs' in field.lower() for field in fields):  # Identify mergerfs entries
+                number_of_mergerfs_lines = number_of_mergerfs_lines + 1
                 fstab_mergerfs_line = line.strip()
                 debug_log_and_print(f"MergerFS line found: {line.strip()}")
                 # fields[0] should contain one or more and/or globbed, underlying file system mount points used by mergerfs
@@ -125,15 +127,16 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
                         # Handle plain (eg /mnt/hdd1 underlying file system mount point
                         free_disk_space = get_free_disk_space(disk)
                         the_mergerfs_disks_in_LtoR_order_from_fstab.append({'disk_mount_point': disk, 'free_disk_space': free_disk_space})
-                # If more than 1 mergerfs line is found, it's a conflict
-                if len(the_mergerfs_disks_in_LtoR_order_from_fstab) > 1:
-                    error_log_and_print("Multiple mergerfs lines found in 'fstab'. Aborting.")
-                    sys.exit(1)  # Exit with a status code indicating an error
     except Exception as e:
         error_log_and_print(f"Error reading /etc/fstab: {e}")
         sys.exit(1)  # Exit with a status code indicating an error
 
-    if len(the_mergerfs_disks_in_LtoR_order_from_fstab) < 1:
+    # If more than 1 mergerfs line is found, it's a conflict
+    if number_of_mergerfs_lines > 1:
+        error_log_and_print("Multiple mergerfs lines found in 'fstab'. Aborting.")
+        sys.exit(1)  # Exit with a status code indicating an error
+
+    if (number_of_mergerfs_lines < 1) or len(the_mergerfs_disks_in_LtoR_order_from_fstab) < 1) :
         error_log_and_print(f"ZERO detected 'mergerfs' underlying disks in LtoR order from 'fstab': {the_mergerfs_disks_in_LtoR_order_from_fstab}")
         sys.exit(1)  # Exit with a status code indicating an error
 
