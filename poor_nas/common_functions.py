@@ -24,6 +24,13 @@ def init_logging(log_filename):
                         level=logging.DEBUG if DEBUG_IS_ON else logging.INFO,
                         format='%(asctime)s %(levelname)s: %(message)s')
 
+def debug_pause():
+    if DEBUG_IS_ON:
+        message = f"DEBUG: Press Enter to continue..."
+        logging.debug(message)
+        print(message, flush=True)
+        input()
+
 def debug_log_and_print(message, data=None):
     """
     Logs and prints a message with optional data, if DEBUG is on.
@@ -50,7 +57,6 @@ def log_and_print(message, data=None):
     Logs and prints a message with optional data.
     """
     logging.info(message)
-    #print(message, flush=True)
     print(f"{message}", flush=True)
     if data is not None:
         logging.info(objPrettyPrint.pformat(data))
