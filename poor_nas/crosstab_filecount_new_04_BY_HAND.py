@@ -163,7 +163,7 @@ def generate_crosstab_report(unique_top_level_media_folders, mergerfs_disks_in_L
                 disk_space_used_gb = 0  # Convert to GB
                 total_free_disk_space = 0
                 total_free_disk_space_gb = 0  # Convert to GB
-            common_functions.debug_pause()
+        common_functions.debug_pause()
 
 
 
