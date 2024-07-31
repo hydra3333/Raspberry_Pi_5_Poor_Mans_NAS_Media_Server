@@ -119,7 +119,9 @@ def generate_crosstab_report(unique_top_level_media_folders, mergerfs_disks_in_L
         centered_string = f"{' ' * left_padding}{source_string}{' ' * right_padding}"
         return centered_string
 
-    # Start processing generate_crosstab_report
+    # --------------------------------------
+    # Main code for generate_crosstab_report
+    # --------------------------------------
 
     # Prepare the header for the crosstab table, rolumns 1..n
     # column 1 = list of top level media folder names
@@ -198,7 +200,7 @@ def generate_crosstab_report(unique_top_level_media_folders, mergerfs_disks_in_L
                 max_column_lengths[index] = max_column_lengths[index] + 1
 
     # Print the rows
-    print(f"*** Start Of Crosstab", flush=True)
+    common_functions.log_and_print(f"*** Start Of Crosstab")
     len_formatted_row = 0
     for g_row in gigantic_list:
         # Format the first column with left alignment
@@ -208,17 +210,17 @@ def generate_crosstab_report(unique_top_level_media_folders, mergerfs_disks_in_L
         formatted_row = formatted_first_column + " | " + " | ".join(remaining_columns) + "  |"
         len_formatted_row = max(len_formatted_row, len(formatted_row))
         if g_row[0] != "":
-            print("-" * len_formatted_row, flush=True)
-        print(formatted_row, flush=True)
-    print("-" * len_formatted_row, flush=True)
-    print(f"*** End Of Crosstab", flush=True)
+            common_functions.log_and_print("-" * len_formatted_row)
+        common_functions.log_and_print(formatted_row)
+    common_functions.log_and_print("-" * len_formatted_row)
+    common_functions.log_and_print(f"*** End Of Crosstab")
 
 def main():
     """
     Main function to coordinate the gathering of disk and media folder information and print the results.
     """
-    #common_functions.DEBUG_IS_ON = False
-    common_functions.DEBUG_IS_ON = True
+    common_functions.DEBUG_IS_ON = False
+    #common_functions.DEBUG_IS_ON = True
 
     TERMINAL_WIDTH = 220
     common_functions.init_PrettyPrinter(TERMINAL_WIDTH)
@@ -226,18 +228,17 @@ def main():
 
     common_functions.log_and_print('-' * TERMINAL_WIDTH)
     common_functions.log_and_print("Starting 'crosstab_filecount'.")
-    common_functions.log_and_print('-' * TERMINAL_WIDTH)
 
     # Step 1: Get mergerfs disks in LtoR order from fstab
     common_functions.log_and_print("Finding MergerFS Disks in Left-to-Right Order from /etc/fstab ...")
     mergerfs_disks_in_LtoR_order_from_fstab = common_functions.get_mergerfs_disks_in_LtoR_order_from_fstab()
-    common_functions.log_and_print("MergerFS Disks in Left-to-Right Order from /etc/fstab :", data=mergerfs_disks_in_LtoR_order_from_fstab)
+    #common_functions.log_and_print("MergerFS Disks in Left-to-Right Order from /etc/fstab :", data=mergerfs_disks_in_LtoR_order_from_fstab)
     #common_functions.debug_pause()
     
     # Step 2: Detect mergerfs disks having a root folder
     common_functions.log_and_print("Finding MergerFS Disks Having a Root Folder ...")
     mergerfs_disks_having_a_root_folder_having_files = common_functions.detect_mergerfs_disks_having_a_root_folder_having_files(mergerfs_disks_in_LtoR_order_from_fstab)
-    common_functions.log_and_print("MergerFS Disks Having a Root Folder :", data=mergerfs_disks_having_a_root_folder_having_files)
+    #common_functions.log_and_print("MergerFS Disks Having a Root Folder :", data=mergerfs_disks_having_a_root_folder_having_files)
     #common_functions.debug_pause()
     
     # Step 3: Get unique top level media folders and update ffd information
@@ -246,14 +247,13 @@ def main():
         mergerfs_disks_in_LtoR_order_from_fstab,
         mergerfs_disks_having_a_root_folder_having_files
     )
-    common_functions.log_and_print("MergerFS Disks Having a Root Folder BACK-UPDATED WITH FFD :", data=mergerfs_disks_having_a_root_folder_having_files)
-    common_functions.log_and_print("Unique Top-Level Media Folders :", data=unique_top_level_media_folders)
+    #common_functions.log_and_print("MergerFS Disks Having a Root Folder BACK-UPDATED WITH FFD :", data=mergerfs_disks_having_a_root_folder_having_files)
+    #common_functions.log_and_print("Unique Top-Level Media Folders :", data=unique_top_level_media_folders)
     #common_functions.debug_pause()
 
     # Step 4: Generate and log the crosstab report
     common_functions.log_and_print("Generating crosstab_report ...")
     generate_crosstab_report(unique_top_level_media_folders, mergerfs_disks_in_LtoR_order_from_fstab, mergerfs_disks_having_a_root_folder_having_files)
-    common_functions.log_and_print('-' * TERMINAL_WIDTH)
     common_functions.log_and_print("Finished 'crosstab_filecount'.")
     common_functions.log_and_print('-' * TERMINAL_WIDTH)
 
