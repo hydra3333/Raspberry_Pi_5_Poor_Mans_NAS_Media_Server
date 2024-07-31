@@ -154,7 +154,7 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
     debug_log_and_print(f"Detected 'mergerfs' underlying disks in LtoR order from fstab '{fstab_mergerfs_line}'", data=the_mergerfs_disks_in_LtoR_order_from_fstab)
     return the_mergerfs_disks_in_LtoR_order_from_fstab
 
-def detect_mergerfs_disks_having_a_root_folder(mergerfs_disks_in_LtoR_order_from_fstab):
+def detect_mergerfs_disks_having_a_root_folder_having_files(mergerfs_disks_in_LtoR_order_from_fstab):
     """
     Checks each underlying mergerfs disk_mount_point for the presence of a single root folder like 'mergerfs_Root_1' to 'mergerfs_Root_8'.
     If multiple root folders are found on a single disk_mount_point, it raises an error with details.
@@ -195,7 +195,7 @@ def detect_mergerfs_disks_having_a_root_folder(mergerfs_disks_in_LtoR_order_from
             ...
         }
     """
-    those_mergerfs_disks_having_a_root_folder = {}
+    those_mergerfs_disks_having_a_root_folder_having_files = {}
     for disk_info in mergerfs_disks_in_LtoR_order_from_fstab:
         disk_mount_point = disk_info['disk_mount_point']
         try:
@@ -215,41 +215,41 @@ def detect_mergerfs_disks_having_a_root_folder(mergerfs_disks_in_LtoR_order_from
                         if top_level_media_folder.is_dir():
                             number_of_files = sum([len(files) for r, d, files in os.walk(top_level_media_folder)])
                             disk_space_used = sum([os.path.getsize(os.path.join(r, file)) for r, d, files in os.walk(top_level_media_folder) for file in files])
-                            found_top_level_media_folders_list.append({
-                                'top_level_media_folder_name': top_level_media_folder.name,
-                                'top_level_media_folder_path': top_level_media_folder,
-                                'ffd': '',
-                                'number_of_files': number_of_files,
-                                'disk_space_used': disk_space_used
-                            })
-
-                    # if a disk_mount_point with a known root folder has top level media folders, then save them
+                            if number_of_files > 0:
+                                found_top_level_media_folders_list.append({
+                                    'top_level_media_folder_name': top_level_media_folder.name,
+                                    'top_level_media_folder_path': top_level_media_folder,
+                                    'ffd': '',
+                                    'number_of_files': number_of_files,
+                                    'disk_space_used': disk_space_used
+                                })
+                    # if a disk_mount_point with a known root folder has top level media folders having files, then save them
                     if found_top_level_media_folders_list:
-                        those_mergerfs_disks_having_a_root_folder[disk_mount_point] = {
+                        those_mergerfs_disks_having_a_root_folder_having_files[disk_mount_point] = {
                             'root_folder_path': found_root_folder_path,
                             'top_level_media_folders': found_top_level_media_folders_list
                         }
-                        debug_log_and_print(f"disk_mount_point '{disk_mount_point}' has root folder '{found_root_folder}' with top level media folders:", data=found_top_level_media_folders_list)
+                        debug_log_and_print(f"disk_mount_point '{disk_mount_point}' has root folder '{found_root_folder}' with top level media folders having files:", data=found_top_level_media_folders_list)
                 else:
                     pass
         except Exception as e:
             error_log_and_print(f"Error accessing {disk_mount_point}: {e}")
             sys.exit(1)  # Exit with a status code indicating an error
 
-    if len(those_mergerfs_disks_having_a_root_folder) < 1:
-        error_log_and_print(f"ZERO Detected 'mergerfs' underlying disks having a root folder AND top_level_media_folders:", data=mergerfs_disks_in_LtoR_order_from_fstab)
+    if len(those_mergerfs_disks_having_a_root_folder_having_files) < 1:
+        error_log_and_print(f"ZERO Detected 'mergerfs' underlying disks having a root folder AND top_level_media_folders having files:", data=mergerfs_disks_in_LtoR_order_from_fstab)
         sys.exit(1)  # Exit with a status code indicating an error
 
-    debug_log_and_print(f"Detected 'mergerfs' underlying disks having a root folder AND top level media folders:", data=those_mergerfs_disks_having_a_root_folder)
-    return those_mergerfs_disks_having_a_root_folder
+    debug_log_and_print(f"Detected 'mergerfs' underlying disks having a root folder AND top level media folders with having files:", data=those_mergerfs_disks_having_a_root_folder_having_files)
+    return those_mergerfs_disks_having_a_root_folder_having_files
 
-def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, mergerfs_disks_having_a_root_folder):
+def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, mergerfs_disks_having_a_root_folder_having_files):
     """
     Consolidates and derives unique top-level media folder names from the detected disks.
     Also determines the first found disk (FFD) for each unique media folder and additional information.
     
     Args:
-        mergerfs_disks_having_a_root_folder (dict): A dictionary containing information about disks with root folders and their top-level media folders.
+        mergerfs_disks_having_a_root_folder_having_files (dict): A dictionary containing information about disks with root folders and their top-level media folders.
             Key: 'disk_mount_point' (str): The mount point path of the disk (e.g., '/mnt/sda1').
             Value: dict with the following keys:
                 - 'root_folder_path' (Path): The path to the root folder.
@@ -307,7 +307,7 @@ def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, 
     unique_top_level_media_folders = {}
 
     # Step 1: Gather all unique top-level media folders
-    for disk_info in mergerfs_disks_having_a_root_folder.values():
+    for disk_info in mergerfs_disks_having_a_root_folder_having_files.values():
         for media_folder_info in disk_info['top_level_media_folders']:
             top_level_media_folder_name = media_folder_info['top_level_media_folder_name']
             if top_level_media_folder_name not in unique_top_level_media_folders:
@@ -321,8 +321,8 @@ def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, 
     for top_level_media_folder_name, folder_info in unique_top_level_media_folders.items():
         for disk_info in mergerfs_disks_in_LtoR_order_from_fstab:
             disk_mount_point = disk_info['disk_mount_point']
-            if disk_mount_point in mergerfs_disks_having_a_root_folder:
-                disk_root_folder_info = mergerfs_disks_having_a_root_folder[disk_mount_point]
+            if disk_mount_point in mergerfs_disks_having_a_root_folder_having_files:
+                disk_root_folder_info = mergerfs_disks_having_a_root_folder_having_files[disk_mount_point]
                 for media_folder_info in disk_root_folder_info['top_level_media_folders']:
                     if media_folder_info['top_level_media_folder_name'] == top_level_media_folder_name:
                         if folder_info['ffd'] == '':
@@ -337,10 +337,10 @@ def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, 
                             'total_free_disk_space': disk_info['free_disk_space']
                         })
 
-    # Step 3: Update ffd for each folder in mergerfs_disks_having_a_root_folder
-    for disk_info in mergerfs_disks_having_a_root_folder.values():
+    # Step 3: Update ffd for each folder in mergerfs_disks_having_a_root_folder_having_files
+    for disk_info in mergerfs_disks_having_a_root_folder_having_files.values():
         for media_folder_info in disk_info['top_level_media_folders']:
             media_folder_name = media_folder_info['top_level_media_folder_name']
             media_folder_info['ffd'] = unique_top_level_media_folders[media_folder_name]['ffd']
 
-    return unique_top_level_media_folders, mergerfs_disks_having_a_root_folder
+    return unique_top_level_media_folders, mergerfs_disks_having_a_root_folder_having_files
