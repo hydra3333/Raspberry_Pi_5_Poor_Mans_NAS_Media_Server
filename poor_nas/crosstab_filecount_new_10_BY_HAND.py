@@ -248,7 +248,7 @@ def main():
     common_functions.DEBUG_IS_ON = False
     #common_functions.DEBUG_IS_ON = True
 
-    TERMINAL_WIDTH = 220
+    TERMINAL_WIDTH = 200
     common_functions.init_PrettyPrinter(TERMINAL_WIDTH)
     common_functions.init_logging(r'./logfile_poor_nas.log')
 
