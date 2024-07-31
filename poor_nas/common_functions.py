@@ -240,7 +240,7 @@ def detect_mergerfs_disks_having_a_root_folder_having_files(mergerfs_disks_in_Lt
         error_log_and_print(f"ZERO Detected 'mergerfs' underlying disks having a root folder AND top_level_media_folders having files:", data=mergerfs_disks_in_LtoR_order_from_fstab)
         sys.exit(1)  # Exit with a status code indicating an error
 
-    debug_log_and_print(f"Detected 'mergerfs' underlying disks having a root folder AND top level media folders with having files:", data=those_mergerfs_disks_having_a_root_folder_having_files)
+    debug_log_and_print(f"Detected 'mergerfs' underlying disks having a root folder AND top level media folders having files:", data=those_mergerfs_disks_having_a_root_folder_having_files)
     return those_mergerfs_disks_having_a_root_folder_having_files
 
 def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, mergerfs_disks_having_a_root_folder_having_files):
