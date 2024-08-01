@@ -496,18 +496,20 @@ sudo mkdir -v -m a=rwx /srv/mediafs
 # /srv/mediafs will be shared 'rw' by SAMBA to provide access to the mergerfs merged disks
 ```
 
-2. **Gracefully shutdown for all that to take effect at next boot**    
+**3. **Gracefully shutdown for all that to take effect at next boot**    
 Shut down the Pi in the standard way; in a Terminal    
 ```
 sudo shutdown
 ```
 and wait for it to finish runnning all of the graceful shutdown tasks and power off.    
 
-**3. Power on all disks, then power on the Pi**
+
+**4. Power on all disks, then power on the Pi**
 **First** power on the disks and wait 30 secs for them to initialize.    
 Boot the Pi 5 to the desktop.
 
-**4. Identify Disk PARTUUID for all USB3 disks, add to fstab**    
+
+**5. Identify the Disk PARTUUID for all USB3 disks, create fstab entries to mount disks at boot**    
 This is where it becomes important that you have already named all of you disk volumes properly
 and have created a root folder in each where the root folder's name matches the disk label.    
 
@@ -516,24 +518,66 @@ IE:
 and ensure they are definitely unique across disks.    
 - On each disk, you must have created one root folder named like `mergerfs_Root_1`  
 so that the number matches the unique disk volume label number (eg `1` for `DISK1` and so on).
-(the 'root folder's like `mergerfs_Root_*`  **must match** the disk volume label number.    
+(those 'root folder's `mergerfs_Root_*`  **must match** the disk volume label number.    
 
+OK, you are going to neeed 2 `Terminal` windows open to do this.
+Start 2 `Terminal`s and position them side by side. 
+Olverlapping is OK, as long as you can see most of each window and easily click between then to change window focus.
 
+In the leftmost window, edit `/etc/fstab` ready to add new items.
+```
+sudo nano /etc/fstab
+```
+Preparation: add these lines to the end of `fstab`:    
+````
+#
+# nofail                                    Forces boot to continue should the mount fail.
+# noatime:                                  Prevents unnecessary writes.
+# nodiratime:                               Prevents unnecessary writes.
+# x-systemd.automount:                      Mount on first access via systemd.
+# x-systemd.device-timeout=N:               Time in seconds to wait for a device to show up, before giving up on it.
+# x-systemd.mount-timeout=N:                Time in seconds to wait for the mount to complete, before giving up on it.
+# x-systemd.requires=MOUNTPOINT:            Mount depends on the spcified mountpoint being mounted
+# branches-mount-timeout=N:                 Number of seconds to wait at startup for branches (dependencies) to be mounted
 
+#PARTUUID= /srv/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+#PARTUUID= /srv/usb3disk2 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+#PARTUUID= /srv/usb3disk3 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+#PARTUUID= /srv/usb3disk4 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+#PARTUUID= /srv/usb3disk5 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+#PARTUUID= /srv/usb3disk6 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+#PARTUUID= /srv/usb3disk7 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+#PARTUUID= /srv/usb3disk8 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+#
+#/srv/usb3disk* /srv/mergerfs mergerfs defaults,nofail,category.action=ff,category.create=ff,category.delete=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=120,x-systemd.requires=/srv/usb3disk1,fsname=mergerfs 0 0
+#
+```
+Now **uncomment ONLY** lines to match the number if disks you have, eg: for 3 disks it would be:
+````
+PARTUUID= /srv/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+PARTUUID= /srv/usb3disk2 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+PARTUUID= /srv/usb3disk3 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+#PARTUUID= /srv/usb3disk4 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+#PARTUUID= /srv/usb3disk5 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+#PARTUUID= /srv/usb3disk6 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+#PARTUUID= /srv/usb3disk7 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+#PARTUUID= /srv/usb3disk8 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+```
+Leave nano open editing `fstab` in that `Terminal` and swap to the other `Terminal` to enter other commands.
 
-
-
-
-
-To see what is happening while we wait, use these commands
+Now we have taken some time editing that, allowing the disks to be recognised by the OS biut not mounted,
+use these commands to see if we can find them:
 ```
 sudo dmesg
 sudo blkid
 sudo df
 sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
 ```
-Eventually, we "should" see the disk appear (notice a line with the disk label appears)
-similar to the below (in this case `DISK7-8Tb`):
+Eventually, we "should" see the disks appear (notice lines with the disk labels appears)
+similar to the below .. if not check your connections etc.
+
+
+
 ```
 sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
 ```
@@ -579,7 +623,7 @@ being careful to ensure that:
 new disk's disk label as shown by `sudo lsblk` eg (`DISK7-8Tb` in this case)
 - the PARTUUID is **exactly** the unique PARTUUID you noted above for this specific disk
 ```
-PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /srv/usb3disk7 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail 0 0
+PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /srv/usb3disk7 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
 ```
 exit nano with `Control O` `Control X`.
 
@@ -1231,10 +1275,10 @@ So in our example it becomes
 # Careful: "nofail" will cause the process to continue with no errors (avoiding a boot hand when a disk does not mount)
 #          however the subsequently dependent mounts will fails as will the overlayfs mount
 #             ... but at least we have booted, not halting boot with a failed fstab entry, and can fix that !
-PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /srv/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail 0 0
+PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /srv/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
 # Create the overlayfs virtual folder, by overlaying the 2 root folders. 
 # The overlayfs lowerdir folders in order Left to Right takes precedence when duplicate files are found.
-overlay /srv/overlay overlay lowerdir=/srv/usb3disk1/ROOTFOLDER1:/srv/usb3disk2/ROOTFOLDER2,defaults,auto,noatime,nodiratime,nofail,users,ro,exec,x-systemd.mount-timeout=60,x-systemd.requires=/srv/usb3disk2,noatime,nodiratime,nofail 0 0
+overlay /srv/overlay overlay lowerdir=/srv/usb3disk1/ROOTFOLDER1:/srv/usb3disk2/ROOTFOLDER2,defaults,auto,noatime,nodiratime,nofail,users,ro,exec,x-systemd.mount-timeout=60,x-systemd.requires=/srv/usb3disk2,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
 #
 # in the past we had 'x-systemd.requires=/srv/usb3disk1' (numbers in sequence of course) on the 2nd and subsequent mounts so each mount depended on the prior. We do not do thast any more.
 ```
