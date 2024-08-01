@@ -458,6 +458,26 @@ sudo reboot
 ---
 # Tell the Pi about the new Disks
 
+
+** BEFORE TURNING ON ANY DISKS**
+Per this thread https://forums.raspberrypi.com/viewtopic.php?t=374341#p2240823    
+
+The **automount** feature may (and does, for unlucky users!) freeze your system and stop it from booting.    
+
+You must **disable** the automount feature **before** tutning on any disks !    
+- In the Desktop start 'File Manager'
+- menu Edit -> Preferences
+- click Volume Management
+--  UNTICK these 3:
+-- Mount mountable volumes automatically on program startup (this is the automounter, not fstab processing)
+-- Mount removable media automatically when they are inserted
+-- Show available options for removable media when they are inserted
+
+
+
+
+
+
 You will need to do this for every new disk, one at a time.
 It can take a while !
 
