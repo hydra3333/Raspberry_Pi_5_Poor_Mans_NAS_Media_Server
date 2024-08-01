@@ -778,7 +778,9 @@ sudo systemctl status hd-idle.service | tail -n 20
 sudo journalctl -u hd-idle.service | grep hd-idle| tail -n 20
 ```
 
+---
 
+# Setup `mergerfs,` "merge" disks for serving as if one disk
 
 
 
