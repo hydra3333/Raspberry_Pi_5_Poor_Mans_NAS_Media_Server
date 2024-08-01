@@ -487,7 +487,7 @@ Even if we have less than 8 disks, create the other mount points anyway so that 
 sudo mkdir -v -m a=rwx /srv
 #
 # {1..8} for 8 disks, for underlying file system that mergerfs will depend on. More than you use is OK.
-sudo mkdir -v -m 777 /srv/{usb3disk{1..8}}
+sudo mkdir -v -m 777 /srv/usb3disk{1..8}
 #
 # double-ensure the protections are as we want them by setting them on the tree
 sudo chmod -R -v a+rwx /srv
@@ -498,6 +498,8 @@ sudo mkdir -v -m a=rwx /srv/mediafs
 # Notes:
 # /srv will be shared 'rw' by SAMBA to provide access to the underlying file systems (particularly the 'ffd's)
 # /srv/mediafs will be shared 'rw' by SAMBA to provide access to the mergerfs merged disks
+#
+ls -al /srv/
 ```
 
 **3. Gracefully shutdown for all that to take effect at next boot**    
@@ -596,7 +598,7 @@ C4D05ABAD05AB302                     2d5599a2-aa11-4aad-9f75-7fca2078b38b sda2  
 9BE2-1346                            4b536088-01                          mmcblk0p1   vfat    512M /boot/firmware bootfs
 12974fe2-889e-4060-b497-1d6ac3fbbb4b 4b536088-02                          mmcblk0p2   ext4   29.2G /              rootfs
 ```
-Now, identify the partitions to mount (check the disk LABEL), then select/copy the full PARTUUID for
+Now, identify the partitions to mount (check the disk `LABEL`), then select/copy the full `PARTUUID` for
 that disk and paste it immediately to the right of the `=` sign for that disk (no spaces).    
 In this example the result of doing looks like this:
 ```
