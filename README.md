@@ -552,7 +552,7 @@ Preparation: add these lines to the end of `fstab`:
 #PARTUUID= /srv/usb3disk7 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
 #PARTUUID= /srv/usb3disk8 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
 #
-/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.requires=/srv/usb3disk1 0 0
+#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.requires=/srv/usb3disk1 0 0
 #
 ```
 Now **uncomment ONLY** lines to match the number if disks you have, eg: for 3 disks it would be:
@@ -628,7 +628,7 @@ Attempt to mount the disks via `fstab`. You should something like the output bel
 If not, immediatelty re-edit fstab and comment out the lines and save `fstab` before you then fix what
 has happened by cross-checking all of the relevant lines ! And repeat this step.    
 ```
-sudo mount -a -v
+sudo mount -v -a
 ```
 should look something like this:
 ```
@@ -642,7 +642,7 @@ should look something like this:
 Congratulations, the USB3 disks are now mounted and will be mounted at boot time from here on.    
 Check what's mounted using:
 ```
-mount -v | grep srv
+sudo mount -v | grep srv
 ```
 ```
 /dev/sda2 on /srv/usb3disk1 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.device-timeout=15,x-systemd.mount-timeout=15)
@@ -780,14 +780,46 @@ sudo journalctl -u hd-idle.service | grep hd-idle| tail -n 20
 
 ---
 
-# Setup `mergerfs,` "merge" disks for serving as if one disk
+# Setup `mergerfs`    
+## Virtual "merge" disks for serving as if one disk    
+### finds media using "first found disk" in Left to Right mount order    
 
+```
+sudo cat /etc/fstab
+```
+Should by now look a bit like this:
+```
+PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /srv/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+PARTUUID=a175d2d3-c2f6-44d4-a5fc-209363280c89 /srv/usb3disk2 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+PARTUUID=9a63b215-bcf1-462b-89d2-56979cec6ed8 /srv/usb3disk3 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+#PARTUUID= /srv/usb3disk4 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+#PARTUUID= /srv/usb3disk5 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+#PARTUUID= /srv/usb3disk6 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+#PARTUUID= /srv/usb3disk7 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+#PARTUUID= /srv/usb3disk8 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+#
+#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.requires=/srv/usb3disk1 0 0
+#
 
+```
+Notice the line starting with `/srv/usb3disk*/mediaroot`.   
+When we un-comment this and remount disks, it will mount all disks in order `/srv/usb3disk1` ...    
+So, edit `fstab`
+```
+sudo nano /etc/fstab
+```
+and remove the '#' from the start of that line so it looks like:    
+```
+#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.requires=/srv/usb3disk1 0 0
+```
+exit nano with `Control O` `Control X`. 
 
-
-
-
-
+Re-load `fstab` and mount unmounted disks and check the results:    
+```
+sudo systemctl daemon-reload
+sudo mount -v -a
+sudo mount -v | grep srv
+```
 
 
 
