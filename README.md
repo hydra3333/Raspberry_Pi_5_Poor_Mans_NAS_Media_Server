@@ -4,6 +4,75 @@
 
 # NOTHING WORKS YET
 
+https://derlin.github.io/bitdowntoc/   
+
+<!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
+
+- [WARNING: UNDER CONSTRUCTION](#warning-under-construction)
+- [DO NOT USE](#do-not-use)
+- [NOTHING WORKS YET](#nothing-works-yet)
+- [Raspberry Pi 5 Poor Persons NAS Media Server    ](#raspberry-pi-5-poor-persons-nas-media-server)
+   * [Outline    ](#outline)
+   * [Why ?](#why-)
+   * [General Approach](#general-approach)
+   * [Acknowledgements    ](#acknowledgements)
+      + [thagrol    ](#thagrol)
+   * [ESSENTIAL PREPARATION:    ](#essential-preparation)
+   * [First, prepare the disks, security, disk volume labels, folder structures, files    ](#first-prepare-the-disks-security-disk-volume-labels-folder-structures-files)
+   * [Prepare the hardware    ](#prepare-the-hardware)
+   * [Install Raspberry Pi OS with `autologin` to the SD card    ](#install-raspberry-pi-os-with-autologin-to-the-sd-card)
+   * [Boot the Raspberry Pi 5 and update the system    ](#boot-the-raspberry-pi-5-and-update-the-system)
+- [Tell the Pi about the new Disks](#tell-the-pi-about-the-new-disks)
+- [Setup `HD-IDLE` to ensure disks are not constantly spun up](#setup-hd-idle-to-ensure-disks-are-not-constantly-spun-up)
+- [Setup `mergerfs`    ](#setup-mergerfs)
+   * [Virtual "merge" disks for serving as if one disk    ](#virtual-merge-disks-for-serving-as-if-one-disk)
+      + [finds media using "first found disk" in Left to Right mount order    ](#finds-media-using-first-found-disk-in-left-to-right-mount-order)
+- [Install and configure `SAMBA`to create file shares on the LAN](#install-and-configure-sambato-create-file-shares-on-the-lan)
+   * [Install and configure `miniDLNA` to serve media on the LAN via DLNA](#install-and-configure-minidlna-to-serve-media-on-the-lan-via-dlna)
+   * [NOW INVESTIGATING `mergerFS` by itself](#now-investigating-mergerfs-by-itself)
+      + [which looks like it will be the bees knees !](#which-looks-like-it-will-be-the-bees-knees-)
+      + [since we discovered ](#since-we-discovered)
+         - [`snapRAID` definitely has limitations    ](#snapraid-definitely-has-limitations)
+         - [RAID means you cannot remove any disk and mount it elsewhere eg on windows 11    ](#raid-means-you-cannot-remove-any-disk-and-mount-it-elsewhere-eg-on-windows-11)
+- [STOP READING NOW](#stop-reading-now)
+- [JUST SOME NOTES, UPCOMING EXPLORATION](#just-some-notes-upcoming-exploration)
+      + [The question put to ChatGPT](#the-question-put-to-chatgpt)
+      + [Random Notes arising from the ChatGPT chat:](#random-notes-arising-from-the-chatgpt-chat)
+         - [Setting up SnapRaid initially, per ChatGPT    ](#setting-up-snapraid-initially-per-chatgpt)
+         - [Configuring Passwordless sudo for snapraid    ](#configuring-passwordless-sudo-for-snapraid)
+         - [A word about `mmap` and `SnapRAID`    ](#a-word-about-mmap-and-snapraid)
+         - [Official home pages and GitHub for `MergerFS` and `SnapRAID`:](#official-home-pages-and-github-for-mergerfs-and-snapraid)
+         - [ChatGPT advice for adding a new disk to existing `SnapRAID` setup](#chatgpt-advice-for-adding-a-new-disk-to-existing-snapraid-setup)
+      + [Additional Tips](#additional-tips)
+         - [Miscellaneous ChatGPT Notes](#miscellaneous-chatgpt-notes)
+      + [SnapRAID](#snapraid)
+      + [Using SnapRAID with MergerFS](#using-snapraid-with-mergerfs)
+      + [Steps to Ensure Independent Disk Use on Windows 11:](#steps-to-ensure-independent-disk-use-on-windows-11)
+      + [Example Configuration for SnapRAID and MergerFS](#example-configuration-for-snapraid-and-mergerfs)
+      + [Unedited notes](#unedited-notes)
+         - [readdir caching](#readdir-caching)
+- [<file system>        <mount point>  <type>    <options>             <dump>  <pass>](#)
+         - [TO INSTALL](#to-install)
+- [SUPERSEDED, COMPLETE BOLLOCKS BELOW](#superseded-complete-bollocks-below)
+   * [Set the Router so this Pi has a Reserved fixed (permanent) DHCP IP Address Lease](#set-the-router-so-this-pi-has-a-reserved-fixed-permanent-dhcp-ip-address-lease)
+   * [Ascertain disks info, specifically DISK-UUID, PARTUUID, and MOUNTPOINT    ](#ascertain-disks-info-specifically-disk-uuid-partuuid-and-mountpoint)
+   * [Create new 'standardized' mount points for disks and 'virtual overlayed folder'](#create-new-standardized-mount-points-for-disks-and-virtual-overlayed-folder)
+   * [Backup and Edit `/etc/fstab` so disks are mounted consistently     ](#backup-and-edit-etcfstab-so-disks-are-mounted-consistently)
+   * [Reboot to see what happens with those mounts    ](#reboot-to-see-what-happens-with-those-mounts)
+   * [Setup `HD-IDLE` to ensure disks are not constantly spun up](#setup-hd-idle-to-ensure-disks-are-not-constantly-spun-up-1)
+   * [Install and configure `SAMBA`to create file shares on the LAN](#install-and-configure-sambato-create-file-shares-on-the-lan-1)
+   * [Install and configure `miniDLNA` to serve media on the LAN via DLNA](#install-and-configure-minidlna-to-serve-media-on-the-lan-via-dlna-1)
+- [UNDER CONSTRUCTION](#under-construction)
+         - [NOTE: we install the miniDLNA index db onto USB3 DISK1 rather than the SD card    ](#note-we-install-the-minidlna-index-db-onto-usb3-disk1-rather-than-the-sd-card)
+         - [since it is faster, and the SD car won't wear out quicker due to index rebuilds    ](#since-it-is-faster-and-the-sd-car-wont-wear-out-quicker-due-to-index-rebuilds)
+         - [create an outline from an older miniDLNA setup script from this:    ](#create-an-outline-from-an-older-minidlna-setup-script-from-this)
+- [Notes to self about the Pi5       ](#notes-to-self-about-the-pi5)
+   * [Commands to Enable the external RTC battery    ](#commands-to-enable-the-external-rtc-battery)
+
+<!-- TOC end -->
+
+
+
 # Raspberry Pi 5 Poor Persons NAS Media Server    
 
 ## Outline    
@@ -1013,7 +1082,7 @@ REM DISK1 as read-write (copy new media to subfolders here, depending on how ful
 \\10.0.1.18\usb3disk2
 ```
 
-
+In
 
 ## Install and configure `miniDLNA` to serve media on the LAN via DLNA
 
