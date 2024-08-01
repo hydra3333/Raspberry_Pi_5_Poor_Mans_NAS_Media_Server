@@ -635,8 +635,6 @@ should look something like this:
 /proc                    : already mounted
 /boot/firmware           : already mounted
 /                        : ignored
-mount: (hint) your fstab has been modified, but systemd still uses
-       the old version; use 'systemctl daemon-reload' to reload.
 /srv/usb3disk1           : successfully mounted
 /srv/usb3disk2           : successfully mounted
 /srv/usb3disk3           : successfully mounted
