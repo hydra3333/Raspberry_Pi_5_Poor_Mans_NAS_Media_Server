@@ -814,14 +814,38 @@ and remove the '#' from the start of that line so it looks like:
 ```
 exit nano with `Control O` `Control X`. 
 
-Re-load `fstab` and mount unmounted disks and check the results:    
+Re-load `fstab` and mount unmounted disks:    
 ```
 sudo systemctl daemon-reload
 sudo mount -v -a
+```
+Check the results:    
+```
 sudo mount -v | grep srv
 ```
+```
+/dev/sda2 on /srv/usb3disk1 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.device-timeout=15,x-systemd.mount-timeout=15)
+/dev/sdc2 on /srv/usb3disk2 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.device-timeout=15,x-systemd.mount-timeout=15)
+/dev/sdg1 on /srv/usb3disk3 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.device-timeout=15,x-systemd.mount-timeout=15)
+1/mediaroot:2/mediaroot:3/mediaroot on /srv/media type fuse.mergerfs (rw,relatime,user_id=0,group_id=0,default_permissions,allow_other)
+```
+And look it it to see the "merged" disks/folders appear as one:    
+```
+ls -al /srv/media
+```
+```
+drwxrwxrwx  1 pi   pi     12288 Aug  1 17:37 .
+drwxr-xr-x 11 root root    4096 Aug  1 16:45 ..
+drwxrwxrwx  1 pi   pi    524288 Jul 25 23:35 ClassicMovies
+drwxrwxrwx  1 pi   pi    196608 Jul 24 14:17 Documentaries
+drwxrwxrwx  1 pi   pi     49152 Jul 26 00:08 Footy
+drwxrwxrwx  1 pi   pi         0 Jul 21 22:51 Movies
+drwxrwxrwx  1 pi   pi         0 Jul 22 00:55 OldMovies
+drwxrwxrwx  1 pi   pi    163840 Jul 26 01:21 SciFi
+```
 
-
+We'll serve this merged folder view up via `SAMBA` and miniDLNA 
+so that devices not need to know which disk it's on.
 
 
 
