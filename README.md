@@ -810,7 +810,7 @@ sudo nano /etc/fstab
 ```
 and remove the '#' from the start of that line so it looks like:    
 ```
-#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.requires=/srv/usb3disk1 0 0
+/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.requires=/srv/usb3disk1 0 0
 ```
 exit nano with `Control O` `Control X`. 
 
