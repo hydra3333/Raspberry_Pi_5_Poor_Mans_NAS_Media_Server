@@ -361,22 +361,6 @@ sudo apt install -y dos2unix
 sudo apt install -y curl
 sudo apt install -y wget
 #
-# Install the software which spins down disks when they are unused
-sudo apt -y install hd-idle
-#
-# Install mergerfs ... the LATEST version ...
-# see here https://github.com/trapexit/mergerfs/releases    
-# wget https://github.com/trapexit/mergerfs/releases/download/<ver>/mergerfs_<ver>.debian-<rel>_<arch>.deb
-# dpkg -i mergerfs_<ver>.debian-<rel>_<arch>.deb
-# see below for this to run on Pi 4+ :
-#    <ver>=2.40.2
-#    <rel>=bookworm
-#    <arch>=arm64
-cd ~/Desktop
-wget -v https://github.com/trapexit/mergerfs/releases/download/2.40.2/mergerfs_2.40.2.debian-bookworm_arm64.deb
-sudo dpkg --install mergerfs_2.40.2.debian-bookworm_arm64.deb
-sudo dpkg --status mergerfs
-
 ```
 
 
@@ -739,7 +723,6 @@ sudo nano /etc/default/hd-idle
 #    adding EVERY DISK, using the noted '/dev/sda' etc
 #
 #Double check hd-idle works with the hard drive
-#sudo hd-idle -t ??? -d
 #   #Command line options:
 #   #-a name Set device name of disks for subsequent idle-time parameters -i. This parameter is optional in the sense that there's a default entry for all disks which are not named otherwise by using this parameter. This can also be a symlink (e.g. /dev/disk/by-uuid/...)
 #   #-i idle_time Idle time in seconds for the currently named disk(s) (-a name) or for all disks.
@@ -784,6 +767,26 @@ sudo journalctl -u hd-idle.service | grep hd-idle| tail -n 20
 ## Virtual "merge" disks for serving as if one disk    
 ### finds media using "first found disk" in Left to Right mount order    
 
+**1. Install mergerfs ... the LATEST version ...**    
+
+See here https://github.com/trapexit/mergerfs/releases    
+
+Download and install it:    
+```
+# wget https://github.com/trapexit/mergerfs/releases/download/<ver>/mergerfs_<ver>.debian-<rel>_<arch>.deb
+# dpkg -i mergerfs_<ver>.debian-<rel>_<arch>.deb
+# see below for this to run on Pi 4+ :
+#    <ver>=2.40.2
+#    <rel>=bookworm
+#    <arch>=arm64
+cd ~/Desktop
+wget -v https://github.com/trapexit/mergerfs/releases/download/2.40.2/mergerfs_2.40.2.debian-bookworm_arm64.deb
+sudo dpkg --install mergerfs_2.40.2.debian-bookworm_arm64.deb
+sudo dpkg --status mergerfs
+# Fix any missing dependencies or conflicts.
+sudo apt-get install -f
+```
+Check chat is in `fstab`:    
 ```
 sudo cat /etc/fstab
 ```
@@ -802,9 +805,9 @@ PARTUUID=9a63b215-bcf1-462b-89d2-56979cec6ed8 /srv/usb3disk3 ntfs defaults,auto,
 #
 
 ```
-Notice the line starting with `/srv/usb3disk*/mediaroot`.   
-When we un-comment this and remount disks, it will mount all disks in order `/srv/usb3disk1` ...    
-So, edit `fstab`
+Notice the line at the end starting with `/srv/usb3disk*/mediaroot`.   
+When we un-comment this and remount disks, it will permit `mergerfs` to mount all disks in order `/srv/usb3disk1` ...    
+So, edit `fstab`    
 ```
 sudo nano /etc/fstab
 ```
@@ -814,7 +817,7 @@ and remove the '#' from the start of that line so it looks like:
 ```
 exit nano with `Control O` `Control X`. 
 
-Re-load `fstab` and mount unmounted disks:    
+**2. Re-load `fstab` and mount unmounted disks**    
 ```
 sudo systemctl daemon-reload
 sudo mount -v -a
@@ -823,14 +826,15 @@ Check the results:
 ```
 sudo mount -v | grep srv
 ```
-which should look like:    
+which should look a bit like:    
 ```
 /dev/sda2 on /srv/usb3disk1 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.device-timeout=30,x-systemd.mount-timeout=30)
 /dev/sdc2 on /srv/usb3disk2 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.device-timeout=30,x-systemd.mount-timeout=30)
 /dev/sdg1 on /srv/usb3disk3 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.device-timeout=30,x-systemd.mount-timeout=30)
 1/mediaroot:2/mediaroot:3/mediaroot on /srv/media type fuse.mergerfs (rw,relatime,user_id=0,group_id=0,default_permissions,allow_other)
 ```
-And see the "merged" disks/folders appear as one folder:    
+
+**3. See the "merged" disks/folders appear as one folder**    
 ```
 ls -al /srv/media
 ```
@@ -846,13 +850,13 @@ drwxrwxrwx  1 pi   pi    163840 Jul 26 01:21 SciFi
 ```
 
 We'll serve up this merged folder `/srv/media` via `SAMBA` and `miniDLNA`, 
-so that devices need not know which disk things are on.
+so that devices on the lan need not know which disk things are on.
 
 
 
 
 
-
+????? SAMBA
 
 
 
