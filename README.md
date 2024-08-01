@@ -648,10 +648,6 @@ mount -v | grep srv
 /dev/sda2 on /srv/usb3disk1 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.device-timeout=15,x-systemd.mount-timeout=15)
 /dev/sdc2 on /srv/usb3disk2 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.device-timeout=15,x-systemd.mount-timeout=15)
 /dev/sdg1 on /srv/usb3disk3 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.device-timeout=15,x-systemd.mount-timeout=15)
-/dev/sdd1 on /srv/usb3disk4 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.device-timeout=15,x-systemd.mount-timeout=15)
-/dev/sde1 on /srv/usb3disk5 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.device-timeout=15,x-systemd.mount-timeout=15)
-/dev/sdb2 on /srv/usb3disk6 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.device-timeout=15,x-systemd.mount-timeout=15)
-/dev/sdf1 on /srv/usb3disk7 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.device-timeout=15,x-systemd.mount-timeout=15)
 ```
 
 ---
