@@ -465,50 +465,66 @@ https://forums.raspberrypi.com/viewtopic.php?t=374341#p2240823
 
 The **automount** feature may (and does, for unlucky users!) freeze your system and stop it from booting.    
 
-You must **disable** the automount feature **before** tutning on any disks !    
+**1. You must disable the automount feature before turning on any disks !!**    
+When the Pi is booted to the desktop, start a Terminal:    
 - In the Desktop start 'File Manager'    
 - menu Edit -> Preferences    
 - click Volume Management    
-[ ] UNTICK these 3:    
+**UNTICK these 3**:    
 [ ] Mount mountable volumes automatically on program startup (this is the automounter, not fstab processing)    
 [ ] Mount removable media automatically when they are inserted    
 [ ] Show available options for removable media when they are inserted    
+then click Close
 
-
-
-
-
-
-
-You will need to do this for every new disk, one at a time.
-It can take a while !
-
-When the Pi is booted to the desktop, start a Terminal.
-
-**1. Create folders to ccontain the mount points**    
-Before creating the first of the mount points,
-create the required folders to contain the new mount points.
-Even if we have less than 8 disks, create the others anyway so that later we can easily add more disks.
+**2. Create folders to ccontain the mount points; in a Terminal**    
+Even if we have less than 8 disks, create the other mount points anyway so that later we can easily add more disks.
 ```
 # /srv probably already exists, try to create it anyway
 sudo mkdir -v -m a=rwx /srv
 #
-# for mergerfs to present the consolidated underlying file systems
-sudo mkdir -v -m a=rwx /srv/mediafs
-#
-# for underlying file system that mergerfs will depend on. Morw than you use is OK.
+# {1..8} for 8 disks, for underlying file system that mergerfs will depend on. More than you use is OK.
 sudo mkdir -v -m 777 /srv/{usb3disk{1..8}}
 #
 # double-ensure the protections are as we want them by setting them on the tree
 sudo chmod -R -v a+rwx /srv
+#
+# moount point for mergerfs to present the consolidated underlying file systems
+sudo mkdir -v -m a=rwx /srv/mediafs
 #
 # Notes:
 # /srv will be shared 'rw' by SAMBA to provide access to the underlying file systems (particularly the 'ffd's)
 # /srv/mediafs will be shared 'rw' by SAMBA to provide access to the mergerfs merged disks
 ```
 
+2. **Gracefully shutdown for all that to take effect at next boot**    
+Shut down the Pi in the standard way; in a Terminal    
+```
+sudo shutdown
+```
+and wait for it to finish runnning all of the graceful shutdown tasks and power off.    
 
-**2. Power on ONE of the USB3 disks**    
+**3. Power on all disks, then power on the Pi**
+**First** power on the disks and wait 30 secs for them to initialize.    
+Boot the Pi 5 to the desktop.
+
+**4. Identify Disk PARTUUID for all USB3 disks, add to fstab**    
+This is where it becomes important that you have already named all of you disk volumes properly
+and have created a root folder in each where the root folder's name matches the disk label.    
+
+IE:    
+- For every disk, it's disk volume label should be like `DISK1`  **in strict numerical sequence** through to `DISK8` 
+and ensure they are definitely unique across disks.    
+- On each disk, you must have created one root folder named like `mergerfs_Root_1`  
+so that the number matches the unique disk volume label number (eg `1` for `DISK1` and so on).
+(the 'root folder's like `mergerfs_Root_*`  **must match** the disk volume label number.    
+
+
+
+
+
+
+
+
 To see what is happening while we wait, use these commands
 ```
 sudo dmesg
