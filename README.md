@@ -511,7 +511,6 @@ and wait for it to finish runnning all of the graceful shutdown tasks and power 
 
 
 **4. Power on all disks, then power on the Pi**
-**First** power on the disks and wait 30 secs for them to initialize.    
 Boot the Pi 5 to the desktop.
 
 
@@ -569,7 +568,7 @@ PARTUUID= /srv/usb3disk3 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask
 #PARTUUID= /srv/usb3disk7 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
 #PARTUUID= /srv/usb3disk8 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
 ```
-Leave nano open editing `fstab` in that `Terminal` and swap to the other `Terminal` to enter other commands.
+Leave `nano` open editing `fstab` in that `Terminal` and swap to the other `Terminal` to enter other commands.
 
 Now we have taken some time editing that, allowing the disks to be recognised by the OS biut not mounted,
 use these commands to see if we can find them:
@@ -583,7 +582,7 @@ similar to the below .. if not check your connections etc.
 ```
 sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
 ```
-In this example looks like this:
+In this example it looks like this, notice the disk `LABEL` column showing out partitions and their corresponding `PARTUUID`:
 ```
 UUID                                 PARTUUID                             NAME        FSTYPE  SIZE MOUNTPOINT     LABEL
                                                                           sda                 4.5T                
@@ -598,7 +597,8 @@ C4D05ABAD05AB302                     2d5599a2-aa11-4aad-9f75-7fca2078b38b sda2  
 9BE2-1346                            4b536088-01                          mmcblk0p1   vfat    512M /boot/firmware bootfs
 12974fe2-889e-4060-b497-1d6ac3fbbb4b 4b536088-02                          mmcblk0p2   ext4   29.2G /              rootfs
 ```
-Now, identify the partitions to mount (check the disk `LABEL`), then select/copy the full `PARTUUID` for
+Now, identify the partitions to mount (check the disk `LABEL`), 
+then select/copy the **full `PARTUUID`** for
 that disk and paste it immediately to the right of the `=` sign for that disk (no spaces).    
 In this example the result of doing looks like this:
 ```
@@ -617,9 +617,9 @@ Make the system notice these changes in fstab:
 ```
 sudo systemctl daemon-reload
 ```
-Attempt to mount the disks via `fstab`. You should something like trhe below.    
-If not, immediatelty re-edit fstab and comment out the lines before you then check what
-has happened by checking all of the relevant lines ! And repeat this step.    
+Attempt to mount the disks via `fstab`. You should something like the output below.    
+If not, immediatelty re-edit fstab and comment out the lines and save `fstab` before you then fix what
+has happened by cross-checking all of the relevant lines ! And repeat this step.    
 ```
 sudo mount -a -v
 ```
@@ -634,83 +634,39 @@ mount: (hint) your fstab has been modified, but systemd still uses
 /srv/usb3disk2           : successfully mounted
 /srv/usb3disk3           : successfully mounted
 ```
-Congratulations, the USB3 disks are now mounted and will be mounted at boot times from here on.    
-You can check by rebooting    
+Congratulations, the USB3 disks are now mounted and will be mounted at boot time from here on.    
+You can check by rebooting:    
 ```
 sudo reboot
 ```
 
+**5. Setup HD-IDLE to splind down USB3 disks when not in use** 
 
 
 
 
 
-Anyway, save these things.
-```
-PARTUUID                             NAME      LABEL
-27891019-f894-4e9b-b326-5f9d10c5c2cf sda1      DISK7-8Tb
-```
-Very carefully, note:    
-- the disk number in the disk's label (`7` in `DISK7-8Tb`)     
-- the disk's PARTUUID (`27891019-f894-4e9b-b326-5f9d10c5c2cf` in this case)    
 
-Now recall the mount point we already created for this new disk.
-Ensure that the number in the text 'usb3disk\*' shown below **exactly** matches the disk number you noted ebove (eg `7` in this case).    
-One of the below:
-```
-# /srv/usb3disk1
-# /srv/usb3disk2
-# /srv/usb3disk3
-# /srv/usb3disk4
-# /srv/usb3disk5
-# /srv/usb3disk6
-# /srv/usb3disk7
-# /srv/usb3disk8
-```
-Make a backup of `/etc/fstab` and then edit it    
-```
-sudo cp -fv /etc/fstab /etc/fstab.bak
-sudo nano  /etc/fstab
-```
-At the end of the file, save a future mount point for it like this,
-being careful to ensure that:    
-- the number in 'usb3disk\*' (eg `usb3disk7`) exactly matches the number in the
-new disk's disk label as shown by `sudo lsblk` eg (`DISK7-8Tb` in this case)
-- the PARTUUID is **exactly** the unique PARTUUID you noted above for this specific disk
-```
-PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /srv/usb3disk7 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
-```
-exit nano with `Control O` `Control X`.
 
-Now use reload the newly updated `fstab`, and test the automount but using fstab; in a Terminal:
-```
-sudo systemctl daemon-reload
-sudo mount -a
-sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
-```
-Sometimes the automount will fail ... thanks linux !    
-So, just shutdown gracefully, it may take a couple of minutes to shut down due to the new disk attachement.
-```
-sudo shutdown
-```
-Then power-on the Pi and it "should" mount ok during the reboot process.
 
-Once the Pi powered on, look for the mounted disk; in a Terminal:    
-```
-#sudo dmesg
-sudo blkid
-sudo df
-sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
-```
-and notice it is listed as mounted:
-```
-UUID                                 PARTUUID                             NAME      FSTYPE   SIZE MOUNTPOINT            LABEL
-                                                                          sda                7.3T                
-121E55501E552E4B                     27891019-f894-4e9b-b326-5f9d10c5c2cf sda1      ntfs     7.3T /srv/usb3disk7 DISK7-8Tb
-                                                                          mmcblk0           29.7G                
-9BE2-1346                            c454855e-01                          mmcblk0p1 vfat     512M /boot/firmware        bootfs
-12974fe2-889e-4060-b497-1d6ac3fbbb4b c454855e-02                          mmcblk0p2 ext4    29.2G /                     rootfs
-```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ---
 
