@@ -441,8 +441,7 @@ sudo reboot
 
 ---
 
-# Tell the Pi about the new Disks
-
+## Tell the Pi about the new Disks
 
 **BEFORE TURNING ON ANY DISKS**    
 Per this thread    
@@ -637,7 +636,7 @@ sudo mount -v | grep srv
 
 ---
 
-# Setup `HD-IDLE` to ensure disks are not constantly spun up
+## Setup `HD-IDLE` to ensure disks are not constantly spun up
 
 Per `https://www.htpcguides.com/spin-down-and-manage-hard-drive-power-on-raspberry-pi/`
 some WD an other external USB3 disks won't spin down on idle and HDPARM and SDPARM don't work on them
@@ -764,9 +763,9 @@ sudo journalctl -u hd-idle.service | grep hd-idle| tail -n 20
 
 ---
 
-# Setup `mergerfs`    
-## Virtual "merge" disks for serving as if one disk    
-### finds media using "first found disk" in Left to Right mount order    
+## Setup `mergerfs` for a virtual disk    
+### Virtual "merge" disks for serving as if one disk    
+#### finds media using "first found disk" in Left to Right mount order    
 
 **1. Install mergerfs ... the LATEST version ...**    
 
@@ -856,7 +855,7 @@ so that devices on the lan need not know which disk things are on.
 
 ---
 
-# Install and configure `SAMBA`to create file shares on the LAN
+## Install and configure `SAMBA`to create file shares on the LAN
 
 **1. Install `SAMBA`; in a Terminal:**    
 ```
@@ -1014,12 +1013,14 @@ REM DISK1 as read-write (copy new media to subfolders here, depending on how ful
 \\10.0.1.18\usb3disk2
 ```
 
+---
 
 ## Install and configure `miniDLNA` to serve media on the LAN via DLNA
 
----
 
-# END OF LEGITIMATE TEXT
+# END OF LEGITIMATE TEXT Here
+
+# IGNORE EVERYTHING BELOW
 
 
 
