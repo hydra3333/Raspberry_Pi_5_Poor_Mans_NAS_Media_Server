@@ -658,12 +658,13 @@ shows a minimum of release `1.21 / 2023-10-22` in
 # Install the more up-to-date release of 'adelolmo' version of `hd-idle` direct from the author.
 # https://github.com/adelolmo/hd-idle
 cd ~/Desktop
-rm -fvr ./hd-idle
-sudo mkdir -v -m a=rwx /hd-idle
-sudo chmod -c a=rwx -R /hd-idle
-cd hd-idle
-sudo touch ./hd-idle.log
-sudo chmod -c a=rwx -R ./hd-idle.log
+rm -fvR /home/pi/Desktop/hd-idle
+mkdir -v -m a=rwx /home/pi/Desktop/hd-idle
+chmod -c a=rwx -R /home/pi/Desktop/hd-idle
+cd /home/pi/Desktop/hd-idle
+touch /home/pi/Desktop/hd-idle/hd-idle.log
+chmod -c a=rw -R /home/pi/Desktop/hd-idle/hd-idle.log
+#
 sudo rm -vf hd-idle_1.21_arm64.deb
 wget https://github.com/adelolmo/hd-idle/releases/download/v1.21/hd-idle_1.21_arm64.deb
 sudo dpkg -i "./hd-idle_1.21_arm64.deb"
@@ -683,9 +684,7 @@ sudo apt list --installed | grep hd-idle
 dpkg -l | grep hd-idle
 ```
 
-We had already installed `HD-IDLE` earlier fia `apt` when we installed a few things.   
-
-Note the `/dev` entries for our disk `LABEL`s
+Note the `/dev` entries for our disk `LABEL`s below:    
 ```
 ls -al /dev/disk/by-label
 ```
@@ -700,7 +699,7 @@ lrwxrwxrwx 1 root root  10 Aug  1 17:44 DISK3-6Tb -> ../../sdc1
 lrwxrwxrwx 1 root root  15 Aug  1 17:44 rootfs -> ../../mmcblk0p2
 
 ```
-See the **first 3 letters** of where it points to, denoting which device id it is assigned.    
+See the **first 3 letters** of where it points to, denoting which device it is assigned.    
 In this instance the disks are:
 ```
 sda
@@ -722,16 +721,16 @@ sudo nano /etc/default/hd-idle
 ```
 # note: https://github.com/adelolmo/hd-idle/
 #
-# 1. Change line neat the top from
+# 1. Change line near the top from
 # START_HD_IDLE=false
-# to 
+#    to 
 # START_HD_IDLE=true
 #
-# 2. Then add another line ay the end:
+# 2. Then add another line at the end:
 #    adding EVERY DISK, using the noted '/dev/sda' etc
 #
-##Double check hd-idle works with the hard drive
-##sudo hd-idle -t ??? -d
+#Double check hd-idle works with the hard drive
+#sudo hd-idle -t ??? -d
 #   #Command line options:
 #   #-a name Set device name of disks for subsequent idle-time parameters -i. This parameter is optional in the sense that there's a default entry for all disks which are not named otherwise by using this parameter. This can also be a symlink (e.g. /dev/disk/by-uuid/...)
 #   #-i idle_time Idle time in seconds for the currently named disk(s) (-a name) or for all disks.
@@ -744,24 +743,44 @@ sudo nano /etc/default/hd-idle
 # default timeout 300s = 5 mins
 # sda sdb sdc etc     timeout 900s = 15 mins
 START_HD_IDLE=true
-HD_IDLE_OPTS="-i 300 -l /home/pi/Desktop/hd-idle.log -a /dev/sda -i 900 -a /dev/sdb -i 900 -a /dev/sdc -i 900"
+HD_IDLE_OPTS="-i 300 -l /home/pi/Desktop/hd-idle/hd-idle.log -a /dev/sda -i 900 -a /dev/sdb -i 900 -a /dev/sdc -i 900"
 ```
 
 To enable `hd-idle` on reboot and then restart, in a Terminal:
 ```
-
+sudo systemctl enable hd-idle   
+sudo systemctl stop hd-idle
+sudo systemctl restart hd-idle
+# wait 2 secs
+sudo cat /home/pi/Desktop/hd-idle/hd-idle.log
+#
+sudo journalctl -u hd-idle.service | grep hd-idle| tail -n 20
+#
+sudo systemctl status hd-idle.service | tail -n 20
 ```
 
 Test `hd-idle`
 ```
-sudo hd-idle -t /dev/sda -d -l /var/log/hd-idle.log
-sudo hd-idle -t /dev/sdb -d -l /var/log/hd-idle.log
+sudo hd-idle -d -l /home/pi/Desktop/hd-idle/hd-idle.log -t /dev/sda 
+sudo hd-idle -d -l /home/pi/Desktop/hd-idle/hd-idle.log -t /dev/sdb
+sudo hd-idle -d -l /home/pi/Desktop/hd-idle/hd-idle.log -t /dev/sdb
+
+sudo hd-idle -t /dev/sda 
+sudo hd-idle -t /dev/sdb
+sudo hd-idle -t /dev/sdc
+
+
+sudo hd-idle -t /dev/sda
+sudo hd-idle -t /dev/sdb
+sudo hd-idle -t /dev/sdc
+
 # wait 2 secs
-sudo cat /var/log/hd-idle.log
+sudo cat /home/pi/Desktop/hd-idle/hd-idle.log
 #
-journalctl -u hd-idle.service | grep hd-idle| tail -n 50
-#
-sudo systemctl status hd-idle.service | tail -n 50
+# Display the status of the service
+sudo systemctl status hd-idle.service | tail -n 20
+# Display some fo the system log
+sudo journalctl -u hd-idle.service | grep hd-idle| tail -n 20
 ```
 
 
