@@ -84,9 +84,9 @@ https://forums.raspberrypi.com/viewtopic.php?t=302752
 
 ---
 
-## ESSENTIAL PREPARATION:    
+## Essential Preparation:    
 ### First, prepare the disks, security, disk volume labels, folder structures, files    
-Assuming we have USB3 disks created as GPT disks (not Dynamic Disks) and formatted as NTFS 
+Assuming we have USB3 disks created as GPT disks (not Dynamic Disks) and formatted as NTFS    
 (since Windows PCs are often used to create media files, and WIndows only really likes disks formatted as NTFS)
 we need to prepare every disk to appear and behave in a consistent way.
 
