@@ -365,11 +365,14 @@ sudo apt install -y wget
 # Install the software which spins down disks when they are unused
 sudo apt -y install hd-idle
 #
-# Install mergerfs ... the LATEST version ... see here https://github.com/trapexit/mergerfs/releases    
+# Install mergerfs ... the LATEST version ...
+# see here https://github.com/trapexit/mergerfs/releases    
 # wget https://github.com/trapexit/mergerfs/releases/download/<ver>/mergerfs_<ver>.debian-<rel>_<arch>.deb
 # dpkg -i mergerfs_<ver>.debian-<rel>_<arch>.deb
-# eg for https://github.com/trapexit/mergerfs/releases/download/2.40.2/mergerfs_2.40.2.debian-bookworm_arm64.deb
-#
+# see below for this to run on Pi 4+ :
+#    <ver>=2.40.2
+#    <rel>=bookworm
+#    <arch>=arm64
 cd ~/Desktop
 wget -v https://github.com/trapexit/mergerfs/releases/download/2.40.2/mergerfs_2.40.2.debian-bookworm_arm64.deb
 sudo dpkg --install mergerfs_2.40.2.debian-bookworm_arm64.deb
