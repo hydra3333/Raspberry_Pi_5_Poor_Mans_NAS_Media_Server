@@ -480,7 +480,7 @@ The **automount** feature may (and does, for unlucky users!) freeze your system 
 **then click Close**    
 
 
-**2. Create folders to ccontain the mount points; in a Terminal**    
+**2. Create folders to contain the disk mount points; in a Terminal**    
 Even if we have less than 8 disks, create the other mount points anyway so that later we can easily add more disks.
 ```
 # /srv probably already exists, try to create it anyway
@@ -533,7 +533,7 @@ In the leftmost window, edit `/etc/fstab` ready to add new items.
 sudo nano /etc/fstab
 ```
 Preparation: add these lines to the end of `fstab`:    
-````
+```
 #
 # nofail                                    Forces boot to continue should the mount fail.
 # noatime:                                  Prevents unnecessary writes.
@@ -557,7 +557,7 @@ Preparation: add these lines to the end of `fstab`:
 #
 ```
 Now **uncomment ONLY** lines to match the number if disks you have, eg: for 3 disks it would be:
-````
+```
 PARTUUID= /srv/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
 PARTUUID= /srv/usb3disk2 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
 PARTUUID= /srv/usb3disk3 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
