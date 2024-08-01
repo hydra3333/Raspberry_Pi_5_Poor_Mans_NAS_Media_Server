@@ -758,22 +758,8 @@ sudo journalctl -u hd-idle.service | grep hd-idle| tail -n 20
 #
 sudo systemctl status hd-idle.service | tail -n 20
 ```
-
-Test `hd-idle`
+Look at the status and logs:
 ```
-sudo hd-idle -d -l /home/pi/Desktop/hd-idle/hd-idle.log -t /dev/sda 
-sudo hd-idle -d -l /home/pi/Desktop/hd-idle/hd-idle.log -t /dev/sdb
-sudo hd-idle -d -l /home/pi/Desktop/hd-idle/hd-idle.log -t /dev/sdb
-
-sudo hd-idle -t /dev/sda 
-sudo hd-idle -t /dev/sdb
-sudo hd-idle -t /dev/sdc
-
-
-sudo hd-idle -t /dev/sda
-sudo hd-idle -t /dev/sdb
-sudo hd-idle -t /dev/sdc
-
 # wait 2 secs
 sudo cat /home/pi/Desktop/hd-idle/hd-idle.log
 #
@@ -782,8 +768,6 @@ sudo systemctl status hd-idle.service | tail -n 20
 # Display some fo the system log
 sudo journalctl -u hd-idle.service | grep hd-idle| tail -n 20
 ```
-
-
 
 
 
