@@ -350,13 +350,31 @@ This will also cause all of the changes above to take effect.
 
 **9. Install some software; in a Terminal**    
 ```
+cd ~/Desktop
+#
 # Install disk params checker, eg sudo hdparm -Tt /dev/sda
 sudo apt -y install hdparm
+#
 # Install a tool which can be used to turn EOL inside text files from windows type to unix type
 sudo apt install -y dos2unix
+#
 # Install the curl and wget tools to download support files if required
 sudo apt install -y curl
 sudo apt install -y wget
+#
+# Install the software which spins down disks when they are unused
+sudo apt -y install hd-idle
+#
+# Install mergerfs ... the LATEST version ... see here https://github.com/trapexit/mergerfs/releases    
+# wget https://github.com/trapexit/mergerfs/releases/download/<ver>/mergerfs_<ver>.debian-<rel>_<arch>.deb
+# dpkg -i mergerfs_<ver>.debian-<rel>_<arch>.deb
+# eg for https://github.com/trapexit/mergerfs/releases/download/2.40.2/mergerfs_2.40.2.debian-bookworm_arm64.deb
+#
+cd ~/Desktop
+wget -v https://github.com/trapexit/mergerfs/releases/download/2.40.2/mergerfs_2.40.2.debian-bookworm_arm64.deb
+sudo dpkg --install mergerfs_2.40.2.debian-bookworm_arm64.deb
+sudo dpkg --status mergerfs
+
 ```
 
 
@@ -720,9 +738,10 @@ mkdir /mnt/new_disk/media
 ```bash
 # Example line (without the #) we are looking for
 # ... when delete, only delete the first found, backup copies of a file are unaffected
-# ...     /srv/usb3disk* /mergerfs_root mergerfs defaults,nofail,category.action=ff,category.create=ff,category.delete=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs 0 0
+ ...     /srv/usb3disk* /srv/mergerfs mergerfs defaults,nofail,category.action=ff,category.create=ff,category.delete=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs 0 0
+
 # ... when delete, only delete it and all backup copies of a file
-# ...     /srv/usb3disk* /mergerfs_root mergerfs defaults,nofail,category.action=ff,category.create=ff,category.delete=all,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs 0 0
+# ...    /srv/usb3disk* /srv/mergerfs mergerfs defaults,nofail,category.action=ff,category.create=ff,category.delete=all,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs 0 0
 # Skip comments and empty lines
 #
 #https://github.com/trapexit/mergerfs?tab=readme-ov-file#functions--policies--categories
@@ -859,6 +878,7 @@ Info
 
 Take a moment to read this issue on the mergerfs GitHub if you're a looking for more context on create policies - they can be a bit confusing to begin with.
 
+NO NO NO
 You might find the best all round option to use in your /etc/fstab entry for mergerfs is category.create=mfs. This will fill all disks at roughly the same rate but not colocate entire "blobs". In otherwords, episodes from the same TV show might end up all over all your disks - in practice this doesn't matter but it might matter to you if you're a neat freak.
 
 If you do want path preservation you'll need to perform the manual act of creating paths on the drives you want the data to land on before transferring your data3.
@@ -885,11 +905,12 @@ exclude *.bak
 
 **MergerFS Mount Command**:
 ```bash
-sudo mergerfs -o defaults,nofail,category.action=mfs,category.create=mfs,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs /mnt/disk2:/mnt/disk3 /mnt/pool
+sudo mergerfs -o defaults,nofail,category.action=ff,category.create=ff,category.delete=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs /srv/usb3disk* /srv/mergerfs
 ```
 **MergerFS fstab**:
 ```bash
-/mnt/hdd*:/mnt/sda1 /mergerfs_root defaults,nofail,mergerfs category.action=mfs,category.create=mfs,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs 0 0
+/srv/usb3disk* /srv/mergerfs mergerfs defaults,nofail,category.action=ff,category.create=ff,category.delete=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs 0 0
+
 **MergerFS Mount Command**:
 ```
 
