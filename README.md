@@ -37,33 +37,33 @@ on the internet - at the cost of having to deal with more complexity ... safety 
 
 ## General Approach
 If one has, say, 1 to 8 old USB3 disks with volume labels `DISK1` ... `DISK8` all plugged into the one or two USB3 hubs,
-and each disk has a matching single root folder `mergerfs_Root_1` ... `mergerfs_Root_8` containing
-subfolders of media to be served.    
+and each disk has a single root folder `mediaroot` containing subfolders 
+(these subfolders underneath `mediaroot` will be called 'top level media folder's) of media to be served.    
 Note that some 'top level media folder's are duplicated across 2 or more other disks as backups.
 ```
-DISK1 -- mergerfs_Root_1 --|--ClassicMovies
-                           |--Footy-----------|--1997
-                           |                  |--1998
-                           |                  |--2003
-                           |                  |--2004
+DISK1 -- mediaroot --|--ClassicMovies
+                     |--Footy-----------|--1997
+                     |                  |--1998
+                     |                  |--2003
+                     |                  |--2004
 
-DISK2 -- mergerfs_Root_2 --|--ClassicMovies
-                           |--Documentaries
-                           |--Footy-----------|--1997
-                           |                  |--1998
-                           |                  |--2003
-                           |                  |--2004
-                           |--Movies
-                           |--SciFi
+DISK2 -- mediaroot --|--ClassicMovies
+                     |--Documentaries
+                     |--Footy-----------|--1997
+                     |                  |--1998
+                     |                  |--2003
+                     |                  |--2004
+                     |--Movies
+                     |--SciFi
 
-DISK3 -- mergerfs_Root_3 --|--ClassicMovies
-                           |--Documentaries
-                           |--Footy-----------|--1997
-                           |                  |--1998
-                           |                  |--2003
-                           |                  |--2004
-                           |--OldMovies
-                           |--SciFi
+DISK3 -- mediaroot --|--ClassicMovies
+                     |--Documentaries
+                     |--Footy-----------|--1997
+                     |                  |--1998
+                     |                  |--2003
+                     |                  |--2004
+                     |--OldMovies
+                     |--SciFi
 ```
 
 This outline assumes you know how to use the nano editor, if not please google it, if using another editor then cool !
@@ -92,7 +92,6 @@ we need to prepare every disk to appear and behave in a consistent way.
 For every disk, change it's disk volume label to be like `DISK1`  **in strict numerical sequence** through to `DISK8` 
 and ensure they are definitely unique across disks. If you are unsure how to do that, try    
 https://www.google.com.au/search?q=how+to+change+an+NTFS+disk+volume+label+in+windows+11    
-(Later, the 'root folder's like `mergerfs_Root_*`  **must match** the disk volume label number).    
 
 On every disk, in Windows change it's Security so that inbuilt username `everyone` is added with `Full Control` access.
 In Windows File Manager
@@ -105,11 +104,12 @@ In Windows File Manager
 - Ensure `Full control` is ticked and click `Apply`;
 if prompted, allow it to change all folders and files on the disk and ignore all errors
 
-On each disk, create one root folder named like `mergerfs_Root_1` 
-so that the number matches the unique disk volume label number (eg `1` for `DISK1` and so on).
+On each disk, create one root folder named like `mediaroot` containing subfolders 
+(these subfolders underneath `mediaroot` will be called 'top level media folder's.
 
-Under the root folder on the disks, place the media files in a reasonably consistent (including filename capitalisation)
-subfolder structure of your choice. The same subfolder names and files could exist on every disk or you could
+Under the 'top level media folder's on the disks, place the media files in a reasonably consistent
+(including filename capitalisation) subfolder structure of your choice.
+The same subfolder names and files could exist on every disk or you could
 spread out the media files and subfolders across disks to balance disk usage...    
 
 Note that some 'top level media folder' trees are duplicated across 2 or more disks to make a backup.  
@@ -118,46 +118,45 @@ The 'main' disk is always the 'first found disk' having a nominated 'top level m
 where a 'first found disk' ('ffd') is determined by the leftmost underlying disk in the
 linux fstab entry for 'mergerfs' (these are specified in left to right order).    
 
-So, in the example below - assuming the LtoR mount order in the fstab entry for `mergerfs`
+So, in the example below - assuming the LtoR mount order in the fstab entry for package `mergerfs`
 is `DISK1,DISK2,DISK3` - then the 'ffd' for each 'top level media folder' will be:
-- `ClassicMovies` : `DISK1 mergerfs_Root_1`
-- `Documentaries` : `DISK2 mergerfs_Root_2`
-- `Footy        ` : `DISK1 mergerfs_Root_1`
-- `Movies       ` : `DISK2 mergerfs_Root_2`
-- `OldMovies    ` : `DISK3 mergerfs_Root_3`
-- `SciFi        ` : `DISK2 mergerfs_Root_2`    
+- `ClassicMovies` : `DISK1 mediaroot`
+- `Documentaries` : `DISK2 mediaroot`
+- `Footy        ` : `DISK1 mediaroot`
+- `Movies       ` : `DISK2 mediaroot`
+- `OldMovies    ` : `DISK3 mediaroot`
+- `SciFi        ` : `DISK2 mediaroot`    
 
 Also note that all of the 'top level media folders' are important enough to have a backup (eg 'Movies', 'OldMovies'). 
-
 ```
-DISK1 -- mergerfs_Root_1 --|--ClassicMovies
-                           |--Footy-----------|--1997
-                           |                  |--1998
-                           |                  |--2003
-                           |                  |--2004
+DISK1 -- mediaroot --|--ClassicMovies
+                     |--Footy-----------|--1997
+                     |                  |--1998
+                     |                  |--2003
+                     |                  |--2004
 
-DISK2 -- mergerfs_Root_2 --|--ClassicMovies
-                           |--Documentaries
-                           |--Footy-----------|--1997
-                           |                  |--1998
-                           |                  |--2003
-                           |                  |--2004
-                           |--Movies
-                           |--SciFi
+DISK2 -- mediaroot --|--ClassicMovies
+                     |--Documentaries
+                     |--Footy-----------|--1997
+                     |                  |--1998
+                     |                  |--2003
+                     |                  |--2004
+                     |--Movies
+                     |--SciFi
 
-DISK3 -- mergerfs_Root_3 --|--ClassicMovies
-                           |--Documentaries
-                           |--Footy-----------|--1997
-                           |                  |--1998
-                           |                  |--2003
-                           |                  |--2004
-                           |--OldMovies
-                           |--SciFi
+DISK3 -- mediaroot --|--ClassicMovies
+                     |--Documentaries
+                     |--Footy-----------|--1997
+                     |                  |--1998
+                     |                  |--2003
+                     |                  |--2004
+                     |--OldMovies
+                     |--SciFi
 ```
 
 In this outline we'll assume we have only the USB3 disks. We can add more as needed,
-just keep an eye on the mandatory 'disk volume label' naming (eg `DISK1`) and its matching
-'root folder' naming (eg `mergerfs_Root_1`) in line with the example model above.    
+just keep an eye on the mandatory 'disk volume label' naming (eg `DISK1`) 
+in line with the example model above.    
 
 The 'top level media folder's (eg `Movies`) can be named anything you like, just ensure
 consistency in capitalization across disks and do not use `space` characters and
@@ -522,13 +521,11 @@ and have created a root folder in each where the root folder's name matches the 
 IE:    
 - For every disk, it's disk volume label should be like `DISK1`  **in strict numerical sequence** through to `DISK8` 
 and ensure they are definitely unique across disks.    
-- On each disk, you must have created one root folder named like `mergerfs_Root_1`  
-so that the number matches the unique disk volume label number (eg `1` for `DISK1` and so on).
-(those 'root folder's `mergerfs_Root_*`  **must match** the disk volume label number.    
+- On each disk, you must have created one root folder named like `mediaroot`.
 
 OK, you are going to neeed 2 `Terminal` windows open to do this.
 Start 2 `Terminal`s and position them side by side. 
-Olverlapping is OK, as long as you can see most of each window and easily click between then to change window focus.
+Overlapping windows is OK, as long as you can see most of each window and easily click between then to change window focus.
 
 In the leftmost window, edit `/etc/fstab` ready to add new items.
 ```
@@ -555,7 +552,7 @@ Preparation: add these lines to the end of `fstab`:
 #PARTUUID= /srv/usb3disk7 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
 #PARTUUID= /srv/usb3disk8 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
 #
-/srv/usb3disk*/mergerfs_Root* /srv/media mergerfs defaults,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.requires=/srv/usb3disk1 0 0
+/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.requires=/srv/usb3disk1 0 0
 #
 ```
 Now **uncomment ONLY** lines to match the number if disks you have, eg: for 3 disks it would be:
@@ -587,13 +584,22 @@ In this example it looks like this, notice the disk `LABEL` column showing out p
 ```
 UUID                                 PARTUUID                             NAME        FSTYPE  SIZE MOUNTPOINT     LABEL
                                                                           sda                 4.5T                
-                                     c542d01e-9ac9-486f-98cb-4521e0fe54f8 sda1                128M                
+                                     c542d01e-9ac9-486f-98cb-4521e0fe54f8 sda1              128M                
 C4D05ABAD05AB302                     2d5599a2-aa11-4aad-9f75-7fca2078b38b sda2        ntfs    4.5T                DISK1-5TB
                                                                           sdb                 3.6T                
-                                     c8c72b90-6c8a-4631-9704-a3816695a6dc sdb1                128M                
-96DA1D13DA1CF0EB                     a175d2d3-c2f6-44d4-a5fc-209363280c89 sdb2        ntfs    3.6T                DISK2-4TB
-                                                                          sdc                 5.5T                
-10D23DFDD23DE81C                     9a63b215-bcf1-462b-89d2-56979cec6ed8 sdc1        ntfs    5.5T                DISK3-6Tb
+                                     417f0090-5de0-41c8-be32-af5d4634bfc9 sdb1               16M                
+04EC17A9EC179450                     e5ff156e-b704-40a9-86d5-5c36c35d6095 sdb2        ntfs    3.6T                DISK6-4Tb
+                                                                          sdc                 3.6T                
+                                     c8c72b90-6c8a-4631-9704-a3816695a6dc sdc1              128M                
+96DA1D13DA1CF0EB                     a175d2d3-c2f6-44d4-a5fc-209363280c89 sdc2        ntfs    3.6T                DISK2-4TB
+                                                                          sdd                10.9T                
+E2E6E093E6E068ED                     d6a52d8b-f1e6-424a-8150-dba9453aa7e7 sdd1        ntfs   10.9T                DISK4-12Tb
+                                                                          sde                 9.1T                
+704645134644DC0A                     cd74d88b-71f1-40b3-bafb-60444215f655 sde1        ntfs    9.1T                DISK5-10Tb
+                                                                          sdf                 7.3T                
+121E55501E552E4B                     27891019-f894-4e9b-b326-5f9d10c5c2cf sdf1        ntfs    7.3T                DISK7-8Tb
+                                                                          sdg                 5.5T                
+10D23DFDD23DE81C                     9a63b215-bcf1-462b-89d2-56979cec6ed8 sdg1        ntfs    5.5T                DISK3-6Tb
                                                                           mmcblk0            29.7G                
 9BE2-1346                            4b536088-01                          mmcblk0p1   vfat    512M /boot/firmware bootfs
 12974fe2-889e-4060-b497-1d6ac3fbbb4b 4b536088-02                          mmcblk0p2   ext4   29.2G /              rootfs
@@ -636,9 +642,18 @@ mount: (hint) your fstab has been modified, but systemd still uses
 /srv/usb3disk3           : successfully mounted
 ```
 Congratulations, the USB3 disks are now mounted and will be mounted at boot time from here on.    
-You can check by rebooting:    
+Check what's mounted using:
 ```
-sudo reboot
+mount -v | grep srv
+```
+```
+/dev/sda2 on /srv/usb3disk1 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.device-timeout=15,x-systemd.mount-timeout=15)
+/dev/sdc2 on /srv/usb3disk2 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.device-timeout=15,x-systemd.mount-timeout=15)
+/dev/sdg1 on /srv/usb3disk3 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.device-timeout=15,x-systemd.mount-timeout=15)
+/dev/sdd1 on /srv/usb3disk4 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.device-timeout=15,x-systemd.mount-timeout=15)
+/dev/sde1 on /srv/usb3disk5 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.device-timeout=15,x-systemd.mount-timeout=15)
+/dev/sdb2 on /srv/usb3disk6 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.device-timeout=15,x-systemd.mount-timeout=15)
+/dev/sdf1 on /srv/usb3disk7 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.device-timeout=15,x-systemd.mount-timeout=15)
 ```
 
 ---
