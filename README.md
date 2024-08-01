@@ -807,6 +807,7 @@ PARTUUID=9a63b215-bcf1-462b-89d2-56979cec6ed8 /srv/usb3disk3 ntfs defaults,auto,
 ```
 Notice the line at the end starting with `/srv/usb3disk*/mediaroot`.   
 When we un-comment this and remount disks, it will permit `mergerfs` to mount all disks in order `/srv/usb3disk1` ...    
+
 So, edit `fstab`    
 ```
 sudo nano /etc/fstab
@@ -852,11 +853,170 @@ drwxrwxrwx  1 pi   pi    163840 Jul 26 01:21 SciFi
 We'll serve up this merged folder `/srv/media` via `SAMBA` and `miniDLNA`, 
 so that devices on the lan need not know which disk things are on.
 
+---
+
+# Install and configure `SAMBA`to create file shares on the LAN
+
+**1. Install `SAMBA`; in a Terminal:**    
+```
+sudo apt -y install samba samba-common-bin smbclient cifs-utils
+```
+
+
+**2. Configure `SAMBA` user; in a Terminal:**    
+Create the default user pi in creating the first samba user
+```
+sudo smbpasswd -a pi
+# if prompted, enter the same password as the default user pi you setup earlier    
+```
+
+**3. Configure `SAMBA`; in a Terminal:**    
+Edit the `SAMBA` config `/etc/samba/smb.conf`    
+```
+sudo nano /etc/samba/smb.conf
+```
+Per https://www.samba.org/samba/docs/current/man-html/smb.conf.5.html    
+Here are some global `SAMBA` settings in `/etc/samba/smb.conf`, use nano to check for and fix them    
+- if they not exist, create them    
+- if they are commented out, uncomment them    
+- if they contain different values, comment out and create a line underneath with the correct setting
+
+```
+workgroup = WORKGROUP
+hosts 10.0.1.10/255.255.255.0 127.0.0.1
+security = user
+deadtime = 15
+#socket options = IPTOS_LOWDELAY TCP_NODELAY SO_RCVBUF=65536 SO_SNDBUF=65536 SO_KEEPALIVE
+# linux auto tunes SO_RCVBUF=65536 SO_SNDBUF=65536
+socket options = IPTOS_LOWDELAY TCP_NODELAY SO_KEEPALIVE
+inherit permissions = yes
+# OK ... 1 is a sticky bit
+# create mask and directory mask actually REMOVE permissions !!!
+#   create mask = 0777
+#   directory mask = 0777
+# force create mode and force directory mode 
+# specifies a set of UNIX mode bit permissions that will always be set 
+force create mode = 1777
+force directory mode = 1777
+preferred master = No
+local master = No
+guest ok = yes
+browseable = yes
+#guest account = root
+public = yes
+guest account = pi
+allow insecure wide links = yes
+follow symlinks = yes
+wide links = yes
+```
+
+Below are the definition of 2 new shares.    
+Add them to the end of `/etc/samba/smb.conf`    
+```
+# DEFINE THE SHARES
+[media]
+comment = ReadOnly access to merged 'top level media folders' on USB3 disks
+path = /srv/media
+available = yes
+force user = pi
+writeable = no
+read only = yes
+browseable = yes
+public=yes
+guest ok = yes
+guest only = yes
+case sensitive = no
+default case = lower
+preserve case = yes
+follow symlinks = yes
+wide links = yes
+
+[usb3disk1]
+comment = rw access to USB3 disk usb3disk1
+path = /srv/usb3disk1
+available = yes
+force user = pi
+writeable = yes
+read only = no
+browseable = yes
+public=yes
+guest ok = yes
+guest only = yes
+case sensitive = no
+default case = lower
+preserve case = yes
+follow symlinks = yes
+wide links = yes
+force create mode = 1777
+force directory mode = 1777
+inherit permissions = yes
+
+# HOW TO ADD MORE INDIVIDUAL DISK SHARES:
+# 1. copy then past all of the setion [usb3disk1] at the bottom
+# 2. in the pasted section change these 3 lines to reflect the new disk:
+#    [usb3disk1]
+#    comment = rw access to USB3 disk usb3disk1
+#    path = /srv/usb3disk1
+# eg
+#    [usb3disk2]
+#    comment = rw access to USB3 disk usb3disk2
+#    path = /srv/usb3disk2
+```
+exit nano with `Control O` `Control X`.    
+
+
+**4. Test the new `SAMBA` parameters; in a Terminal:**    
+
+Test the new `SAMBA` parameters
+```
+sudo testparm
+```
+
+**5. Restart the `SAMBA` service; in a Terminal:**    
+
+Restart the `SAMBA` service, waiting 2 secs in between each command    
+```
+sudo systemctl enable smbd
+# wait 2 secs
+
+sudo systemctl stop smbd
+# wait 2 secs
+
+sudo systemctl restart smbd
+```
+
+**6. List the new `SAMBA` users; in a Terminal:**    
+
+List the new `SAMBA` users (which can have different passwords to the Pi itself) and shares    
+```
+sudo pdbedit -L -v
+sudo net usershare info --long
+sudo smbstatus
+sudo smbstatus --shares # Will retrieve what's being shared and which machine (if any) is connected to what.
+sudo hostname
+sudo hostname --fqdn
+sudo hostname --all-ip-addresses
+```
+
+**7. How to access shares from Windows; in a Terminal:**    
+
+You can now access the defined shares from a Windows PC or from an app that supports the SMB protocol.    
+eg on a Windows 11 PC in Windows Explorer, use the IP address of the Pi, eg ...    
+```
+REM read-only virtual folder of overlayed disk folders
+\\10.0.1.18\media
+
+REM DISK1 as read-write (copy new media to subfolders here, depending on how full this disk is)
+\\10.0.1.18\usb3disk1
+
+REM DISK1 as read-write (copy new media to subfolders here, depending on how full this disk is)
+\\10.0.1.18\usb3disk2
+```
 
 
 
+## Install and configure `miniDLNA` to serve media on the LAN via DLNA
 
-????? SAMBA
 
 
 
@@ -1349,8 +1509,8 @@ sudo reboot now
 ```
 
 ## Set the Router so this Pi has a Reserved fixed (permanent) DHCP IP Address Lease
-In this outline the LAN IP Address range is 10.0.0.0/255.255.255.0 with the Pi 5 knowing itself of course on 127.0.0.1,
-and the Router's IP Address lease for the Pi could be something like 10.0.0.18.    
+In this outline the LAN IP Address range is 10.0.1.0/255.255.255.0 with the Pi 5 knowing itself of course on 127.0.0.1,
+and the Router's IP Address lease for the Pi could be something like 10.0.1.18.    
 
 _If you have a different IP Address/Range, substitute in the correct IP and Address range etc in the outline below._     
 
@@ -1363,7 +1523,7 @@ hostname -f
 hostname -I
 #ifconfig
 ```
-The Pi's LAN IP address may be something like 10.0.0.18.    
+The Pi's LAN IP address may be something like 10.0.1.18.    
 
 Login to the router and look at the LAN connected devices, looking for the IP address matching the Pi.    
 
@@ -1629,7 +1789,7 @@ Here are some global `SAMBA` settings in `/etc/samba/smb.conf`, use nano to chec
 
 ```
 workgroup = WORKGROUP
-hosts 10.0.0.0/255.255.255.0 127.0.0.1
+hosts 10.0.1.0/255.255.255.0 127.0.0.1
 security = user
 deadtime = 15
 #socket options = IPTOS_LOWDELAY TCP_NODELAY SO_RCVBUF=65536 SO_SNDBUF=65536 SO_KEEPALIVE
@@ -1728,11 +1888,11 @@ You can now access the defined shares from a Windows machine or from an app that
 eg on a Windows 11 PC in Windows Explorer use the IP address of the Pi, eg ...    
 ```
 REM read-only virtual folder of overlayed disk folders
-\\10.0.0.18\overlayed_media_root
+\\10.0.1.18\overlayed_media_root
 REM DISK1 as read-write (copy new media to subfolders here, depending on how full this disk is)
-\\10.0.0.18\individual_disks\DISK1
+\\10.0.1.18\individual_disks\DISK1
 REM DISK2 root folder as read-write (copy new media to subfolders here, depending on how full this disk is)
-\\10.0.0.18\individual_disks\DISK2\ROOTFOLDER2
+\\10.0.1.18\individual_disks\DISK2\ROOTFOLDER2
 ```
 
 ## Install and configure `miniDLNA` to serve media on the LAN via DLNA
