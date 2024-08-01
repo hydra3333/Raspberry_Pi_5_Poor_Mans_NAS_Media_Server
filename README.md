@@ -465,16 +465,18 @@ https://forums.raspberrypi.com/viewtopic.php?t=374341#p2240823
 
 The **automount** feature may (and does, for unlucky users!) freeze your system and stop it from booting.    
 
-**1. You must disable the automount feature before turning on any disks !!**    
+**1. DISABLE THE AUTOMOUNT FEATURE BEFORE TURNING ON ANY DISKS !!**    
 
 **When the Pi is booted to the desktop, start a Terminal:**    
-**- In the Desktop start 'File Manager'**    
+**In the Desktop start 'File Manager'**    
+
 **- menu Edit -> Preferences**    
 **- click Volume Management**    
 **UNTICK these 3:**    
 **[ ] Mount mountable volumes automatically on program startup (this is the automounter, not fstab processing)**    
 **[ ] Mount removable media automatically when they are inserted**    
 **[ ] Show available options for removable media when they are inserted**    
+
 **then click Close**    
 
 
