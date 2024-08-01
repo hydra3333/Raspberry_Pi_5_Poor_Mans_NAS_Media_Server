@@ -170,24 +170,6 @@ with its 'fdd' rule in single-directional mirroring from 'ffd' to 'backup's.
 
 ---
 
-## Install Raspberry Pi OS with `autologin`    
-Run the `Raspberry Pi Imager` on a PC to put the full 64 bit `Raspberry Pi OS` image to an SD card in the usual way    
-- Choose to "Edit Settings" and then the GENERAL tab.    
-- Set a Hostname you will recognise, eg PINAS64.    
-- Set a username as `pi` (if not `pi` then replace username `pi` in this outline with the chosen username) and
-the password as something you will remember (you will need to enter it later during `SAMBA` and other setups,
-and change all references of `pi` to the username).    
-- Set you locale settings and keyboard layout (setting keyboard layout is important if in non-US non-GB country).    
-- Choose the SERVICES tab.    
-- Enable SSH with password authentification.    
-- Choose the OPTIONS tab.    
-- Disable telementry.    
-Click SAVE.    
-Click YES to apply OS customisation.    
-Click YES to proceed.    
-
----
-
 ## Prepare the hardware    
 A quick note: we leave disks **strictly** powered off at this point
 because for the first few times the Pi 5 is powered on,
@@ -234,17 +216,21 @@ Click YES to proceed.
 - Plug the SD card into the Pi 5    
 - Power on the Pi 5    
 
+
 **2. Once the Pi has finished booting to the desktop (leave it set to autologin)**    
+For me, the the Pi does not properly recognise the country and keyboard I specify whilst creating the SD card image.    
+Set you locale settings and keyboard layout and WiFi country (setting keyboard layout is important if in non-US non-GB country).    
 - Click Start, Preferences, Raspberry Pi Configuration    
-- In the Localisation Tab, Set the Locale and then character set UTF-8, Timezone, Keyboard (setting keyboard is important if in non-US non-GB country), WiFi country, then click OK.    
+- In the System Tab, set **Auto Logon ON**, **Splash Screen OFF**   
+- In the Interfaces Tab, sey **VNC ON**, **SSH ON**, perhaps **Raspberry Connect OFF**    
+- Find the right Tab and set **usb_max_current_enable ON**     
+- In the Localisation Tab, Set the Locale and then character-set UTF-8, Timezone, Keyboard (setting keyboard is important if in non-US non-GB country), WiFi country, then click OK.    
 - If prompted to reboot then click YES and reboot back to the desktop.    
-- Click Start, Preferences, Raspberry Pi Configuration    
-- In the System Tab, set Auto Logon ON, Splash Screen OFF    
-- In the Interfaces Tab, sey **VNC ON**, **SSH ON**, **Raspberry Connect OFF**     
 - Click OK    
 - If prompted to reboot then click YES and reboot.    
 
-Once the Pi has finished booting to the desktop:    
+If it reboots, then once the Pi has finished booting to the desktop:    
+
 
 **3. Force PCI Express Gen 3.0 speeds after next boot (8 GT/sec, almost double the speed) on the Pi 5; in a Terminal**    
 and per https://www.jeffgeerling.com/blog/2023/forcing-pci-express-gen-30-speeds-on-pi-5     
@@ -258,6 +244,7 @@ dtparam=pciex1
 dtparam=pciex1_gen=3
 ```
 exit nano with `Control O` `Control X`.    
+
 
 **4. Enable the external RTC battery, assuming you purchased and installed one**    
 Per https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#real-time-clock-rtc    
@@ -307,27 +294,30 @@ The RTC also provides the time on boot e.g. in `dmesg`, for use cases that lack 
 ```
 NOTE: The RTC is still usable even when there is no backup battery attached to the J5 connector.    
 
-**5. Enable `usb_max_current_enable`; in a Terminal**    
-We'll tro to avoid issues with several USB3 disks at boot time.    
+
+**5. Check/Enable `usb_max_current_enable` manually; in a Terminal**    
+We'll try to avoid issues with several USB3 disks at boot time.    
 Info in  https://www.raspberrypi.com/documentation/computers/configuration.html    
 Use nano to edit `/boot/firmware/config.txt`.    
 ```
 sudo nano /boot/firmware/config.txt
 ```
-add
+add it if it doesn't already exist in the config file    
 ```
 usb_max_current_enable=1
 ```
 exit nano with `Control O` `Control X`. 
 
+
 **6. Disable USB Autosuspend; in a Terminal**    
-Autosuspend might cause issues with certain USB devices. 
+It has been written that Autosuspend might cause issues with certain USB devices. 
 We can disable it by adding `usbcore.autosuspend=-1` to the file `/boot/firmware/cmdline.txt`.
 ```
 sudo nano /boot/firmware/cmdline.txt
 ```
 and add a space and then this ` usbcore.autosuspend=-1` at very end of the single line.
 exit nano with `Control O` `Control X`.
+
 
 **7. Update the system; in a Terminal**    
 
@@ -343,18 +333,20 @@ sudo apt -y update
 sudo apt -y full-upgrade
 sudo apt -y dist-upgrade
 ```
+
+
+**8. Run `raspi-config` to configure more system settings; in a Terminal**    
+
+Use 
+```
+sudo raspi-config
+```
 Reboot the Pi now. In a Terminal:
 ```
 sudo reboot now
 ```
 This will also cause all of the changes above to take effect.
 
-**8. Run `raspi-config` to configure more system settings; in a Terminal**    
-
-```
-sudo raspi-config
-```
-Using the menu ... stuff here
 
 **9. Install some software; in a Terminal**    
 ```
@@ -367,6 +359,7 @@ sudo apt install -y curl
 sudo apt install -y wget
 ```
 
+
 **10. Add user `pi` into groups `plugdev` and `systemd-journal`; in a Terminal**    
 ```
 sudo usermod -a -G plugdev pi
@@ -374,6 +367,7 @@ sudo usermod -a -G systemd-journal pi
 # plugdev:         Allows members to mount (only with the options nodev and nosuid, for security reasons) and umount removable devices through pmount.
 # systemd-journal: Since Debian 8 (Jessie), members of this group can use the command 'journalctl' and read log files of systemd (in /var/log/journal).
 ```
+
 
 **11. Make this server IPv4 only, by disabling IPv6; in a Terminal**    
 ```
@@ -383,6 +377,7 @@ sudo sed -i.bak "s;net.ipv6.conf.all.disable_ipv6;#net.ipv6.conf.all.disable_ipv
 echo net.ipv6.conf.all.disable_ipv6=1 | sudo tee -a "/etc/sysctl.conf"
 sudo sysctl -p
 ```
+
 
 **12. Increase system parameter `fs.inotify.max_user_watches` from default 8192 (used by miniDLNA to monitor changes to filesystems); in a Terminal**    
 ```
@@ -404,6 +399,7 @@ sudo sed -i.bak "s;fs.inotify.max_user_watches=;#fs.inotify.max_user_watches=;g"
 echo fs.inotify.max_user_watches=262144 | sudo tee -a "/etc/sysctl.conf"
 sudo sysctl -p
 ```
+
 
 **13. We choose to create some `alias` shortcut commands to make life easier, by editing script `~/.bashrc`; in a Terminal**    
 ```
@@ -432,6 +428,7 @@ alias psmem20="ps auxf | sort -nr -k 4 | head -20"
 ```
 exit nano with `Control O` `Control X`.   
 
+
 **14. Reboot the Pi 5 for everything to take effect; in a Terminal**    
 ```
 sudo reboot
@@ -450,27 +447,25 @@ Before creating the first of the mount points,
 create the required folders to contain the new mount points.
 Even if we have less than 8 disks, create the others anyway so that later we can easily add more disks.
 ```
+# /srv probably already exists, try to create it anyway
 sudo mkdir -v -m a=rwx /srv
-sudo chmod -R -v a+rwx /srv
 #
 # for mergerfs to present the consolidated underlying file systems
 sudo mkdir -v -m a=rwx /srv/mediafs
 #
-# for underlying file system for mergerfs
-sudo mkdir -v -m a=rwx /srv/usb3disk1
-sudo mkdir -v -m a=rwx /srv/usb3disk2
-sudo mkdir -v -m a=rwx /srv/usb3disk3
-sudo mkdir -v -m a=rwx /srv/usb3disk4
-sudo mkdir -v -m a=rwx /srv/usb3disk5
-sudo mkdir -v -m a=rwx /srv/usb3disk6
-sudo mkdir -v -m a=rwx /srv/usb3disk7
-sudo mkdir -v -m a=rwx /srv/usb3disk8
+# for underlying file system that mergerfs will depend on. Morw than you use is OK.
+sudo mkdir -v -m 777 /srv/{usb3disk{1..8}}
 #
+# double-ensure the protections are as we want them by setting them on the tree
+sudo chmod -R -v a+rwx /srv
+#
+# Notes:
 # /srv will be shared 'rw' by SAMBA to provide access to the underlying file systems (particularly the 'ffd's)
 # /srv/mediafs will be shared 'rw' by SAMBA to provide access to the mergerfs merged disks
 ```
 
-**2. Power on ONE of the disks**    
+
+**2. Power on ONE of the USB3 disks**    
 To see what is happening while we wait, use these commands
 ```
 sudo dmesg
@@ -725,9 +720,9 @@ mkdir /mnt/new_disk/media
 ```bash
 # Example line (without the #) we are looking for
 # ... when delete, only delete the first found, backup copies of a file are unaffected
-# ...     /srv/usb3disk* /mergerfs_root mergerfs category.action=ff,category.create=ff,category.delete=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs 0 0
+# ...     /srv/usb3disk* /mergerfs_root mergerfs defaults,nofail,category.action=ff,category.create=ff,category.delete=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs 0 0
 # ... when delete, only delete it and all backup copies of a file
-# ...     /srv/usb3disk* /mergerfs_root mergerfs category.action=ff,category.create=ff,category.delete=all,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs 0 0
+# ...     /srv/usb3disk* /mergerfs_root mergerfs defaults,nofail,category.action=ff,category.create=ff,category.delete=all,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs 0 0
 # Skip comments and empty lines
 #
 #https://github.com/trapexit/mergerfs?tab=readme-ov-file#functions--policies--categories
@@ -890,11 +885,11 @@ exclude *.bak
 
 **MergerFS Mount Command**:
 ```bash
-sudo mergerfs -o defaults,category.action=mfs,category.create=mfs,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs /mnt/disk2:/mnt/disk3 /mnt/pool
+sudo mergerfs -o defaults,nofail,category.action=mfs,category.create=mfs,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs /mnt/disk2:/mnt/disk3 /mnt/pool
 ```
 **MergerFS fstab**:
 ```bash
-/mnt/hdd*:/mnt/sda1 /mergerfs_root mergerfs category.action=mfs,category.create=mfs,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs 0 0
+/mnt/hdd*:/mnt/sda1 /mergerfs_root defaults,nofail,mergerfs category.action=mfs,category.create=mfs,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs 0 0
 **MergerFS Mount Command**:
 ```
 
@@ -1175,11 +1170,11 @@ So in our example it becomes
 #          however the subsequently dependent mounts will fails as will the overlayfs mount
 #             ... but at least we have booted, not halting boot with a failed fstab entry, and can fix that !
 PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /srv/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail 0 0
-PARTUUID=a175d2d3-c2f6-44d4-a5fc-209363280c89 /srv/usb3disk2 ntfs x-systemd.requires=/srv/usb3disk1,defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail 0 0
 # Create the overlayfs virtual folder, by overlaying the 2 root folders. 
 # The overlayfs lowerdir folders in order Left to Right takes precedence when duplicate files are found.
 overlay /srv/overlay overlay lowerdir=/srv/usb3disk1/ROOTFOLDER1:/srv/usb3disk2/ROOTFOLDER2,defaults,auto,noatime,nodiratime,nofail,users,ro,exec,x-systemd.mount-timeout=60,x-systemd.requires=/srv/usb3disk2,noatime,nodiratime,nofail 0 0
 #
+# in the past we had 'x-systemd.requires=/srv/usb3disk1' (numbers in sequence of course) on the 2nd and subsequent mounts so each mount depended on the prior. We do not do thast any more.
 ```
 
 exit nano with `Control O` `Control X`.    
