@@ -649,67 +649,66 @@ Per `https://www.htpcguides.com/spin-down-and-manage-hard-drive-power-on-raspber
 some WD an other external USB3 disks won't spin down on idle and HDPARM and SDPARM don't work on them
 ... the `adelolmo` version of `hd-idle` appears to work, so let's use that.  
 
-**Do NOT do this:**
+This    
+`https://github.com/adelolmo/hd-idle`     
+shows a minimum of release `1.21 / 2023-10-22` in    
+`https://github.com/adelolmo/hd-idle/releases/download/v1.21/hd-idle_1.21_arm64.deb`
+
 ```
+# Install the more up-to-date release of 'adelolmo' version of `hd-idle` direct from the author.
+# https://github.com/adelolmo/hd-idle
+cd ~/Desktop
+rm -fvr ./hd-idle
+sudo mkdir -v -m a=rwx /hd-idle
+sudo chmod -c a=rwx -R /hd-idle
+cd hd-idle
+sudo touch ./hd-idle.log
+sudo chmod -c a=rwx -R ./hd-idle.log
+sudo rm -vf hd-idle_1.21_arm64.deb
+wget https://github.com/adelolmo/hd-idle/releases/download/v1.21/hd-idle_1.21_arm64.deb
+sudo dpkg -i "./hd-idle_1.21_arm64.deb"
+sudo dpkg -l hd-idle
+#Stop `hd-idle`
+sudo systemctl stop hd-idle
+cd ~/Desktop
+```
+
+Do **NOT** do this since we install the newer version:
+```
+# since this show versions `1.05+ds-2+b1` which is very old.
 sudo apt -y install hd-idle
 # and then these
 sudo apt-cache show hd-idle
 sudo apt list --installed | grep hd-idle
 dpkg -l | grep hd-idle
 ```
-since all show version `1.05+ds-2+b1` which is very old.
-
-This `https://github.com/adelolmo/hd-idle` shows a minimum of release `1.21 / 2023-10-22` in
-`https://github.com/adelolmo/hd-idle/releases/download/v1.21/hd-idle_1.21_arm64.deb`
-
-Even so, the old version works OK and I couldn't get logging going proprtly on the newer version.   
-Do **NOT** do this as it i for the newer version:
-```
-#Install the more up-to-date release of 'adelolmo' version of `hd-idle` direct from the author.
-# https://github.com/adelolmo/hd-idle
-cd ~/Desktop
-rm -fvr ./hd-idle
-mkdir -pv hd-idle
-cd hd-idle
-sudo touch /var/log/hd-idle.log
-sudo chmod +777 /var/log/hd-idle.log
-sudo rm -vf hd-idle_1.21_arm64.deb
-wget https://github.com/adelolmo/hd-idle/releases/download/v1.21/hd-idle_1.21_arm64.deb
-sudo dpkg -i "./hd-idle_1.21_arm64.deb"
-sudo dpkg -l hd-idle
-cd ~/Desktop
-```
 
 We had already installed `HD-IDLE` earlier fia `apt` when we installed a few things.   
 
-So, hark back to `PARTUUID`s we mounted ... 
+Note the `/dev` entries for our disk `LABEL`s
 ```
-$ sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
-UUID                                 PARTUUID                             NAME        FSTYPE  SIZE MOUNTPOINT     LABEL
-                                                                          sda                 4.5T                
-                                     c542d01e-9ac9-486f-98cb-4521e0fe54f8 sda1               128M                
-C4D05ABAD05AB302                     2d5599a2-aa11-4aad-9f75-7fca2078b38b sda2        ntfs    4.5T /srv/usb3disk1 DISK1-5TB
-                                                                          sdb                 3.6T                
-                                     c8c72b90-6c8a-4631-9704-a3816695a6dc sdb1               128M                
-96DA1D13DA1CF0EB                     a175d2d3-c2f6-44d4-a5fc-209363280c89 sdb2        ntfs    3.6T /srv/usb3disk2 DISK2-4TB
-                                                                          sdc                 5.5T                
-10D23DFDD23DE81C                     9a63b215-bcf1-462b-89d2-56979cec6ed8 sdc1        ntfs    5.5T /srv/usb3disk3 DISK3-6Tb
-                                                                          mmcblk0            29.7G                
-9BE2-1346                            4b536088-01                          mmcblk0p1   vfat    512M /boot/firmware bootfs
-12974fe2-889e-4060-b497-1d6ac3fbbb4b 4b536088-02                          mmcblk0p2   ext4   29.2G /              rootfs
+ls -al /dev/disk/by-label
 ```
-top note the mouny points similar to `/srv/usb3disk1` and its corresponding `PARTUUID` on the left.    
-
-
-
-
-
-Noting previously the [UUID, PARTUUID, root folder name] quadruplet of each disk
 ```
-DISK-UUID         PARTUUID                              NAME    root folder name
-C4D05ABAD05AB302  2d5599a2-aa11-4aad-9f75-7fca2078b38b  sdb     ROOTFOLDER1
-96DA1D13DA1CF0EB  a175d2d3-c2f6-44d4-a5fc-209363280c89  sda     ROOTFOLDER2
+total 0
+drwxr-xr-x 2 root root 140 Aug  1 17:44 .
+drwxr-xr-x 9 root root 180 Aug  1 17:44 ..
+lrwxrwxrwx 1 root root  15 Aug  1 17:44 bootfs -> ../../mmcblk0p1
+lrwxrwxrwx 1 root root  10 Aug  1 17:44 DISK1-5TB -> ../../sda2
+lrwxrwxrwx 1 root root  10 Aug  1 17:44 DISK2-4TB -> ../../sdb2
+lrwxrwxrwx 1 root root  10 Aug  1 17:44 DISK3-6Tb -> ../../sdc1
+lrwxrwxrwx 1 root root  15 Aug  1 17:44 rootfs -> ../../mmcblk0p2
+
 ```
+See the **first 3 letters** of where it points to, denoting which device id it is assigned.    
+In this instance the disks are:
+```
+sda
+sdb
+sdc
+```
+
+To configure `hd-idle` for those disks:
 
 Stop `hd-idle`
 ```
@@ -719,10 +718,18 @@ sudo systemctl stop hd-idle
 After edit `etc/default/hd-idle` to change `hd-idle` parameters
 ```
 sudo nano /etc/default/hd-idle
-# enabling hd-idle auto start by changing line 'START_HD_IDLE=false' to have a value **true**
-START_HD_IDLE=true
-# Adding lines at the end for every disk, using the noted NAME
-# option -d = debug
+```
+```
+# note: https://github.com/adelolmo/hd-idle/
+#
+# 1. Change line neat the top from
+# START_HD_IDLE=false
+# to 
+# START_HD_IDLE=true
+#
+# 2. Then add another line ay the end:
+#    adding EVERY DISK, using the noted '/dev/sda' etc
+#
 ##Double check hd-idle works with the hard drive
 ##sudo hd-idle -t ??? -d
 #   #Command line options:
@@ -735,28 +742,25 @@ START_HD_IDLE=true
 #   #-d Debug mode. It will print debugging info to stdout/stderr (/var/log/syslog if started with systemctl)
 #   #-h Print usage information.
 # default timeout 300s = 5 mins
-# sda etc     timeout 900s = 15 mins
-HD_IDLE_OPTS="-i 300 -a /dev/sdb -i 900 -a /dev/sda -i 900 -l /var/log/hd-idle.log"
+# sda sdb sdc etc     timeout 900s = 15 mins
+START_HD_IDLE=true
+HD_IDLE_OPTS="-i 300 -l /home/pi/Desktop/hd-idle.log -a /dev/sda -i 900 -a /dev/sdb -i 900 -a /dev/sdc -i 900"
 ```
 
 To enable `hd-idle` on reboot and then restart, in a Terminal:
 ```
-sudo systemctl enable hd-idle   
-sudo systemctl stop hd-idle
-sudo systemctl restart hd-idle
-# wait 2 secs
-sudo cat /var/log/hd-idle.log
-journalctl -u hd-idle.service | grep hd-idle| tail -n 50
-sudo systemctl status hd-idle.service | tail -n 50
+
 ```
 
 Test `hd-idle`
 ```
-sudo hd-idle -t /dev/sdb -d -l /var/log/hd-idle.log
 sudo hd-idle -t /dev/sda -d -l /var/log/hd-idle.log
+sudo hd-idle -t /dev/sdb -d -l /var/log/hd-idle.log
 # wait 2 secs
 sudo cat /var/log/hd-idle.log
+#
 journalctl -u hd-idle.service | grep hd-idle| tail -n 50
+#
 sudo systemctl status hd-idle.service | tail -n 50
 ```
 
@@ -1504,7 +1508,7 @@ START_HD_IDLE=true
 #   #-h Print usage information.
 # default timeout 300s = 5 mins
 # sda etc     timeout 900s = 15 mins
-HD_IDLE_OPTS="-i 300 -a /dev/sdb -i 900 -a /dev/sda -i 900 -l /var/log/hd-idle.log"
+HD_IDLE_OPTS="-i 300 -l /var/log/hd-idle.log -a /dev/sdb -i 900 -a /dev/sda -i 900"
 ```
 
 To enable `hd-idle` on reboot and then restart, in a Terminal:
