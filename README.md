@@ -493,11 +493,11 @@ sudo mkdir -v -m 777 /srv/usb3disk{1..8}
 sudo chmod -R -v a+rwx /srv
 #
 # moount point for mergerfs to present the consolidated underlying file systems
-sudo mkdir -v -m a=rwx /srv/mediafs
+sudo mkdir -v -m a=rwx /srv/media
 #
 # Notes:
 # /srv will be shared 'rw' by SAMBA to provide access to the underlying file systems (particularly the 'ffd's)
-# /srv/mediafs will be shared 'rw' by SAMBA to provide access to the mergerfs merged disks
+# /srv/media will be shared 'rw' by SAMBA to provide access to the mergerfs merged disks
 #
 ls -al /srv/
 ```
@@ -555,7 +555,7 @@ Preparation: add these lines to the end of `fstab`:
 #PARTUUID= /srv/usb3disk7 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
 #PARTUUID= /srv/usb3disk8 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
 #
-#/srv/usb3disk* /srv/mergerfs mergerfs defaults,nofail,category.action=ff,category.create=ff,category.delete=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=120,x-systemd.requires=/srv/usb3disk1,fsname=mergerfs 0 0
+/srv/usb3disk*/mergerfs_Root* /srv/media mergerfs defaults,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.requires=/srv/usb3disk1 0 0
 #
 ```
 Now **uncomment ONLY** lines to match the number if disks you have, eg: for 3 disks it would be:
@@ -616,6 +616,28 @@ save and exit nano with `Control O` `Control X`.
 Make the system notice these changes in fstab:
 ```
 sudo systemctl daemon-reload
+```
+Attempt to mount the disks via `fstab`. You should something like trhe below.    
+If not, immediatelty re-edit fstab and comment out the lines before you then check what
+has happened by checking all of the relevant lines ! And repeat this step.    
+```
+sudo mount -a -v
+```
+should look something like thos:
+```
+/proc                    : already mounted
+/boot/firmware           : already mounted
+/                        : ignored
+mount: (hint) your fstab has been modified, but systemd still uses
+       the old version; use 'systemctl daemon-reload' to reload.
+/srv/usb3disk1           : successfully mounted
+/srv/usb3disk2           : successfully mounted
+/srv/usb3disk3           : successfully mounted
+```
+Congratulations, the USB3 disks are now mounted and will be mounted at boot times from here on.    
+You can check by rebooting    
+```
+sudo reboot
 ```
 
 
@@ -856,10 +878,10 @@ mkdir /mnt/new_disk/media
 ```bash
 # Example line (without the #) we are looking for
 # ... when delete, only delete the first found, backup copies of a file are unaffected
- ...     /srv/usb3disk* /srv/mergerfs mergerfs defaults,nofail,category.action=ff,category.create=ff,category.delete=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs 0 0
+ ...     /srv/usb3disk* /srv/media mergerfs defaults,nofail,category.action=ff,category.create=ff,category.delete=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs 0 0
 
 # ... when delete, only delete it and all backup copies of a file
-# ...    /srv/usb3disk* /srv/mergerfs mergerfs defaults,nofail,category.action=ff,category.create=ff,category.delete=all,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs 0 0
+# ...    /srv/usb3disk* /srv/media mergerfs defaults,nofail,category.action=ff,category.create=ff,category.delete=all,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs 0 0
 # Skip comments and empty lines
 #
 #https://github.com/trapexit/mergerfs?tab=readme-ov-file#functions--policies--categories
@@ -1023,11 +1045,11 @@ exclude *.bak
 
 **MergerFS Mount Command**:
 ```bash
-sudo mergerfs -o defaults,nofail,category.action=ff,category.create=ff,category.delete=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs /srv/usb3disk* /srv/mergerfs
+sudo mergerfs -o defaults,nofail,category.action=ff,category.create=ff,category.delete=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs /srv/usb3disk* /srv/media
 ```
 **MergerFS fstab**:
 ```bash
-/srv/usb3disk* /srv/mergerfs mergerfs defaults,nofail,category.action=ff,category.create=ff,category.delete=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs 0 0
+/srv/usb3disk* /srv/media mergerfs defaults,nofail,category.action=ff,category.create=ff,category.delete=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs 0 0
 
 **MergerFS Mount Command**:
 ```
