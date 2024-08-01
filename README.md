@@ -543,7 +543,7 @@ Preparation: add these lines to the end of `fstab`:
 # x-systemd.mount-timeout=N:                Time in seconds to wait for the mount to complete, before giving up on it.
 # x-systemd.requires=MOUNTPOINT:            Mount depends on the spcified mountpoint being mounted
 # branches-mount-timeout=N:                 Number of seconds to wait at startup for branches (dependencies) to be mounted
-
+#
 #PARTUUID= /srv/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
 #PARTUUID= /srv/usb3disk2 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
 #PARTUUID= /srv/usb3disk3 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
@@ -572,28 +572,55 @@ Leave nano open editing `fstab` in that `Terminal` and swap to the other `Termin
 Now we have taken some time editing that, allowing the disks to be recognised by the OS biut not mounted,
 use these commands to see if we can find them:
 ```
-sudo dmesg
 sudo blkid
-sudo df
 sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
 ```
 Eventually, we "should" see the disks appear (notice lines with the disk labels appears)
 similar to the below .. if not check your connections etc.
 
-
-
 ```
 sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
 ```
+In this example looks like this:
 ```
-UUID                                 PARTUUID                             NAME      FSTYPE   SIZE MOUNTPOINT     LABEL
-                                                                          sda                7.3T                
-121E55501E552E4B                     27891019-f894-4e9b-b326-5f9d10c5c2cf sda1      ntfs     7.3T                DISK7-8Tb
-                                                                          mmcblk0           29.7G                
-9BE2-1346                            c454855e-01                          mmcblk0p1 vfat     512M /boot/firmware bootfs
-12974fe2-889e-4060-b497-1d6ac3fbbb4b c454855e-02                          mmcblk0p2 ext4    29.2G /              rootfs
+UUID                                 PARTUUID                             NAME        FSTYPE  SIZE MOUNTPOINT     LABEL
+                                                                          sda                 4.5T                
+                                     c542d01e-9ac9-486f-98cb-4521e0fe54f8 sda1                128M                
+C4D05ABAD05AB302                     2d5599a2-aa11-4aad-9f75-7fca2078b38b sda2        ntfs    4.5T                DISK1-5TB
+                                                                          sdb                 3.6T                
+                                     c8c72b90-6c8a-4631-9704-a3816695a6dc sdb1                128M                
+96DA1D13DA1CF0EB                     a175d2d3-c2f6-44d4-a5fc-209363280c89 sdb2        ntfs    3.6T                DISK2-4TB
+                                                                          sdc                 5.5T                
+10D23DFDD23DE81C                     9a63b215-bcf1-462b-89d2-56979cec6ed8 sdc1        ntfs    5.5T                DISK3-6Tb
+                                                                          mmcblk0            29.7G                
+9BE2-1346                            4b536088-01                          mmcblk0p1   vfat    512M /boot/firmware bootfs
+12974fe2-889e-4060-b497-1d6ac3fbbb4b 4b536088-02                          mmcblk0p2   ext4   29.2G /              rootfs
 ```
-Sometimes it gets automounted, sometimes it doesn't, hey it's linux.
+Now, identify the partitions to mount (check the disk LABEL), then select/copy the full PARTUUID for
+that disk and paste it immediately to the right of the `=` sign for that disk (no spaces).    
+In this example the result of doing looks like this:
+```
+PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /srv/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+PARTUUID=a175d2d3-c2f6-44d4-a5fc-209363280c89 /srv/usb3disk2 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+PARTUUID=9a63b215-bcf1-462b-89d2-56979cec6ed8 /srv/usb3disk3 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+#PARTUUID= /srv/usb3disk4 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+#PARTUUID= /srv/usb3disk5 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+#PARTUUID= /srv/usb3disk6 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+#PARTUUID= /srv/usb3disk7 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+#PARTUUID= /srv/usb3disk8 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=15,x-systemd.mount-timeout=15 0 0
+```
+save and exit nano with `Control O` `Control X`.     
+
+Make the system notice these changes in fstab:
+```
+sudo systemctl daemon-reload
+```
+
+
+
+
+
+
 Anyway, save these things.
 ```
 PARTUUID                             NAME      LABEL
