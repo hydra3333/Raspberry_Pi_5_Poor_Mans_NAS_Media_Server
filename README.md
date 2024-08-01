@@ -823,13 +823,14 @@ Check the results:
 ```
 sudo mount -v | grep srv
 ```
+which should look like:    
 ```
 /dev/sda2 on /srv/usb3disk1 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.device-timeout=15,x-systemd.mount-timeout=15)
 /dev/sdc2 on /srv/usb3disk2 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.device-timeout=15,x-systemd.mount-timeout=15)
 /dev/sdg1 on /srv/usb3disk3 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.device-timeout=15,x-systemd.mount-timeout=15)
 1/mediaroot:2/mediaroot:3/mediaroot on /srv/media type fuse.mergerfs (rw,relatime,user_id=0,group_id=0,default_permissions,allow_other)
 ```
-And look it it to see the "merged" disks/folders appear as one:    
+And see the "merged" disks/folders appear as one folder:    
 ```
 ls -al /srv/media
 ```
@@ -844,8 +845,8 @@ drwxrwxrwx  1 pi   pi         0 Jul 22 00:55 OldMovies
 drwxrwxrwx  1 pi   pi    163840 Jul 26 01:21 SciFi
 ```
 
-We'll serve this merged folder view up via `SAMBA` and miniDLNA 
-so that devices not need to know which disk it's on.
+We'll serve up this merged folder view up via `SAMBA` and miniDLNA, 
+so that devices need not know which disk things are on.
 
 
 
