@@ -79,12 +79,12 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
     Returns:
         list of dict: A list of dictionaries, each representing a detected mergerfs underlying disk in LtoR order from fstab.
         Each dictionary contains:
-            - 'disk_mount_point' (str): The mount point path of the disk (e.g., '/mnt/sda1').
+            - 'disk_mount_point' (str): The mount point path of the disk (e.g., '/srv/usb3disk1').
             - 'free_disk_space' (int): The free disk space available on the disk in bytes.
     Example:
         [
-            {'disk_mount_point': '/mnt/sda1', 'free_disk_space': 1234567890},
-            {'disk_mount_point': '/mnt/sda2', 'free_disk_space': 987654321},
+            {'disk_mount_point': '/srv/usb3disk1', 'free_disk_space': 1234567890},
+            {'disk_mount_point': '/srv/usb3disk2', 'free_disk_space': 987654321},
         ]
 
     Note: this does not guarantee a detected underlying disk contains a root folder or any 'top level media folders' under it.
@@ -101,10 +101,7 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
         for line in fstab_lines:
             # Example line (without the #) we are looking for
             # ... when delete, only delete the first found, backup copies of a file are unaffected
-            # ...     /srv/usb3disk* /mergerfs_root mergerfs category.action=ff,category.create=ff,category.delete=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs 0 0
-            # ... when delete, only delete it and all backup copies of a file
-            # ...     /srv/usb3disk* /mergerfs_root mergerfs category.action=ff,category.create=ff,category.delete=all,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,branches-mount-timeout=300,fsname=mergerfs 0 0
-            # Skip comments and empty lines
+            #         /srv/usb3disk*/mediaroot /srv/media mergerfs defaults,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true 0 0
             debug_log_and_print(f"A line was read from /etc/fstab:", data=line)
             if line.startswith('#') or not line.strip():
                 continue
@@ -156,35 +153,35 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
 
 def detect_mergerfs_disks_having_a_root_folder_having_files(mergerfs_disks_in_LtoR_order_from_fstab):
     """
-    Checks each underlying mergerfs disk_mount_point for the presence of a single root folder like 'mergerfs_Root_1' to 'mergerfs_Root_8'.
+    Checks each underlying mergerfs disk_mount_point for the presence of a single root folder like 'mediaroot'.
     If multiple root folders are found on a single disk_mount_point, it raises an error with details.
     
     Args:
         mergerfs_disks_in_LtoR_order_from_fstab (list of dict): A list of dictionaries representing detected mergerfs underlying disks.
             Each dictionary contains:
-                - 'disk_mount_point' (str): The mount point path of the disk (e.g., '/mnt/sda1').
+                - 'disk_mount_point' (str): The mount point path of the disk (e.g., '/srv/usb3disk1').
                 - 'free_disk_space' (int): The free disk space available on the disk in bytes.
     
     Returns:
         dict: A dictionary containing information about disks with root folders and their top-level media folders.
-        Key: 'disk_mount_point' (str): The mount point path of the disk (e.g., '/mnt/sda1').
+        Key: 'disk_mount_point' (str): The mount point path of the disk (e.g., '/srv/usb3disk1').
         Value: dict with the following keys:
-            - 'root_folder_path' (Path): The path to the root folder (e.g., Path('/mnt/sda1/mergerfs_Root_1')).
+            - 'root_folder_path' (Path): The path to the root folder (e.g., Path('/srv/usb3disk1/mediaroot')).
             - 'top_level_media_folders' (list of dict): A list of dictionaries, each representing a top-level media folder.
                 Each dictionary contains:
                     - 'top_level_media_folder_name' (str): The name of the media folder (e.g., 'Movies').
-                    - 'top_level_media_folder_path' (Path): The path to the media folder (e.g., Path('/mnt/sda1/mergerfs_Root_1/Movies')).
+                    - 'top_level_media_folder_path' (Path): The path to the media folder (e.g., Path('/srv/usb3disk1/mediaroot/Movies')).
                     - 'ffd' (str): Initially an empty string, will be populated later with the first found disk (FFD).
                     - 'number_of_files' (int): The number of files in the media folder.
                     - 'disk_space_used' (int): The disk space used by the media folder in bytes.
     Example:
         {
-            '/mnt/sda1': {
-                'root_folder_path': Path('/mnt/sda1/mergerfs_Root_1'),
+            '/srv/usb3disk1': {
+                'root_folder_path': Path('/srv/usb3disk1/mediaroot'),
                 'top_level_media_folders': [
                     {
                         'top_level_media_folder_name': 'Movies',
-                        'top_level_media_folder_path': Path('/mnt/sda1/mergerfs_Root_1/Movies'),
+                        'top_level_media_folder_path': Path('/srv/usb3disk1/mediaroot/Movies'),
                         'ffd': '',
                         'number_of_files': 1500,
                         'disk_space_used': 12000000000
@@ -201,10 +198,12 @@ def detect_mergerfs_disks_having_a_root_folder_having_files(mergerfs_disks_in_Lt
         try:
             disk_mount_point_path = Path(disk_mount_point)
             if disk_mount_point_path.is_dir():
-                candidate_root_folders = [d.name for d in sorted(disk_mount_point_path.iterdir()) if d.is_dir() and re.match(r'^mergerfs_Root_[1-8]$', d.name)]
+                # find candidate media root folder with name 'mediaroot'
+                #candidate_root_folders = [d.name for d in sorted(disk_mount_point_path.iterdir()) if d.is_dir() and re.match(r'^mediaroot[1-8]$', d.name)]
+                candidate_root_folders = [d.name for d in sorted(disk_mount_point_path.iterdir()) if d.is_dir() and re.match(r'^mediaroot$', d.name)]
                 # Check for multiple root folders on the same disk
                 if len(candidate_root_folders) > 1:
-                    error_log_and_print(f"Each disk_mount_point should only have only one root folder like 'mergerfs_Root_*'.")
+                    error_log_and_print(f"Each disk_mount_point should only have only one root folder like 'mediaroot'.")
                     error_log_and_print(f"Error: disk_mount_point {disk_mount_point} has multiple root folders:", data=candidate_root_folders)
                     sys.exit(1)  # Exit with a status code indicating an error
                 elif len(candidate_root_folders) == 1:
@@ -250,7 +249,7 @@ def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, 
     
     Args:
         mergerfs_disks_having_a_root_folder_having_files (dict): A dictionary containing information about disks with root folders and their top-level media folders.
-            Key: 'disk_mount_point' (str): The mount point path of the disk (e.g., '/mnt/sda1').
+            Key: 'disk_mount_point' (str): The mount point path of the disk (e.g., '/srv/usb3disk1').
             Value: dict with the following keys:
                 - 'root_folder_path' (Path): The path to the root folder.
                 - 'top_level_media_folders' (list of dict): A list of dictionaries, each representing a top-level media folder.
@@ -261,7 +260,7 @@ def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, 
                     - 'disk_space_used' (int): The disk space used by the media folder in bytes.
         mergerfs_disks_in_LtoR_order_from_fstab (list of dict): A list of dictionaries representing detected mergerfs underlying disks.
             Each dictionary contains:
-                - 'disk_mount_point' (str): The mount point path of the disk (e.g., '/mnt/sda1').
+                - 'disk_mount_point' (str): The mount point path of the disk (e.g., '/srv/usb3disk1').
                 - 'free_disk_space' (int): The free disk space available on the disk in bytes.
     
     Returns:
@@ -280,20 +279,20 @@ def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, 
     Example:
         {
             'Movies': {
-                'ffd': '/mnt/sda1',
+                'ffd': '/srv/usb3disk1',
                 'disk_info': [
                     {
-                        'disk_mount_point': '/mnt/sda1',
+                        'disk_mount_point': '/srv/usb3disk1',
                         'is_ffd': True,
-                        'root_folder_path': Path('/mnt/sda1/mergerfs_Root_1'),
+                        'root_folder_path': Path('/srv/usb3disk1/mediaroot'),
                         'number_of_files': 1500,
                         'disk_space_used': 12000000000,
                         'total_free_disk_space': 50000000000
                     },
                     {
-                        'disk_mount_point': '/mnt/sda2',
+                        'disk_mount_point': '/srv/usb3disk2',
                         'is_ffd': False,
-                        'root_folder_path': Path('/mnt/sda2/mergerfs_Root_2'),
+                        'root_folder_path': Path('/srv/usb3disk2/mediaroot'),
                         'number_of_files': 1500,
                         'disk_space_used': 12000000000,
                         'total_free_disk_space': 60000000000
