@@ -276,8 +276,8 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
     # REMEMBER
     #
     # ITEMS FROM THIS LIST WILL ALWAYS BE RETURNED IN THE ORDER THEY WERE ADDED.
-	# THIS IS REQUIRED BEHAVIOUR FOR THIS CODE BASE TO WORK
-	the_mergerfs_disks_in_LtoR_order_from_fstab = []
+    # THIS IS REQUIRED BEHAVIOUR FOR THIS CODE BASE TO WORK
+    the_mergerfs_disks_in_LtoR_order_from_fstab = []
 
     try:
         with open('/etc/fstab', 'r') as fstab_file:
@@ -333,7 +333,7 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
                             the_mergerfs_disks_in_LtoR_order_from_fstab.append({'disk_mount_point': efpc_resolved_mount_point, 'free_disk_space': fds_free_disk_space, 'root_folder_path': efpc_resolved_path})
                     else:
                         # Handle plain (eg /mnt/hdd1 underlying file system mount point
-						# Do not care if there is an error from get_free_disk_space ... the free disk space will be returned as zero which is OK
+                        # Do not care if there is an error from get_free_disk_space ... the free disk space will be returned as zero which is OK
                         efpc_status, efpc_error_number, efpc_error_string, efpc_resolved_path, efpc_resolved_mount_point, efpc_resolved_path_under_mount, efpc_resolved_top_level_folder, efpc_resolved_path_under_top_level_folder = extract_five_path_components(disk)
                         if (not efpc_status) or (efpc_resolved_mount_point == "") or (not re.match(rf'^{re.escape(MEDIAROOT_FOLDER_NAME)}$', efpc_resolved_path_under_mount)):
                             continue # disk perhaps not mounted etc, skip to the end of this FOR iteration
@@ -409,7 +409,7 @@ def detect_mergerfs_disks_having_a_root_folder_having_files(mergerfs_disks_in_Lt
     # REMEMBER
     those_mergerfs_disks_having_a_root_folder_having_files = {}
     for disk_info in mergerfs_disks_in_LtoR_order_from_fstab:
-        disk_mount_point = disk_info['disk_mount_point']	# 'disk_mount_point' in mergerfs_disks_in_LtoR_order_from_fstab are ONLY the mountpoint eg '/srv/usb3disk1'
+        disk_mount_point = disk_info['disk_mount_point']    # 'disk_mount_point' in mergerfs_disks_in_LtoR_order_from_fstab are ONLY the mountpoint eg '/srv/usb3disk1'
         root_folder_path = disk_info['root_folder_path']    # 'root_folder_path' comes from the fstab mergerfs mount, is a valid resolved path to the root folder '/srv/usb3disk1/mediaroot'
         try:
             if Path(root_folder_path).is_dir():
@@ -530,11 +530,11 @@ def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, 
     # REMEMBER
     #
     # AFTER SORTING USING ORDEREDDICT, ITEMS FROM THIS DICT WILL ALWAYS BE RETURNED IN THE ORDER THEY WERE ADDED.
-	# THIS IS REQUIRED BEHAVIOUR FOR THIS CODE BASE TO WORK
+    # THIS IS REQUIRED BEHAVIOUR FOR THIS CODE BASE TO WORK
     unique_top_level_media_folders = {}
 
     # Step 1: Gather all unique top-level media folder names (name only, not paths)
-	#         Determining draft ffd depends on SORTED mergerfs_disks_having_a_root_folder_having_files
+    #         Determining draft ffd depends on SORTED mergerfs_disks_having_a_root_folder_having_files
     for disk_info in mergerfs_disks_having_a_root_folder_having_files.values():
         for media_folder_info in disk_info['top_level_media_folders']:
             top_level_media_folder_name = media_folder_info['top_level_media_folder_name']
@@ -546,7 +546,7 @@ def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, 
                     'disk_info': []                                                                            # blank since we are only seeing the FIRST unique top-level media folder name that we find
                 }
     # To ensure dict items are always returned in order of key,
-	# make it an ORDEREDDICT sorted by keys
+    # make it an ORDEREDDICT sorted by keys
     unique_top_level_media_folders = OrderedDict(sorted(unique_top_level_media_folders.items()))
     debug_log_and_print(f"get_unique_top_level_media_folders AFTER STEP 1 unique_top_level_media_folders:\n", data=unique_top_level_media_folders)
 
