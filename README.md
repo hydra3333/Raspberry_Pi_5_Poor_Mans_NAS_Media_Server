@@ -876,14 +876,15 @@ Edit the `SAMBA` config `/etc/samba/smb.conf`
 sudo nano /etc/samba/smb.conf
 ```
 Per https://www.samba.org/samba/docs/current/man-html/smb.conf.5.html    
-Here are some global `SAMBA` settings in `/etc/samba/smb.conf`, use nano to check for and fix them    
-- if they not exist, create them    
-- if they are commented out, uncomment them    
-- if they contain different values, comment out and create a line underneath with the correct setting
+Here are some global `SAMBA` settings in `/etc/samba/smb.conf`.    
+Use nano to check for and fix each of them    
+- if they do not exist, create them    
+- if they are commented out, uncomment and fix them    
+- if they contain different values, comment that line out and create a new line underneath with the correct setting
 
 ```
 workgroup = WORKGROUP
-hosts 10.0.1.10/255.255.255.0 127.0.0.1
+hosts 10.0.0.1/255.255.255.0 127.0.0.1
 security = user
 deadtime = 15
 #socket options = IPTOS_LOWDELAY TCP_NODELAY SO_RCVBUF=65536 SO_SNDBUF=65536 SO_KEEPALIVE
@@ -910,8 +911,8 @@ follow symlinks = yes
 wide links = yes
 ```
 
-Below are the definition of 2 new shares.    
-Add them to the end of `/etc/samba/smb.conf`    
+Below are the definitions for 3 live shares, with 5 more commented out.    
+Copy and paste it to the end of `/etc/samba/smb.conf` and un-comment any shared you need to make live.     
 ```
 # DEFINE THE SHARES
 [media]
@@ -951,16 +952,145 @@ force create mode = 1777
 force directory mode = 1777
 inherit permissions = yes
 
-# HOW TO ADD MORE INDIVIDUAL DISK SHARES:
-# 1. copy then past all of the setion [usb3disk1] at the bottom
-# 2. in the pasted section change these 3 lines to reflect the new disk:
-#    [usb3disk1]
-#    comment = rw access to USB3 disk usb3disk1
-#    path = /srv/usb3disk1
-# eg
-#    [usb3disk2]
-#    comment = rw access to USB3 disk usb3disk2
-#    path = /srv/usb3disk2
+[usb3disk2]
+comment = rw access to USB3 disk usb3disk2
+path = /srv/usb3disk2
+available = yes
+force user = pi
+writeable = yes
+read only = no
+browseable = yes
+public=yes
+guest ok = yes
+guest only = yes
+case sensitive = no
+default case = lower
+preserve case = yes
+follow symlinks = yes
+wide links = yes
+force create mode = 1777
+force directory mode = 1777
+inherit permissions = yes
+
+[usb3disk3]
+comment = rw access to USB3 disk usb3disk3
+path = /srv/usb3disk3
+available = yes
+force user = pi
+writeable = yes
+read only = no
+browseable = yes
+public=yes
+guest ok = yes
+guest only = yes
+case sensitive = no
+default case = lower
+preserve case = yes
+follow symlinks = yes
+wide links = yes
+force create mode = 1777
+force directory mode = 1777
+inherit permissions = yes
+
+#[usb3disk4]
+#comment = rw access to USB3 disk usb3disk4
+#path = /srv/usb3disk4
+#available = yes
+#force user = pi
+#writeable = yes
+#read only = no
+#browseable = yes
+#public=yes
+#guest ok = yes
+#guest only = yes
+#case sensitive = no
+#default case = lower
+#preserve case = yes
+#follow symlinks = yes
+#wide links = yes
+#force create mode = 1777
+#force directory mode = 1777
+#inherit permissions = yes
+
+#[usb3disk5]
+#comment = rw access to USB3 disk usb3disk5
+#path = /srv/usb3disk5
+#available = yes
+#force user = pi
+#writeable = yes
+#read only = no
+#browseable = yes
+#public=yes
+#guest ok = yes
+#guest only = yes
+#case sensitive = no
+#default case = lower
+#preserve case = yes
+#follow symlinks = yes
+#wide links = yes
+#force create mode = 1777
+#force directory mode = 1777
+#inherit permissions = yes
+
+#[usb3disk6]
+#comment = rw access to USB3 disk usb3disk6
+#path = /srv/usb3disk6
+#available = yes
+#force user = pi
+#writeable = yes
+#read only = no
+#browseable = yes
+#public=yes
+#guest ok = yes
+#guest only = yes
+#case sensitive = no
+#default case = lower
+#preserve case = yes
+#follow symlinks = yes
+#wide links = yes
+#force create mode = 1777
+#force directory mode = 1777
+#inherit permissions = yes
+
+#[usb3disk7]
+#comment = rw access to USB3 disk usb3disk7
+#path = /srv/usb3disk7
+#available = yes
+#force user = pi
+#writeable = yes
+#read only = no
+#browseable = yes
+#public=yes
+#guest ok = yes
+#guest only = yes
+#case sensitive = no
+#default case = lower
+#preserve case = yes
+#follow symlinks = yes
+#wide links = yes
+#force create mode = 1777
+#force directory mode = 1777
+#inherit permissions = yes
+
+#[usb3disk8]
+#comment = rw access to USB3 disk usb3disk8
+#path = /srv/usb3disk8
+#available = yes
+#force user = pi
+#writeable = yes
+#read only = no
+#browseable = yes
+#public=yes
+#guest ok = yes
+#guest only = yes
+#case sensitive = no
+#default case = lower
+#preserve case = yes
+#follow symlinks = yes
+#wide links = yes
+#force create mode = 1777
+#force directory mode = 1777
+#inherit permissions = yes
 ```
 exit nano with `Control O` `Control X`.    
 
@@ -1004,13 +1134,13 @@ You can now access the defined shares from a Windows PC or from an app that supp
 eg on a Windows 11 PC in Windows Explorer, use the IP address of the Pi, eg ...    
 ```
 REM read-only virtual folder of overlayed disk folders
-\\10.0.1.18\media
+\\10.0.0..18\media
 
 REM DISK1 as read-write (copy new media to subfolders here, depending on how full this disk is)
-\\10.0.1.18\usb3disk1
+\\10.0.0..18\usb3disk1
 
 REM DISK1 as read-write (copy new media to subfolders here, depending on how full this disk is)
-\\10.0.1.18\usb3disk2
+\\10.0.0..18\usb3disk2
 ```
 
 ---
@@ -1512,8 +1642,8 @@ sudo reboot now
 ```
 
 ## Set the Router so this Pi has a Reserved fixed (permanent) DHCP IP Address Lease
-In this outline the LAN IP Address range is 10.0.1.0/255.255.255.0 with the Pi 5 knowing itself of course on 127.0.0.1,
-and the Router's IP Address lease for the Pi could be something like 10.0.1.18.    
+In this outline the LAN IP Address range is 10.0.0..0/255.255.255.0 with the Pi 5 knowing itself of course on 127.0.0.1,
+and the Router's IP Address lease for the Pi could be something like 10.0.0..18.    
 
 _If you have a different IP Address/Range, substitute in the correct IP and Address range etc in the outline below._     
 
@@ -1526,7 +1656,7 @@ hostname -f
 hostname -I
 #ifconfig
 ```
-The Pi's LAN IP address may be something like 10.0.1.18.    
+The Pi's LAN IP address may be something like 10.0.0..18.    
 
 Login to the router and look at the LAN connected devices, looking for the IP address matching the Pi.    
 
@@ -1792,7 +1922,7 @@ Here are some global `SAMBA` settings in `/etc/samba/smb.conf`, use nano to chec
 
 ```
 workgroup = WORKGROUP
-hosts 10.0.1.0/255.255.255.0 127.0.0.1
+hosts 10.0.0..0/255.255.255.0 127.0.0.1
 security = user
 deadtime = 15
 #socket options = IPTOS_LOWDELAY TCP_NODELAY SO_RCVBUF=65536 SO_SNDBUF=65536 SO_KEEPALIVE
@@ -1891,11 +2021,11 @@ You can now access the defined shares from a Windows machine or from an app that
 eg on a Windows 11 PC in Windows Explorer use the IP address of the Pi, eg ...    
 ```
 REM read-only virtual folder of overlayed disk folders
-\\10.0.1.18\overlayed_media_root
+\\10.0.0..18\overlayed_media_root
 REM DISK1 as read-write (copy new media to subfolders here, depending on how full this disk is)
-\\10.0.1.18\individual_disks\DISK1
+\\10.0.0..18\individual_disks\DISK1
 REM DISK2 root folder as read-write (copy new media to subfolders here, depending on how full this disk is)
-\\10.0.1.18\individual_disks\DISK2\ROOTFOLDER2
+\\10.0.0..18\individual_disks\DISK2\ROOTFOLDER2
 ```
 
 ## Install and configure `miniDLNA` to serve media on the LAN via DLNA
@@ -3165,7 +3295,7 @@ Here are some global `SAMBA` settings in `/etc/samba/smb.conf`, use nano to chec
 
 ```
 workgroup = WORKGROUP
-hosts 10.0.1.10/255.255.255.0 127.0.0.1
+hosts 10.0.0..10/255.255.255.0 127.0.0.1
 security = user
 deadtime = 15
 #socket options = IPTOS_LOWDELAY TCP_NODELAY SO_RCVBUF=65536 SO_SNDBUF=65536 SO_KEEPALIVE
@@ -3286,13 +3416,13 @@ You can now access the defined shares from a Windows PC or from an app that supp
 eg on a Windows 11 PC in Windows Explorer, use the IP address of the Pi, eg ...    
 ```
 REM read-only virtual folder of overlayed disk folders
-\\10.0.1.18\media
+\\10.0.0..18\media
 
 REM DISK1 as read-write (copy new media to subfolders here, depending on how full this disk is)
-\\10.0.1.18\usb3disk1
+\\10.0.0..18\usb3disk1
 
 REM DISK1 as read-write (copy new media to subfolders here, depending on how full this disk is)
-\\10.0.1.18\usb3disk2
+\\10.0.0..18\usb3disk2
 ```
 
 
@@ -3791,8 +3921,8 @@ sudo reboot now
 ```
 
 ## Set the Router so this Pi has a Reserved fixed (permanent) DHCP IP Address Lease
-In this outline the LAN IP Address range is 10.0.1.0/255.255.255.0 with the Pi 5 knowing itself of course on 127.0.0.1,
-and the Router's IP Address lease for the Pi could be something like 10.0.1.18.    
+In this outline the LAN IP Address range is 10.0.0..0/255.255.255.0 with the Pi 5 knowing itself of course on 127.0.0.1,
+and the Router's IP Address lease for the Pi could be something like 10.0.0..18.    
 
 _If you have a different IP Address/Range, substitute in the correct IP and Address range etc in the outline below._     
 
@@ -3805,7 +3935,7 @@ hostname -f
 hostname -I
 #ifconfig
 ```
-The Pi's LAN IP address may be something like 10.0.1.18.    
+The Pi's LAN IP address may be something like 10.0.0..18.    
 
 Login to the router and look at the LAN connected devices, looking for the IP address matching the Pi.    
 
@@ -4071,7 +4201,7 @@ Here are some global `SAMBA` settings in `/etc/samba/smb.conf`, use nano to chec
 
 ```
 workgroup = WORKGROUP
-hosts 10.0.1.0/255.255.255.0 127.0.0.1
+hosts 10.0.0..0/255.255.255.0 127.0.0.1
 security = user
 deadtime = 15
 #socket options = IPTOS_LOWDELAY TCP_NODELAY SO_RCVBUF=65536 SO_SNDBUF=65536 SO_KEEPALIVE
@@ -4170,11 +4300,11 @@ You can now access the defined shares from a Windows machine or from an app that
 eg on a Windows 11 PC in Windows Explorer use the IP address of the Pi, eg ...    
 ```
 REM read-only virtual folder of overlayed disk folders
-\\10.0.1.18\overlayed_media_root
+\\10.0.0..18\overlayed_media_root
 REM DISK1 as read-write (copy new media to subfolders here, depending on how full this disk is)
-\\10.0.1.18\individual_disks\DISK1
+\\10.0.0..18\individual_disks\DISK1
 REM DISK2 root folder as read-write (copy new media to subfolders here, depending on how full this disk is)
-\\10.0.1.18\individual_disks\DISK2\ROOTFOLDER2
+\\10.0.0..18\individual_disks\DISK2\ROOTFOLDER2
 ```
 
 ## Install and configure `miniDLNA` to serve media on the LAN via DLNA
