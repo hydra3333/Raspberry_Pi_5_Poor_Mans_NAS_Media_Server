@@ -667,7 +667,7 @@ sudo systemctl stop hd-idle
 cd ~/Desktop
 ```
 
-Do **NOT** do this since we install the newer version:
+**Do NOT do this** since we instead install the newer version direct from the author:
 ```
 # since this show versions `1.05+ds-2+b1` which is very old.
 sudo apt -y install hd-idle
@@ -771,14 +771,16 @@ sudo journalctl -u hd-idle.service | grep hd-idle| tail -n 20
 
 See here https://github.com/trapexit/mergerfs/releases    
 
-Download and install it:    
+Download and install it direct from the author:    
 ```
-# wget https://github.com/trapexit/mergerfs/releases/download/<ver>/mergerfs_<ver>.debian-<rel>_<arch>.deb
-# dpkg -i mergerfs_<ver>.debian-<rel>_<arch>.deb
-# see below for this to run on Pi 4+ :
+# For this to run on Pi 4 and newer:
 #    <ver>=2.40.2
 #    <rel>=bookworm
 #    <arch>=arm64
+# wget https://github.com/trapexit/mergerfs/releases/download/<ver>/mergerfs_<ver>.debian-<rel>_<arch>.deb
+# dpkg -i mergerfs_<ver>.debian-<rel>_<arch>.deb
+# sudo apt-get install -f
+#
 cd ~/Desktop
 wget -v https://github.com/trapexit/mergerfs/releases/download/2.40.2/mergerfs_2.40.2.debian-bookworm_arm64.deb
 sudo dpkg --install mergerfs_2.40.2.debian-bookworm_arm64.deb
@@ -786,7 +788,7 @@ sudo dpkg --status mergerfs
 # Fix any missing dependencies or conflicts.
 sudo apt-get install -f
 ```
-Check chat is in `fstab`:    
+Check that the mount definitions for underlying disks to be merged are correctly in `fstab`:    
 ```
 sudo cat /etc/fstab
 ```
