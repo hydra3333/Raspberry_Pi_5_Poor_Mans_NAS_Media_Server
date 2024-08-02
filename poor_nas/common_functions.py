@@ -467,7 +467,9 @@ def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, 
         dict: A dictionary containing unique top-level media folders and related derived information.
         Key: 'top_level_media_folder_name' (str): The unique name of the top-level media folder (e.g., 'Movies').
         Value: dict with the following keys:
+            - 'top_level_media_folder_name' (str): yes it is a key above as well as a key/value pair here
             - 'ffd' (str): The first found disk for this media folder.
+            - 'ffd_root_folder_path': the root path of the ffd.
             - 'disk_info' (list of dict): A list of dictionaries with information about each disk containing this media folder.
                 Each dictionary contains:
                     - 'disk_mount_point' (str): The mount point path of the disk.
@@ -479,7 +481,9 @@ def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, 
     Example:
         {
             'Movies': {
+                'top_level_media_folder_name': 'Movies',
                 'ffd': '/srv/usb3disk1',
+                'ffd_root_folder_path': '/srv/usb3disk1/mediaroot',
                 'disk_info': [
                     {
                         'disk_mount_point': '/srv/usb3disk1',
@@ -505,16 +509,19 @@ def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, 
     """
     unique_top_level_media_folders = {}
 
-    # Step 1: Gather all unique top-level media folders
+    # Step 1: Gather all unique top-level media folder names (name only, not paths)
+	#         Determining draft ffd depends on SORTED mergerfs_disks_having_a_root_folder_having_files
     for disk_info in mergerfs_disks_having_a_root_folder_having_files.values():
         for media_folder_info in disk_info['top_level_media_folders']:
             top_level_media_folder_name = media_folder_info['top_level_media_folder_name']
-            if top_level_media_folder_name not in unique_top_level_media_folders:
+            if top_level_media_folder_name not in unique_top_level_media_folders:    # if it is the FIRST disk found having the folder name (and files)
                 unique_top_level_media_folders[top_level_media_folder_name] = {
                     'top_level_media_folder_name': top_level_media_folder_name,
-                    'ffd': '',
-                    'disk_info': []
+                    'ffd': "DRAFT ffd:" + disk_info['disk_mount_point'],                                       # draft ffd: disk_info['disk_mount_point']
+                    'ffd_root_folder_path': "DRAFT ffd_root_folder_path: " + disk_info['root_folder_path'],    # draft ffd_root_folder_path: disk_info['root_folder_path']
+                    'disk_info': []                                                                            # blank since we are only seeing the FIRST unique top-level media folder name that we find
                 }
+    debug_log_and_print('get_unique_top_level_media_folders AFTER STEP 1 unique_top_level_media_folders:', data=unique_top_level_media_folders)
 
     # Step 2: Determine the ffd (first found disk) for each top-level media folder
     for top_level_media_folder_name, folder_info in unique_top_level_media_folders.items():
@@ -535,11 +542,13 @@ def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, 
                             'disk_space_used': media_folder_info['disk_space_used'],
                             'total_free_disk_space': disk_info['free_disk_space']
                         })
+    debug_log_and_print('get_unique_top_level_media_folders AFTER STEP 1 unique_top_level_media_folders:', data=unique_top_level_media_folders)
 
     # Step 3: Update ffd for each folder in mergerfs_disks_having_a_root_folder_having_files
     for disk_info in mergerfs_disks_having_a_root_folder_having_files.values():
         for media_folder_info in disk_info['top_level_media_folders']:
             media_folder_name = media_folder_info['top_level_media_folder_name']
             media_folder_info['ffd'] = unique_top_level_media_folders[media_folder_name]['ffd']
+    debug_log_and_print('get_unique_top_level_media_folders AFTER STEP 3 unique_top_level_media_folders:', data=unique_top_level_media_folders)
 
     return unique_top_level_media_folders, mergerfs_disks_having_a_root_folder_having_files
