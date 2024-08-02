@@ -20,7 +20,9 @@ import pprint
 # Configuration
 DEBUG_IS_ON = False  # Set to True to enable debug printing
 objPrettyPrint = None
-#
+
+# Constants
+MEDIAROOT_FOLDER_NAME = r"mediaroot"
 
 def init_PrettyPrinter(TERMINAL_WIDTH):
     # Set up prettyprint for formatting
@@ -256,17 +258,17 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
         Each dictionary contains:
             - 'disk_mount_point' (str): The mount point path of the disk (e.g., '/srv/usb3disk1').
             - 'free_disk_space' (int): The free disk space available on the disk in bytes.
+            - 'root_folder_path' (str): The path mergerfs uses as the "head" of its mount (e.g., '/srv/usb3disk1/mediaroot').
     Example:
         [
-            {'disk_mount_point': '/srv/usb3disk1', 'free_disk_space': 1234567890},
-            {'disk_mount_point': '/srv/usb3disk2', 'free_disk_space': 987654321},
+            {'disk_mount_point': '/srv/usb3disk1', 'free_disk_space': 1234567890, 'root_folder_path': '/srv/usb3disk1/mediaroot'},
+            {'disk_mount_point': '/srv/usb3disk2', 'free_disk_space': 987654321}, 'root_folder_path': '/srv/usb3disk2/mediaroot'},
         ]
-
     Notes: this does not guarantee a detected underlying disk contains a root folder or any 'top level media folders' under it.
            Handle disks referenced but not mounted in /etc/fstab.
-           Does not depend on the mergerfs disk mount referencing a top-level root folder or not.
            If a top-level root folder specified in the mergerfs mount does not exist, the disk is skipped for this run.
            Skips unmounted disks for this run.
+           Skips disks where MEDIAROOT_FOLDER_NAME is not a part of the string underneath the mount point, or does not exist ... i.e. disks without a valid root
     """
     the_mergerfs_disks_in_LtoR_order_from_fstab = []
     try:
@@ -303,11 +305,11 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
                         for ep in expanded_paths:
                             # if it is detected as valid (i.e. it is mounted and the rest of it is valid and exists) then find the free disk space and add it to the_mergerfs_disks_in_LtoR_order_from_fstab 
                             efpc_status, efpc_error_number, efpc_error_string, efpc_resolved_path, efpc_resolved_mount_point, efpc_resolved_path_under_mount, efpc_resolved_top_level_folder, efpc_resolved_path_under_top_level_folder = extract_five_path_components(ep)
-                            if efpc_resolved_mount_point == "" or not efpc_status:
+                            if (not efpc_status) or (efpc_resolved_mount_point == "") or (not re.match(rf'^{re.escape(MEDIAROOT_FOLDER_NAME)}$', efpc_resolved_path_under_mount)):
                                 continue # disk perhaps not mounted etc, skip to the end of this FOR iteration
                             # Get the free disk space
                             fds_status, fds_error_number, fds_error_string, fds_free_disk_space = get_free_disk_space(efpc_resolved_mount_point)
-                            the_mergerfs_disks_in_LtoR_order_from_fstab.append({'disk_mount_point': efpc_resolved_mount_point, 'free_disk_space': fds_free_disk_space})
+                            the_mergerfs_disks_in_LtoR_order_from_fstab.append({'disk_mount_point': efpc_resolved_mount_point, 'free_disk_space': fds_free_disk_space, 'root_folder_path': efpc_resolved_path}'})
                     elif '{' in disk and '}' in disk:
                         # Handle curly brace globbing pattern (eg /mnt/{hdd1,hdd2})
                         pattern = re.sub(r'\{(.*?)\}', r'(\1)', disk)
@@ -316,19 +318,19 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
                         for ep in expanded_paths:
                             # if it is detected as valid (i.e. it is mounted and the rest of it is valid and exists) then find the free disk space and add it to the_mergerfs_disks_in_LtoR_order_from_fstab 
                             efpc_status, efpc_error_number, efpc_error_string, efpc_resolved_path, efpc_resolved_mount_point, efpc_resolved_path_under_mount, efpc_resolved_top_level_folder, efpc_resolved_path_under_top_level_folder = extract_five_path_components(ep)
-                            if efpc_resolved_mount_point == "" or not efpc_status:
+                            if (not efpc_status) or (efpc_resolved_mount_point == "") or (not re.match(rf'^{re.escape(MEDIAROOT_FOLDER_NAME)}$', efpc_resolved_path_under_mount)):
                                 continue # disk perhaps not mounted etc, skip to the end of this FOR iteration
                             # Get the free disk space
                             fds_status, fds_error_number, fds_error_string, fds_free_disk_space = get_free_disk_space(efpc_resolved_mount_point)
-                            the_mergerfs_disks_in_LtoR_order_from_fstab.append({'disk_mount_point': efpc_resolved_mount_point, 'free_disk_space': fds_free_disk_space})
+                            the_mergerfs_disks_in_LtoR_order_from_fstab.append({'disk_mount_point': efpc_resolved_mount_point, 'free_disk_space': fds_free_disk_space, 'root_folder_path': efpc_resolved_path})
                     else:
                         # Handle plain (eg /mnt/hdd1 underlying file system mount point
 						# Do not care if there is an error from get_free_disk_space ... the free disk space will be returned as zero which is OK
                         efpc_status, efpc_error_number, efpc_error_string, efpc_resolved_path, efpc_resolved_mount_point, efpc_resolved_path_under_mount, efpc_resolved_top_level_folder, efpc_resolved_path_under_top_level_folder = extract_five_path_components(disk)
-                        if efpc_resolved_mount_point == "" or not efpc_status:
+                        if (not efpc_status) or (efpc_resolved_mount_point == "") or (not re.match(rf'^{re.escape(MEDIAROOT_FOLDER_NAME)}$', efpc_resolved_path_under_mount)):
                             continue # disk perhaps not mounted etc, skip to the end of this FOR iteration
                         fds_status, fds_error_number, fds_error_string, fds_free_disk_space = get_free_disk_space(efpc_resolved_mount_point)
-                        the_mergerfs_disks_in_LtoR_order_from_fstab.append({'disk_mount_point': efpc_resolved_mount_point, 'free_disk_space': fds_free_disk_space})
+                        the_mergerfs_disks_in_LtoR_order_from_fstab.append({'disk_mount_point': efpc_resolved_mount_point, 'free_disk_space': fds_free_disk_space, 'root_folder_path': efpc_resolved_path})
     except Exception as e:
         error_log_and_print(f"Error reading /etc/fstab: {e}")
         sys.exit(1)  # Exit with a status code indicating an error
@@ -352,10 +354,15 @@ def detect_mergerfs_disks_having_a_root_folder_having_files(mergerfs_disks_in_Lt
     
     Args:
         mergerfs_disks_in_LtoR_order_from_fstab (list of dict): A list of dictionaries representing detected mergerfs underlying disks.
-            Each dictionary contains:
-                - 'disk_mount_point' (str): The mount point path of the disk (e.g., '/srv/usb3disk1').
-                - 'free_disk_space' (int): The free disk space available on the disk in bytes.
-    
+        Each dictionary contains:
+            - 'disk_mount_point' (str): The mount point path of the disk (e.g., '/srv/usb3disk1').
+            - 'free_disk_space' (int): The free disk space available on the disk in bytes.
+            - 'root_folder_path' (str): The path mergerfs uses as the "head" of its mount (e.g., '/srv/usb3disk1/mediaroot').
+            Example:
+                [
+                    {'disk_mount_point': '/srv/usb3disk1', 'free_disk_space': 1234567890, 'root_folder_path': '/srv/usb3disk1/mediaroot'},
+                    {'disk_mount_point': '/srv/usb3disk2', 'free_disk_space': 987654321}, 'root_folder_path': '/srv/usb3disk2/mediaroot'},
+                ]
     Returns:
         dict: A dictionary containing information about disks with root folders and their top-level media folders.
         Key: 'disk_mount_point' (str): The mount point path of the disk (e.g., '/srv/usb3disk1').
@@ -388,13 +395,13 @@ def detect_mergerfs_disks_having_a_root_folder_having_files(mergerfs_disks_in_Lt
     """
     those_mergerfs_disks_having_a_root_folder_having_files = {}
     for disk_info in mergerfs_disks_in_LtoR_order_from_fstab:
-        disk_mount_point = disk_info['disk_mount_point']
+        disk_mount_point = disk_info['disk_mount_point']	# 'disk_mount_point' in mergerfs_disks_in_LtoR_order_from_fstab are ONLY the mountpoint eg '/srv/usb3disk1'
         try:
             disk_mount_point_path = Path(disk_mount_point)
             if disk_mount_point_path.is_dir():
-                # find candidate media root folder with name 'mediaroot'
-                #candidate_root_folders = [d.name for d in sorted(disk_mount_point_path.iterdir()) if d.is_dir() and re.match(r'^mediaroot[1-8]$', d.name)]
-                candidate_root_folders = [d.name for d in sorted(disk_mount_point_path.iterdir()) if d.is_dir() and re.match(r'^mediaroot$', d.name)]
+                # Find candidate media root folder with name in constant: MEDIAROOT_FOLDER_NAME
+                #candidate_root_folders_case1 = [d.name for d in sorted(disk_mount_point_path.iterdir()) if d.is_dir() and re.match(rf'^{re.escape(MEDIAROOT_FOLDER_NAME)}[1-8]$', d.name)]
+                candidate_root_folders_case2 = [d.name for d in sorted(disk_mount_point_path.iterdir()) if d.is_dir() and re.match(rf'^{re.escape(MEDIAROOT_FOLDER_NAME)}$', d.name)]
                 # Check for multiple root folders on the same disk
                 if len(candidate_root_folders) > 1:
                     error_log_and_print(f"Each disk_mount_point should only have only one root folder like 'mediaroot'.")
@@ -453,9 +460,15 @@ def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, 
                     - 'number_of_files' (int): The number of files in the media folder.
                     - 'disk_space_used' (int): The disk space used by the media folder in bytes.
         mergerfs_disks_in_LtoR_order_from_fstab (list of dict): A list of dictionaries representing detected mergerfs underlying disks.
-            Each dictionary contains:
-                - 'disk_mount_point' (str): The mount point path of the disk (e.g., '/srv/usb3disk1').
-                - 'free_disk_space' (int): The free disk space available on the disk in bytes.
+        Each dictionary contains:
+            - 'disk_mount_point' (str): The mount point path of the disk (e.g., '/srv/usb3disk1').
+            - 'free_disk_space' (int): The free disk space available on the disk in bytes.
+            - 'root_folder_path' (str): The path mergerfs uses as the "head" of its mount (e.g., '/srv/usb3disk1/mediaroot').
+            Example:
+                [
+                    {'disk_mount_point': '/srv/usb3disk1', 'free_disk_space': 1234567890, 'root_folder_path': '/srv/usb3disk1/mediaroot'},
+                    {'disk_mount_point': '/srv/usb3disk2', 'free_disk_space': 987654321}, 'root_folder_path': '/srv/usb3disk2/mediaroot'},
+                ]
     
     Returns:
         dict: A dictionary containing unique top-level media folders and related derived information.
