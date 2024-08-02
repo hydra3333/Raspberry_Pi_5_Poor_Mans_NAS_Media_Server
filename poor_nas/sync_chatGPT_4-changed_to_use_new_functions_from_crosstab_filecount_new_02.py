@@ -88,7 +88,7 @@ def sync_folders(unique_top_level_media_folders, mergerfs_disks_having_a_root_fo
                     break
         
         if ffd_folder is None:
-            error_log_and_print(f"Error: FFD folder for {media_folder_name} not found on disk {ffd}.")
+            error_log_and_print(f"Error: ffd folder for {media_folder_name} not found on disk {ffd}.")
             sys.exit(1)  # Exit with a status code indicating an error
         
         # B. Use mergerfs_disks_having_a_root_folder by iterating over disks and
@@ -101,7 +101,7 @@ def sync_folders(unique_top_level_media_folders, mergerfs_disks_having_a_root_fo
                 if folder_info['top_level_media_folder_name'] == media_folder_name:
                     target_folder = folder_info['top_level_media_folder_path']
                     if not target_folder.exists():
-                        error_log_and_print(f"Error: Target folder {target_folder} does not exist to rsync into.")
+                        error_log_and_print(f"Error: media_folder_name:'{media_folder_name}',ffd:'{ffd_folder}' expected Target folder {target_folder} does not exist to rsync into.")
                         sys.exit(1)  # Exit with a status code indicating an error
 
                     # Ensure the parent directory exists for the target file on the target disk
@@ -132,34 +132,34 @@ def main():
     4. Identifies the first found disk (ffd) for each folder.
     5. Syncs folders from the ffd to other disks.
     """
-
-    common_functions.DEBUG_IS_ON = False
-    #common_functions.DEBUG_IS_ON = True
-
-    perform_action = False
-    #perform_action = True
+    #common_functions.DEBUG_IS_ON = False
+    common_functions.DEBUG_IS_ON = True
 
     TERMINAL_WIDTH = 200
     common_functions.init_PrettyPrinter(TERMINAL_WIDTH)
-    common_functions.init_logging(r'/home/pi/Desktop/logs/crosstab.log')
+    common_functions.init_logging(r'/home/pi/Desktop/logs/sync.log')
 
     common_functions.log_and_print('-' * TERMINAL_WIDTH)
+
     current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     common_functions.log_and_print(f"Starting media 'SYNC' at {current_time}.")
 
-    disks_in_order_from_fstab = get_mergerfs_disks_in_LtoR_order_from_fstab()
-    if not disks_in_order_from_fstab:
+	mergerfs_disks_in_LtoR_order_from_fstab = common_functions.get_mergerfs_disks_in_LtoR_order_from_fstab()
+    if not mergerfs_disks_in_LtoR_order_from_fstab:
         error_log_and_print("No disks found in fstab or mergerfs entry not detected.")
         sys.exit(1)  # Exit with a status code indicating an error
 
-    mergerfs_disks_having_a_root_folder = detect_mergerfs_disks_having_a_root_folder(disks_in_order_from_fstab)
-    if not mergerfs_disks_having_a_root_folder:
-        error_log_and_print("No media disks detected with mergerfs_Root_* folders.")
+	mergerfs_disks_having_a_root_folder_having_files = common_functions.detect_mergerfs_disks_having_a_root_folder_having_files(mergerfs_disks_in_LtoR_order_from_fstab)
+    if not mergerfs_disks_having_a_root_folder_having_files:
+        error_log_and_print("No media disks detected with media folders having files.")
         sys.exit(1)  # Exit with a status code indicating an error
 
-    unique_top_level_media_folders = get_unique_top_level_media_folders(disks_in_order_from_fstab, mergerfs_disks_having_a_root_folder)
+    unique_top_level_media_folders, mergerfs_disks_having_a_root_folder_having_files = common_functions.get_unique_top_level_media_folders(
+        mergerfs_disks_in_LtoR_order_from_fstab,
+        mergerfs_disks_having_a_root_folder_having_files
+    )
 
-    sync_folders(unique_top_level_media_folders, mergerfs_disks_having_a_root_folder, perform_action=perform_action)
+    sync_folders(unique_top_level_media_folders, mergerfs_disks_having_a_root_folder_having_files, perform_action=perform_action)
 
     current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     common_functions.log_and_print(f"Finished 'media 'SYNC' at {current_time}.")

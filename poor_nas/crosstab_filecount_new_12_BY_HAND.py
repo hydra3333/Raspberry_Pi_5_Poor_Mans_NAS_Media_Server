@@ -244,14 +244,12 @@ def main():
     """
     Main function to coordinate the gathering of disk and media folder information and print the results.
     """
-    #common_functions.DEBUG_IS_ON = False
-    common_functions.DEBUG_IS_ON = True
+    common_functions.DEBUG_IS_ON = False
+    #common_functions.DEBUG_IS_ON = True
 
     TERMINAL_WIDTH = 200
     common_functions.init_PrettyPrinter(TERMINAL_WIDTH)
     common_functions.init_logging(r'/home/pi/Desktop/logs/crosstab.log')
-
-    common_functions.DEBUG_IS_ON = False
 
     common_functions.log_and_print('-' * TERMINAL_WIDTH)
     
