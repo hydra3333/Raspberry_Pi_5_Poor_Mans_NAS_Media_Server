@@ -308,7 +308,8 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
                         )
                     else:
                         # Handle plain (eg /mnt/hdd1 underlying file system mount point
-                        free_disk_space = get_free_disk_space(disk)
+						# Do not care if there is an error from get_free_disk_space ... the free disk space will be returned as zero which is OK
+                        fds_status, fds_error_number, fds_error_string, free_disk_space = get_free_disk_space(disk) # status, error_number, error_string, free_disk_space
                         the_mergerfs_disks_in_LtoR_order_from_fstab.append({'disk_mount_point': disk, 'free_disk_space': free_disk_space})    # this is a from mergerfs including a disk and its 'root folder'
     except Exception as e:
         error_log_and_print(f"Error reading /etc/fstab: {e}")
