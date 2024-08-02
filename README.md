@@ -1162,10 +1162,10 @@ sudo hostname --fqdn
 sudo hostname --all-ip-addresses
 ```
 
-**7. How to access shares from Windows; in a Terminal:**    
+**7. How to access shares from Windows**    
 
-You can now access the defined shares from a Windows PC or from an app that supports the SMB protocol.    
-eg on a Windows 11 PC in Windows Explorer, use the IP address of the Pi, eg ...    
+You can now access the `SAMBA` shares on the Pi from a Windows PC or from an app that supports the SMB protocol.    
+eg on a Windows PC in Windows Explorer, use the IP address of the Pi in the folder path text bar at the top, eg ...    
 ```
 REM read-only virtual folder of overlayed disk folders
 \\10.0.0.18\media
@@ -1173,8 +1173,11 @@ REM read-only virtual folder of overlayed disk folders
 REM DISK1 as read-write (copy new media to subfolders here, depending on how full this disk is)
 \\10.0.0.18\usb3disk1
 
-REM DISK1 as read-write (copy new media to subfolders here, depending on how full this disk is)
+REM DISK2 as read-write (copy new media to subfolders here, depending on how full this disk is)
 \\10.0.0.18\usb3disk2
+
+REM DISK3 as read-write (copy new media to subfolders here, depending on how full this disk is)
+\\10.0.0.18\usb3disk3
 ```
 
 ---
