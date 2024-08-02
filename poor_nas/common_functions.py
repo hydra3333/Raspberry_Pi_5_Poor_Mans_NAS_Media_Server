@@ -262,7 +262,11 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
             {'disk_mount_point': '/srv/usb3disk2', 'free_disk_space': 987654321},
         ]
 
-    Note: this does not guarantee a detected underlying disk contains a root folder or any 'top level media folders' under it.
+    Notes: this does not guarantee a detected underlying disk contains a root folder or any 'top level media folders' under it.
+           Handle disks referenced but not mounted in /etc/fstab.
+           Does not depend on the mergerfs disk mount referencing a top-level root folder or not.
+           If a top-level root folder specified in the mergerfs mount does not exist, the disk is skipped for this run.
+           Skips unmounted disks for this run.
     """
     the_mergerfs_disks_in_LtoR_order_from_fstab = []
     try:
@@ -282,7 +286,7 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
                 continue
             fields = line.split()
             if any('mergerfs' in field.lower() for field in fields):  # Identify mergerfs entries
-                number_of_mergerfs_lines = number_of_mergerfs_lines + 1
+                number_of_mergerfs_lines += 1
                 fstab_mergerfs_line = line.strip()
                 debug_log_and_print(f"MergerFS line found: {line.strip()}")
                 # fields[0] should contain one or more and/or globbed, underlying file system mount points used by mergerfs
@@ -295,22 +299,36 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
                         # Handle wildcard globbing pattern (eg /mnt/hdd*)
                         expanded_paths = sorted(glob.glob(disk))
                         debug_log_and_print(f"MergerFS line Handling wildcard globbing pattern ... expanded_paths:", data=expanded_paths)
-                        the_mergerfs_disks_in_LtoR_order_from_fstab.extend(
-                            [{'disk_mount_point': p, 'free_disk_space': get_free_disk_space(p)} for p in expanded_paths]    # this is a from mergerfs including a disk and its 'root folder'
-                        )
+                        # Iterate over each path in the expanded paths
+                        for ep in expanded_paths:
+                            # if it is detected as valid (i.e. it is mounted and the rest of it is valid and exists) then find the free disk space and add it to the_mergerfs_disks_in_LtoR_order_from_fstab 
+                            efpc_status, efpc_error_number, efpc_error_string, efpc_resolved_path, efpc_resolved_mount_point, efpc_resolved_path_under_mount, efpc_resolved_top_level_folder, efpc_resolved_path_under_top_level_folder = extract_five_path_components(ep)
+                            if efpc_resolved_mount_point == "" or not efpc_status:
+                                continue # disk perhaps not mounted etc, skip to the end of this FOR iteration
+                            # Get the free disk space
+                            fds_status, fds_error_number, fds_error_string, fds_free_disk_space = get_free_disk_space(efpc_resolved_mount_point)
+                            the_mergerfs_disks_in_LtoR_order_from_fstab.append({'disk_mount_point': efpc_resolved_mount_point, 'free_disk_space': fds_free_disk_space})
                     elif '{' in disk and '}' in disk:
                         # Handle curly brace globbing pattern (eg /mnt/{hdd1,hdd2})
                         pattern = re.sub(r'\{(.*?)\}', r'(\1)', disk)
                         expanded_paths = sorted(glob.glob(pattern))
-                        debug_log_and_print(f"MergerFS line Handling wcurly brace globbing pattern... expanded_paths:", data=expanded_paths)
-                        the_mergerfs_disks_in_LtoR_order_from_fstab.extend(
-                            [{'disk_mount_point': p, 'free_disk_space': get_free_disk_space(p)} for p in expanded_paths]    # this is a from mergerfs including a disk and its 'root folder'
-                        )
+                        # Iterate over each path in the expanded paths
+                        for ep in expanded_paths:
+                            # if it is detected as valid (i.e. it is mounted and the rest of it is valid and exists) then find the free disk space and add it to the_mergerfs_disks_in_LtoR_order_from_fstab 
+                            efpc_status, efpc_error_number, efpc_error_string, efpc_resolved_path, efpc_resolved_mount_point, efpc_resolved_path_under_mount, efpc_resolved_top_level_folder, efpc_resolved_path_under_top_level_folder = extract_five_path_components(ep)
+                            if efpc_resolved_mount_point == "" or not efpc_status:
+                                continue # disk perhaps not mounted etc, skip to the end of this FOR iteration
+                            # Get the free disk space
+                            fds_status, fds_error_number, fds_error_string, fds_free_disk_space = get_free_disk_space(efpc_resolved_mount_point)
+                            the_mergerfs_disks_in_LtoR_order_from_fstab.append({'disk_mount_point': efpc_resolved_mount_point, 'free_disk_space': fds_free_disk_space})
                     else:
                         # Handle plain (eg /mnt/hdd1 underlying file system mount point
 						# Do not care if there is an error from get_free_disk_space ... the free disk space will be returned as zero which is OK
-                        fds_status, fds_error_number, fds_error_string, free_disk_space = get_free_disk_space(disk) # status, error_number, error_string, free_disk_space
-                        the_mergerfs_disks_in_LtoR_order_from_fstab.append({'disk_mount_point': disk, 'free_disk_space': free_disk_space})    # this is a from mergerfs including a disk and its 'root folder'
+                        efpc_status, efpc_error_number, efpc_error_string, efpc_resolved_path, efpc_resolved_mount_point, efpc_resolved_path_under_mount, efpc_resolved_top_level_folder, efpc_resolved_path_under_top_level_folder = extract_five_path_components(disk)
+                        if efpc_resolved_mount_point == "" or not efpc_status:
+                            continue # disk perhaps not mounted etc, skip to the end of this FOR iteration
+                        fds_status, fds_error_number, fds_error_string, fds_free_disk_space = get_free_disk_space(efpc_resolved_mount_point)
+                        the_mergerfs_disks_in_LtoR_order_from_fstab.append({'disk_mount_point': efpc_resolved_mount_point, 'free_disk_space': fds_free_disk_space})
     except Exception as e:
         error_log_and_print(f"Error reading /etc/fstab: {e}")
         sys.exit(1)  # Exit with a status code indicating an error
