@@ -269,6 +269,12 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
            Skips unmounted disks for this run.
            Skips disks where MEDIAROOT_FOLDER_NAME is not a part of the string underneath the mount point, or does not exist ... i.e. disks without a valid root
     """
+    # REMEMBER
+    # REMEMBER: In Python, when you assign or pass a **mutable object (like a dictionary)** to another variable or function,
+    # REMEMBER:            it doesn't create a copy but rather a **reference** to the same object.
+    # REMEMBER:            BEING BY REFERENCE, updates to that variable makes updates TO THE ORIGINAL OBJECT.
+    # REMEMBER
+    #
     # ITEMS FROM THIS LIST WILL ALWAYS BE RETURNED IN THE ORDER THEY WERE ADDED.
 	# THIS IS REQUIRED BEHAVIOUR FOR THIS CODE BASE TO WORK
 	the_mergerfs_disks_in_LtoR_order_from_fstab = []
@@ -396,6 +402,11 @@ def detect_mergerfs_disks_having_a_root_folder_having_files(mergerfs_disks_in_Lt
             ...
         }
     """
+    # REMEMBER
+    # REMEMBER: In Python, when you assign or pass a **mutable object (like a dictionary)** to another variable or function,
+    # REMEMBER:            it doesn't create a copy but rather a **reference** to the same object.
+    # REMEMBER:            BEING BY REFERENCE, updates to that variable makes updates TO THE ORIGINAL OBJECT.
+    # REMEMBER
     those_mergerfs_disks_having_a_root_folder_having_files = {}
     for disk_info in mergerfs_disks_in_LtoR_order_from_fstab:
         disk_mount_point = disk_info['disk_mount_point']	# 'disk_mount_point' in mergerfs_disks_in_LtoR_order_from_fstab are ONLY the mountpoint eg '/srv/usb3disk1'
@@ -512,6 +523,12 @@ def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, 
             ...
         }
     """
+    # REMEMBER
+    # REMEMBER: In Python, when you assign or pass a **mutable object (like a dictionary)** to another variable or function,
+    # REMEMBER:            it doesn't create a copy but rather a **reference** to the same object.
+    # REMEMBER:            BEING BY REFERENCE, updates to that variable makes updates TO THE ORIGINAL OBJECT.
+    # REMEMBER
+    #
     # AFTER SORTING USING ORDEREDDICT, ITEMS FROM THIS DICT WILL ALWAYS BE RETURNED IN THE ORDER THEY WERE ADDED.
 	# THIS IS REQUIRED BEHAVIOUR FOR THIS CODE BASE TO WORK
     unique_top_level_media_folders = {}
@@ -524,16 +541,20 @@ def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, 
             if top_level_media_folder_name not in unique_top_level_media_folders:    # if it is the FIRST disk found having the folder name (and files)
                 unique_top_level_media_folders[top_level_media_folder_name] = {
                     'top_level_media_folder_name': top_level_media_folder_name,
-                    'ffd': "DRAFT ffd:" + disk_info['disk_mount_point'],                                       # draft ffd: disk_info['disk_mount_point']
-                    'ffd_root_folder_path': "DRAFT ffd_root_folder_path: " + disk_info['root_folder_path'],    # draft ffd_root_folder_path: disk_info['root_folder_path']
+                    'ffd': disk_info['disk_mount_point'],                                       # draft ffd: disk_info['disk_mount_point']
+                    'ffd_root_folder_path': disk_info['root_folder_path'],    # draft ffd_root_folder_path: disk_info['root_folder_path']
                     'disk_info': []                                                                            # blank since we are only seeing the FIRST unique top-level media folder name that we find
                 }
     # To ensure dict items are always returned in order of key,
 	# make it an ORDEREDDICT sorted by keys
     unique_top_level_media_folders = OrderedDict(sorted(unique_top_level_media_folders.items()))
+    debug_log_and_print(f"get_unique_top_level_media_folders AFTER STEP 1 unique_top_level_media_folders:\n", data=unique_top_level_media_folders)
 
-    debug_log_and_print('get_unique_top_level_media_folders AFTER STEP 1 unique_top_level_media_folders:\n', data=unique_top_level_media_folders)
-
+    # REMEMBER
+    # REMEMBER: In Python, when you assign or pass a **mutable object (like a dictionary)** to another variable or function,
+    # REMEMBER:            it doesn't create a copy but rather a **reference** to the same object.
+    # REMEMBER:            BEING BY REFERENCE, updates to that variable makes updates TO THE ORIGINAL OBJECT.
+    # REMEMBER
     # Step 2: Determine the ffd (first found disk) for each top-level media folder
     for top_level_media_folder_name in sorted(unique_top_level_media_folders): # ORDEREDDICT IS PRE-SORTED, DO THIS AS A LEFTOVER SORT FROM USING AN UNORDERED DICT
         folder_info = unique_top_level_media_folders[top_level_media_folder_name]
@@ -554,15 +575,19 @@ def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, 
                             'disk_space_used': media_folder_info['disk_space_used'],
                             'total_free_disk_space': disk_info['free_disk_space']
                         })
-    debug_log_and_print('get_unique_top_level_media_folders AFTER STEP 2 unique_top_level_media_folders:\n', data=unique_top_level_media_folders)
+                        debug_log_and_print(f"get_unique_top_level_media_folders INSIDE STEP 2 APPENDING TO 'folder_info['disk_info']':\n", data=folder_info['disk_info'])
+    debug_log_and_print(f"get_unique_top_level_media_folders AFTER STEP 2 unique_top_level_media_folders:\n", data=unique_top_level_media_folders)
 
+    # REMEMBER
+    # REMEMBER: In Python, when you assign or pass a **mutable object (like a dictionary)** to another variable or function,
+    # REMEMBER:            it doesn't create a copy but rather a **reference** to the same object.
+    # REMEMBER:            BEING BY REFERENCE, updates to that variable makes updates TO THE ORIGINAL OBJECT.
+    # REMEMBER
     # Step 3: Update ffd for each folder in mergerfs_disks_having_a_root_folder_having_files
     for disk_info in mergerfs_disks_having_a_root_folder_having_files.values():
         for media_folder_info in disk_info['top_level_media_folders']:
             media_folder_name = media_folder_info['top_level_media_folder_name']
             media_folder_info['ffd'] = unique_top_level_media_folders[media_folder_name]['ffd']
-            ??? missing some lines ???
-
-    debug_log_and_print('get_unique_top_level_media_folders AFTER STEP 3 unique_top_level_media_folders:\n', data=unique_top_level_media_folders)
+    debug_log_and_print(f"get_unique_top_level_media_folders AFTER STEP 3 unique_top_level_media_folders:\n", data=unique_top_level_media_folders)
 
     return unique_top_level_media_folders, mergerfs_disks_having_a_root_folder_having_files
