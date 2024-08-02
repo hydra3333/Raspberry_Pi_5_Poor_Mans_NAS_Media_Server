@@ -1,3 +1,13 @@
+###
+### changed the mergerfs mount to mount the disk AND the top level folder
+### eg from 
+###    /srv/usb3disk1
+### to
+###    /srv/usb3disk1/mediaroot
+###
+### So we must change all this code to suit that
+### 
+
 import os
 import sys
 import subprocess
@@ -62,6 +72,50 @@ def log_and_print(message, data=None):
         logging.info(objPrettyPrint.pformat(data))
         print(objPrettyPrint.pformat(data), flush=True)
 
+def find_mount_point_from_path(path):
+    """
+    Returns the mount point from a path.
+    """
+    resolved_path = Path(path).resolve()
+    while not resolved_path.is_mount():
+        resolved_path = resolved_path.parent
+    return str(resolved_path)
+
+def get_top_level_folder_from_path(path):
+    """
+    returns the topmost folder underneath the mount point from a path
+    """
+    path = Path(path).resolve()
+    resolved_mount_point = find_mount_point_from_path(path)
+    resolved_path_under_mount = path.relative_to(resolved_mount_point)
+    resolved_top_level_folder = resolved_path_under_mount.parts[0]
+    return resolved_top_level_folder
+
+def extract_five_path_components(path):
+    """
+    Returns 5 strings:
+    - the resolved path
+    - the resolved mount point
+    - the resolved path underneath the mount point
+    - the resolved topmost folder underneath the mount point
+    - the resolved remaining path underneath the topmost folder
+    from a given path.
+    Called:
+        resolved_path, resolved_mount_point, resolved_path_under_mount, resolved_top_level_folder, resolved_path_under_top_level_folder = extract_five_path_components(path)
+    """
+    # Resolve the incoming path
+    resolved_path = Path(path).resolve()
+    # Finding the mount point
+    resolved_mount_point = resolved_path
+    while not resolved_mount_point.is_mount():
+        resolved_mount_point = resolved_mount_point.parent
+    # Getting the relative path from the mount point
+    resolved_path_under_mount = resolved_path.relative_to(resolved_mount_point)
+    # Extracting the top-level folder and the remaining path
+    resolved_top_level_folder = resolved_path_under_mount.parts[0]
+    resolved_path_under_top_level_folder = Path(*resolved_path_under_mount.parts[1:]) if len(resolved_path_under_mount.parts) > 1 else Path()
+    return str(resolved_path), str(resolved_mount_point), str(resolved_path_under_mount), resolved_top_level_folder, str(resolved_path_under_top_level_folder)
+
 def get_free_disk_space(path):
     """
     Get the free disk space for the given path.
@@ -121,7 +175,7 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
                         expanded_paths = sorted(glob.glob(disk))
                         debug_log_and_print(f"MergerFS line Handling wildcard globbing pattern ... expanded_paths:", data=expanded_paths)
                         the_mergerfs_disks_in_LtoR_order_from_fstab.extend(
-                            [{'disk_mount_point': p, 'free_disk_space': get_free_disk_space(p)} for p in expanded_paths]
+                            [{'disk_mount_point': p, 'free_disk_space': get_free_disk_space(p)} for p in expanded_paths]    # this is a from mergerfs including a disk and its 'root folder'
                         )
                     elif '{' in disk and '}' in disk:
                         # Handle curly brace globbing pattern (eg /mnt/{hdd1,hdd2})
@@ -129,12 +183,12 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
                         expanded_paths = sorted(glob.glob(pattern))
                         debug_log_and_print(f"MergerFS line Handling wcurly brace globbing pattern... expanded_paths:", data=expanded_paths)
                         the_mergerfs_disks_in_LtoR_order_from_fstab.extend(
-                            [{'disk_mount_point': p, 'free_disk_space': get_free_disk_space(p)} for p in expanded_paths]
+                            [{'disk_mount_point': p, 'free_disk_space': get_free_disk_space(p)} for p in expanded_paths]    # this is a from mergerfs including a disk and its 'root folder'
                         )
                     else:
                         # Handle plain (eg /mnt/hdd1 underlying file system mount point
                         free_disk_space = get_free_disk_space(disk)
-                        the_mergerfs_disks_in_LtoR_order_from_fstab.append({'disk_mount_point': disk, 'free_disk_space': free_disk_space})
+                        the_mergerfs_disks_in_LtoR_order_from_fstab.append({'disk_mount_point': disk, 'free_disk_space': free_disk_space})    # this is a from mergerfs including a disk and its 'root folder'
     except Exception as e:
         error_log_and_print(f"Error reading /etc/fstab: {e}")
         sys.exit(1)  # Exit with a status code indicating an error
