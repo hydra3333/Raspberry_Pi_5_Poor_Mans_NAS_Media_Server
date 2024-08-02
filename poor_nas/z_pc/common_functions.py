@@ -1,15 +1,14 @@
-###
-### changed the mergerfs mount to mount the disk AND the top level folder
+### Changed the mergerfs mount to mount the disk AND the top level folder
 ### eg from 
 ###    /srv/usb3disk1
 ### to
 ###    /srv/usb3disk1/mediaroot
-###
-### So we must change all this code to suit that
-### 
+### So we changed all this code to suit that. 
+### Hopefuilly it works.
 
 import os
 import sys
+from collections import OrderedDict
 import subprocess
 from pathlib import Path
 import glob
@@ -51,7 +50,7 @@ def debug_log_and_print(message, data=None):
         logging.debug(message)
         print(f"DEBUG: {message}", flush=True)
         if data is not None:
-            logging.debug(objPrettyPrint.pformat(data))
+            logging.debug(f"\n" + objPrettyPrint.pformat(data))
             print(objPrettyPrint.pformat(data), flush=True)
 
 def error_log_and_print(message, data=None):
@@ -61,7 +60,7 @@ def error_log_and_print(message, data=None):
     logging.error(message)
     print(f"ERROR: {message}", flush=True)
     if data is not None:
-        logging.error(objPrettyPrint.pformat(data))
+        logging.error(f"\n" + objPrettyPrint.pformat(data))
         print(objPrettyPrint.pformat(data), flush=True)
 
 def log_and_print(message, data=None):
@@ -71,7 +70,7 @@ def log_and_print(message, data=None):
     logging.info(message)
     print(f"{message}", flush=True)
     if data is not None:
-        logging.info(objPrettyPrint.pformat(data))
+        logging.info(f"\n" + objPrettyPrint.pformat(data))
         print(objPrettyPrint.pformat(data), flush=True)
 
 def find_mount_point_from_path(path):
@@ -270,7 +269,16 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
            Skips unmounted disks for this run.
            Skips disks where MEDIAROOT_FOLDER_NAME is not a part of the string underneath the mount point, or does not exist ... i.e. disks without a valid root
     """
-    the_mergerfs_disks_in_LtoR_order_from_fstab = []
+    # REMEMBER
+    # REMEMBER: In Python, when you assign or pass a **mutable object (like a dictionary)** to another variable or function,
+    # REMEMBER:            it doesn't create a copy but rather a **reference** to the same object.
+    # REMEMBER:            BEING BY REFERENCE, updates to that variable makes updates TO THE ORIGINAL OBJECT.
+    # REMEMBER
+    #
+    # ITEMS FROM THIS LIST WILL ALWAYS BE RETURNED IN THE ORDER THEY WERE ADDED.
+	# THIS IS REQUIRED BEHAVIOUR FOR THIS CODE BASE TO WORK
+	the_mergerfs_disks_in_LtoR_order_from_fstab = []
+
     try:
         with open('/etc/fstab', 'r') as fstab_file:
             fstab_lines = fstab_file.readlines()
@@ -283,7 +291,7 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
             # Example line (without the #) we are looking for
             # ... when delete, only delete the first found, backup copies of a file are unaffected
             #         /srv/usb3disk*/mediaroot /srv/media mergerfs defaults,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true 0 0
-            debug_log_and_print(f"A line was read from /etc/fstab:", data=line)
+            debug_log_and_print(f"A line was read from /etc/fstab:\n", data=line)
             if line.startswith('#') or not line.strip():
                 continue
             fields = line.split()
@@ -300,7 +308,7 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
                     if '*' in disk:
                         # Handle wildcard globbing pattern (eg /mnt/hdd*)
                         expanded_paths = sorted(glob.glob(disk))
-                        debug_log_and_print(f"MergerFS line Handling wildcard globbing pattern ... expanded_paths:", data=expanded_paths)
+                        debug_log_and_print(f"MergerFS line Handling wildcard globbing pattern ... expanded_paths:\n", data=expanded_paths)
                         # Iterate over each path in the expanded paths
                         for ep in expanded_paths:
                             # if it is detected as valid (i.e. it is mounted and the rest of it is valid and exists) then find the free disk space and add it to the_mergerfs_disks_in_LtoR_order_from_fstab 
@@ -309,7 +317,7 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
                                 continue # disk perhaps not mounted etc, skip to the end of this FOR iteration
                             # Get the free disk space
                             fds_status, fds_error_number, fds_error_string, fds_free_disk_space = get_free_disk_space(efpc_resolved_mount_point)
-                            the_mergerfs_disks_in_LtoR_order_from_fstab.append({'disk_mount_point': efpc_resolved_mount_point, 'free_disk_space': fds_free_disk_space, 'root_folder_path': efpc_resolved_path}'})
+                            the_mergerfs_disks_in_LtoR_order_from_fstab.append({'disk_mount_point': efpc_resolved_mount_point, 'free_disk_space': fds_free_disk_space, 'root_folder_path': efpc_resolved_path})
                     elif '{' in disk and '}' in disk:
                         # Handle curly brace globbing pattern (eg /mnt/{hdd1,hdd2})
                         pattern = re.sub(r'\{(.*?)\}', r'(\1)', disk)
@@ -341,10 +349,10 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
         sys.exit(1)  # Exit with a status code indicating an error
 
     if (number_of_mergerfs_lines < 1) or (len(the_mergerfs_disks_in_LtoR_order_from_fstab) < 1) :
-        error_log_and_print(f"ZERO detections of 'mergerfs' underlying disks in LtoR order from 'fstab':", data=the_mergerfs_disks_in_LtoR_order_from_fstab)
+        error_log_and_print(f"ZERO detections of 'mergerfs' underlying disks in LtoR order from 'fstab':\n", data=the_mergerfs_disks_in_LtoR_order_from_fstab)
         sys.exit(1)  # Exit with a status code indicating an error
 
-    debug_log_and_print(f"Detected 'mergerfs' underlying disks in LtoR order from fstab '{fstab_mergerfs_line}'", data=the_mergerfs_disks_in_LtoR_order_from_fstab)
+    debug_log_and_print(f"Detected 'mergerfs' underlying disks in LtoR order from fstab '{fstab_mergerfs_line}'\n", data=the_mergerfs_disks_in_LtoR_order_from_fstab)
     return the_mergerfs_disks_in_LtoR_order_from_fstab
 
 def detect_mergerfs_disks_having_a_root_folder_having_files(mergerfs_disks_in_LtoR_order_from_fstab):
@@ -394,15 +402,20 @@ def detect_mergerfs_disks_having_a_root_folder_having_files(mergerfs_disks_in_Lt
             ...
         }
     """
+    # REMEMBER
+    # REMEMBER: In Python, when you assign or pass a **mutable object (like a dictionary)** to another variable or function,
+    # REMEMBER:            it doesn't create a copy but rather a **reference** to the same object.
+    # REMEMBER:            BEING BY REFERENCE, updates to that variable makes updates TO THE ORIGINAL OBJECT.
+    # REMEMBER
     those_mergerfs_disks_having_a_root_folder_having_files = {}
     for disk_info in mergerfs_disks_in_LtoR_order_from_fstab:
         disk_mount_point = disk_info['disk_mount_point']	# 'disk_mount_point' in mergerfs_disks_in_LtoR_order_from_fstab are ONLY the mountpoint eg '/srv/usb3disk1'
         root_folder_path = disk_info['root_folder_path']    # 'root_folder_path' comes from the fstab mergerfs mount, is a valid resolved path to the root folder '/srv/usb3disk1/mediaroot'
         try:
-            if root_folder_path.is_dir():
+            if Path(root_folder_path).is_dir():
                 found_top_level_media_folders_list = []
-                for top_level_media_folder in sorted(root_folder_path.iterdir()):
-                    if top_level_media_folder.is_dir():
+                for top_level_media_folder in sorted(Path(root_folder_path).iterdir()):
+                    if Path(top_level_media_folder).is_dir():
                         number_of_files = sum([len(files) for r, d, files in os.walk(top_level_media_folder)])
                         disk_space_used = sum([os.path.getsize(os.path.join(r, file)) for r, d, files in os.walk(top_level_media_folder) for file in files])
                         if number_of_files > 0:
@@ -420,19 +433,22 @@ def detect_mergerfs_disks_having_a_root_folder_having_files(mergerfs_disks_in_Lt
                         'root_folder_path': root_folder_path,
                         'top_level_media_folders': found_top_level_media_folders_list
                     }
-                    debug_log_and_print(f"disk_mount_point '{disk_mount_point}' has root folder '{root_folder_path}' with top level media folders having files:", data=found_top_level_media_folders_list)
+                    debug_log_and_print(f"disk_mount_point '{disk_mount_point}' has root folder '{root_folder_path}' with top level media folders having files:\n", data=found_top_level_media_folders_list)
             else:
                 error_log_and_print(f"Error pre-detected disk/root does not exist: disk_mount_point: {disk_mount_point} root_folder_path: {root_folder_path}\n{e}")
                 sys.exit(1)  # Exit with a status code indicating an error
         except Exception as e:
-            error_log_and_print(f"Error accessing disk_mount_point: {disk_mount_point} root_folder_path: {root_folder_path}\n{e}")
+            error_number = getattr(e, 'errno', None)
+            error_string = str(e)
+            error_log_and_print(f"Error accessing disk_mount_point: '{disk_mount_point}' root_folder_path: '{root_folder_path}' Error: {e}")
+            error_log_and_print(f"Error accessing disk_mount_point: Error: '{error_number}' '{error_string}'")
             sys.exit(1)  # Exit with a status code indicating an error
     #
     if len(those_mergerfs_disks_having_a_root_folder_having_files) < 1:
-        error_log_and_print(f"ZERO Detected 'mergerfs' underlying disks having a root folder AND top_level_media_folders having files:", data=mergerfs_disks_in_LtoR_order_from_fstab)
+        error_log_and_print(f"ZERO Detected 'mergerfs' underlying disks having a root folder AND top_level_media_folders having files:\n", data=mergerfs_disks_in_LtoR_order_from_fstab)
         sys.exit(1)  # Exit with a status code indicating an error
 
-    debug_log_and_print(f"Detected 'mergerfs' underlying disks having a root folder AND top level media folders having files:", data=those_mergerfs_disks_having_a_root_folder_having_files)
+    debug_log_and_print(f"Detected 'mergerfs' underlying disks having a root folder AND top level media folders having files:\n", data=those_mergerfs_disks_having_a_root_folder_having_files)
     return those_mergerfs_disks_having_a_root_folder_having_files
 
 def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, mergerfs_disks_having_a_root_folder_having_files):
@@ -507,6 +523,14 @@ def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, 
             ...
         }
     """
+    # REMEMBER
+    # REMEMBER: In Python, when you assign or pass a **mutable object (like a dictionary)** to another variable or function,
+    # REMEMBER:            it doesn't create a copy but rather a **reference** to the same object.
+    # REMEMBER:            BEING BY REFERENCE, updates to that variable makes updates TO THE ORIGINAL OBJECT.
+    # REMEMBER
+    #
+    # AFTER SORTING USING ORDEREDDICT, ITEMS FROM THIS DICT WILL ALWAYS BE RETURNED IN THE ORDER THEY WERE ADDED.
+	# THIS IS REQUIRED BEHAVIOUR FOR THIS CODE BASE TO WORK
     unique_top_level_media_folders = {}
 
     # Step 1: Gather all unique top-level media folder names (name only, not paths)
@@ -517,14 +541,23 @@ def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, 
             if top_level_media_folder_name not in unique_top_level_media_folders:    # if it is the FIRST disk found having the folder name (and files)
                 unique_top_level_media_folders[top_level_media_folder_name] = {
                     'top_level_media_folder_name': top_level_media_folder_name,
-                    'ffd': "DRAFT ffd:" + disk_info['disk_mount_point'],                                       # draft ffd: disk_info['disk_mount_point']
-                    'ffd_root_folder_path': "DRAFT ffd_root_folder_path: " + disk_info['root_folder_path'],    # draft ffd_root_folder_path: disk_info['root_folder_path']
+                    'ffd': disk_info['disk_mount_point'],                                       # draft ffd: disk_info['disk_mount_point']
+                    'ffd_root_folder_path': disk_info['root_folder_path'],    # draft ffd_root_folder_path: disk_info['root_folder_path']
                     'disk_info': []                                                                            # blank since we are only seeing the FIRST unique top-level media folder name that we find
                 }
-    debug_log_and_print('get_unique_top_level_media_folders AFTER STEP 1 unique_top_level_media_folders:', data=unique_top_level_media_folders)
+    # To ensure dict items are always returned in order of key,
+	# make it an ORDEREDDICT sorted by keys
+    unique_top_level_media_folders = OrderedDict(sorted(unique_top_level_media_folders.items()))
+    debug_log_and_print(f"get_unique_top_level_media_folders AFTER STEP 1 unique_top_level_media_folders:\n", data=unique_top_level_media_folders)
 
+    # REMEMBER
+    # REMEMBER: In Python, when you assign or pass a **mutable object (like a dictionary)** to another variable or function,
+    # REMEMBER:            it doesn't create a copy but rather a **reference** to the same object.
+    # REMEMBER:            BEING BY REFERENCE, updates to that variable makes updates TO THE ORIGINAL OBJECT.
+    # REMEMBER
     # Step 2: Determine the ffd (first found disk) for each top-level media folder
-    for top_level_media_folder_name, folder_info in unique_top_level_media_folders.items():
+    for top_level_media_folder_name in sorted(unique_top_level_media_folders): # ORDEREDDICT IS PRE-SORTED, DO THIS AS A LEFTOVER SORT FROM USING AN UNORDERED DICT
+        folder_info = unique_top_level_media_folders[top_level_media_folder_name]
         for disk_info in mergerfs_disks_in_LtoR_order_from_fstab:
             disk_mount_point = disk_info['disk_mount_point']
             if disk_mount_point in mergerfs_disks_having_a_root_folder_having_files:
@@ -542,13 +575,19 @@ def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, 
                             'disk_space_used': media_folder_info['disk_space_used'],
                             'total_free_disk_space': disk_info['free_disk_space']
                         })
-    debug_log_and_print('get_unique_top_level_media_folders AFTER STEP 1 unique_top_level_media_folders:', data=unique_top_level_media_folders)
+                        debug_log_and_print(f"get_unique_top_level_media_folders INSIDE STEP 2 APPENDING TO 'folder_info['disk_info']':\n", data=folder_info['disk_info'])
+    debug_log_and_print(f"get_unique_top_level_media_folders AFTER STEP 2 unique_top_level_media_folders:\n", data=unique_top_level_media_folders)
 
+    # REMEMBER
+    # REMEMBER: In Python, when you assign or pass a **mutable object (like a dictionary)** to another variable or function,
+    # REMEMBER:            it doesn't create a copy but rather a **reference** to the same object.
+    # REMEMBER:            BEING BY REFERENCE, updates to that variable makes updates TO THE ORIGINAL OBJECT.
+    # REMEMBER
     # Step 3: Update ffd for each folder in mergerfs_disks_having_a_root_folder_having_files
     for disk_info in mergerfs_disks_having_a_root_folder_having_files.values():
         for media_folder_info in disk_info['top_level_media_folders']:
             media_folder_name = media_folder_info['top_level_media_folder_name']
             media_folder_info['ffd'] = unique_top_level_media_folders[media_folder_name]['ffd']
-    debug_log_and_print('get_unique_top_level_media_folders AFTER STEP 3 unique_top_level_media_folders:', data=unique_top_level_media_folders)
+    debug_log_and_print(f"get_unique_top_level_media_folders AFTER STEP 3 unique_top_level_media_folders:\n", data=unique_top_level_media_folders)
 
     return unique_top_level_media_folders, mergerfs_disks_having_a_root_folder_having_files
