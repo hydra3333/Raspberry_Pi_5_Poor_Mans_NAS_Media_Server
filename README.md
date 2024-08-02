@@ -591,7 +591,7 @@ E2E6E093E6E068ED                     d6a52d8b-f1e6-424a-8150-dba9453aa7e7 sdd1  
 Now, identify the partitions to mount (check the disk `LABEL`), 
 then select/copy the **full `PARTUUID`** for
 that disk and paste it immediately to the right of the `=` sign for that disk (no spaces).    
-In this example the result of doing looks like this:
+In this example the result of doing that looks like this:
 ```
 PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /srv/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=30,x-systemd.mount-timeout=30 0 0
 PARTUUID=a175d2d3-c2f6-44d4-a5fc-209363280c89 /srv/usb3disk2 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=30,x-systemd.mount-timeout=30 0 0
@@ -604,17 +604,17 @@ PARTUUID=9a63b215-bcf1-462b-89d2-56979cec6ed8 /srv/usb3disk3 ntfs defaults,auto,
 ```
 save and exit nano with `Control O` `Control X`.     
 
-Make the system notice these changes in fstab:
+Make the operating system notice these new changes in fstab:
 ```
 sudo systemctl daemon-reload
 ```
-Attempt to mount the disks via `fstab`. You should something like the output below.    
+Attempt to mount the disks via `fstab`. You should see something like the output below.    
 If not, immediatelty re-edit fstab and comment out the lines and save `fstab` before you then fix what
 has happened by cross-checking all of the relevant lines ! And repeat this step.    
 ```
 sudo mount -v -a
 ```
-should look something like this:
+which should yield something like this:
 ```
 /proc                    : already mounted
 /boot/firmware           : already mounted
@@ -623,7 +623,7 @@ should look something like this:
 /srv/usb3disk2           : successfully mounted
 /srv/usb3disk3           : successfully mounted
 ```
-Congratulations, the USB3 disks are now mounted and will be mounted at boot time from here on.    
+Congratulations, the USB3 disks are now mounted and will be mounted during every boot from now on.    
 Check what's mounted using:
 ```
 sudo mount -v | grep srv
