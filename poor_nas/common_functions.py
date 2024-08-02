@@ -367,6 +367,7 @@ def detect_mergerfs_disks_having_a_root_folder_having_files(mergerfs_disks_in_Lt
         dict: A dictionary containing information about disks with root folders and their top-level media folders.
         Key: 'disk_mount_point' (str): The mount point path of the disk (e.g., '/srv/usb3disk1').
         Value: dict with the following keys:
+            - 'disk_mount_point': (str): yes it is a key above as well as a key/value pair here
             - 'root_folder_path' (Path): The path to the root folder (e.g., Path('/srv/usb3disk1/mediaroot')).
             - 'top_level_media_folders' (list of dict): A list of dictionaries, each representing a top-level media folder.
                 Each dictionary contains:
@@ -396,46 +397,37 @@ def detect_mergerfs_disks_having_a_root_folder_having_files(mergerfs_disks_in_Lt
     those_mergerfs_disks_having_a_root_folder_having_files = {}
     for disk_info in mergerfs_disks_in_LtoR_order_from_fstab:
         disk_mount_point = disk_info['disk_mount_point']	# 'disk_mount_point' in mergerfs_disks_in_LtoR_order_from_fstab are ONLY the mountpoint eg '/srv/usb3disk1'
+        root_folder_path = disk_info['root_folder_path']    # 'root_folder_path' comes from the fstab mergerfs mount, is a valid resolved path to the root folder '/srv/usb3disk1/mediaroot'
         try:
-            disk_mount_point_path = Path(disk_mount_point)
-            if disk_mount_point_path.is_dir():
-                # Find candidate media root folder with name in constant: MEDIAROOT_FOLDER_NAME
-                #candidate_root_folders_case1 = [d.name for d in sorted(disk_mount_point_path.iterdir()) if d.is_dir() and re.match(rf'^{re.escape(MEDIAROOT_FOLDER_NAME)}[1-8]$', d.name)]
-                candidate_root_folders_case2 = [d.name for d in sorted(disk_mount_point_path.iterdir()) if d.is_dir() and re.match(rf'^{re.escape(MEDIAROOT_FOLDER_NAME)}$', d.name)]
-                # Check for multiple root folders on the same disk
-                if len(candidate_root_folders) > 1:
-                    error_log_and_print(f"Each disk_mount_point should only have only one root folder like 'mediaroot'.")
-                    error_log_and_print(f"Error: disk_mount_point {disk_mount_point} has multiple root folders:", data=candidate_root_folders)
-                    sys.exit(1)  # Exit with a status code indicating an error
-                elif len(candidate_root_folders) == 1:
-                    found_root_folder = candidate_root_folders[0]
-                    found_root_folder_path = disk_mount_point_path / found_root_folder
-                    found_top_level_media_folders_list = []
-                    for top_level_media_folder in sorted(found_root_folder_path.iterdir()):
-                        if top_level_media_folder.is_dir():
-                            number_of_files = sum([len(files) for r, d, files in os.walk(top_level_media_folder)])
-                            disk_space_used = sum([os.path.getsize(os.path.join(r, file)) for r, d, files in os.walk(top_level_media_folder) for file in files])
-                            if number_of_files > 0:
-                                found_top_level_media_folders_list.append({
-                                    'top_level_media_folder_name': top_level_media_folder.name,
-                                    'top_level_media_folder_path': top_level_media_folder,
-                                    'ffd': '',
-                                    'number_of_files': number_of_files,
-                                    'disk_space_used': disk_space_used
-                                })
-                    # if a disk_mount_point with a known root folder has top level media folders having files, then save them
-                    if found_top_level_media_folders_list:
-                        those_mergerfs_disks_having_a_root_folder_having_files[disk_mount_point] = {
-                            'root_folder_path': found_root_folder_path,
-                            'top_level_media_folders': found_top_level_media_folders_list
-                        }
-                        debug_log_and_print(f"disk_mount_point '{disk_mount_point}' has root folder '{found_root_folder}' with top level media folders having files:", data=found_top_level_media_folders_list)
-                else:
-                    pass
+            if root_folder_path.is_dir():
+                found_top_level_media_folders_list = []
+                for top_level_media_folder in sorted(root_folder_path.iterdir()):
+                    if top_level_media_folder.is_dir():
+                        number_of_files = sum([len(files) for r, d, files in os.walk(top_level_media_folder)])
+                        disk_space_used = sum([os.path.getsize(os.path.join(r, file)) for r, d, files in os.walk(top_level_media_folder) for file in files])
+                        if number_of_files > 0:
+                            found_top_level_media_folders_list.append({
+                                'top_level_media_folder_name': top_level_media_folder.name,
+                                'top_level_media_folder_path': top_level_media_folder,
+                                'ffd': '',
+                                'number_of_files': number_of_files,
+                                'disk_space_used': disk_space_used
+                            })
+                # if a disk_mount_point with a known root folder has top level media folders having files, then save them
+                if found_top_level_media_folders_list:
+                    those_mergerfs_disks_having_a_root_folder_having_files[disk_mount_point] = {
+                        'disk_mount_point': disk_mount_point,
+                        'root_folder_path': root_folder_path,
+                        'top_level_media_folders': found_top_level_media_folders_list
+                    }
+                    debug_log_and_print(f"disk_mount_point '{disk_mount_point}' has root folder '{root_folder_path}' with top level media folders having files:", data=found_top_level_media_folders_list)
+            else:
+                error_log_and_print(f"Error pre-detected disk/root does not exist: disk_mount_point: {disk_mount_point} root_folder_path: {root_folder_path}\n{e}")
+                sys.exit(1)  # Exit with a status code indicating an error
         except Exception as e:
-            error_log_and_print(f"Error accessing {disk_mount_point}: {e}")
+            error_log_and_print(f"Error accessing disk_mount_point: {disk_mount_point} root_folder_path: {root_folder_path}\n{e}")
             sys.exit(1)  # Exit with a status code indicating an error
-
+    #
     if len(those_mergerfs_disks_having_a_root_folder_having_files) < 1:
         error_log_and_print(f"ZERO Detected 'mergerfs' underlying disks having a root folder AND top_level_media_folders having files:", data=mergerfs_disks_in_LtoR_order_from_fstab)
         sys.exit(1)  # Exit with a status code indicating an error
@@ -452,6 +444,7 @@ def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, 
         mergerfs_disks_having_a_root_folder_having_files (dict): A dictionary containing information about disks with root folders and their top-level media folders.
             Key: 'disk_mount_point' (str): The mount point path of the disk (e.g., '/srv/usb3disk1').
             Value: dict with the following keys:
+                - 'disk_mount_point': (str): yes it is a key above as well as a key/value pair here
                 - 'root_folder_path' (Path): The path to the root folder.
                 - 'top_level_media_folders' (list of dict): A list of dictionaries, each representing a top-level media folder.
                     - 'top_level_media_folder_name' (str): The name of the media folder.
