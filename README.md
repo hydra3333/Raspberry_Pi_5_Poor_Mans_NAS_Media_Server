@@ -8,21 +8,21 @@
 # Raspberry Pi 5 Poor Persons NAS Media Server    
 
 ## Outline    
-If you have a PI 5 and some old USB3 disks (with their own power supply) and a couple of USB3 hubs laying around,
+If we have a PI 5 and some old USB3 disks (with their own power supply) and a couple of USB3 hubs laying around,
 but can't afford a NAS box nor a 3D printer to print one nor a SATA hat for the Pi etc, then perhaps
-cobble together a NAS / Media Server with what you have.
+cobble together a NAS / Media Server with what we have.
 
-Together with a Pi 5 and an SD card you can use    
+Together with a Pi 5 and an SD card we can use    
 - 1 or 2 (say, 4-port) USB3 hubs plugged into the Pi 5 to connect many old USB3 disks to the Pi    
 - 1 to 8 old USB3 disks plugged into the USB hubs    
 
-With this harware you can readily serve up standard SAMBA SMB/CIFS file shares
+With this harware we can readily serve up standard SAMBA SMB/CIFS file shares
 and media files to devices across the LAN.   
 
 ## Why ?
 Most ordinary people cannot afford expensive new bits like multiple NVME drives or Pi Hat's etc,
 as shown on youtube 'how-to's !  It's great they show and test those things, but money doesn't grow on trees,
-especially if you have kids and/or are retired.    
+especially if we have kids and/or are retired.    
 
 One could use `OpenMediaVault` or `Plex` more easily, but they connect to the internet to do 'stuff'.
 I looked at `Plex` et al years ago and was very uncomfortable with the level of access installed packages potentially
@@ -30,7 +30,7 @@ provided to the vendor servers directly into my LAN and hence to all the devices
 ... essentially permitting them unfettered invisible 'remote control' access if they so chose.
 I valued my banking details and documents etc, choosing to limit exposure to that potential security hazard.    
 
-This 'roll your own' approach minimises cost, and avoids the pain of getting 'done over' by your own hand - installing
+This 'roll our own' approach minimises cost, and avoids the pain of getting 'done over' by our own hand - installing
 packages known to interact of themselves in essentially unknown ways with (uncontrolled) vendors' servers
 on the internet - at the cost of having to deal with more complexity ... safety first.
 
@@ -67,7 +67,7 @@ DISK3 -- mediaroot --|--ClassicMovies
                      |--SciFi
 ```
 
-This outline assumes you know how to use the nano editor, if not please google it, if using another editor then cool !
+This outline assumes we know how to use the nano editor, if not please google it, if using another editor then cool !
 
 ---
 
@@ -91,7 +91,7 @@ Assuming we have USB3 disks created as GPT disks (not Dynamic Disks) and formatt
 we need to prepare every disk to appear and behave in a consistent way.
 
 For every disk, change it's disk volume label to be like `DISK1`  **in strict numerical sequence** through to `DISK8` 
-and ensure they are definitely unique across disks. If you are unsure how to do that, try    
+and ensure they are definitely unique across disks. If we are unsure how to do that, try    
 https://www.google.com.au/search?q=how+to+change+an+NTFS+disk+volume+label+in+windows+11    
 
 On every disk, in Windows change it's Security so that inbuilt username `everyone` is added with `Full Control` access.
@@ -109,8 +109,8 @@ On each disk, create one root folder named like `mediaroot` containing subfolder
 (these subfolders underneath `mediaroot` will be called 'top level media folder's.
 
 Under the 'top level media folder's on the disks, place the media files in a reasonably consistent
-(including filename capitalisation) subfolder structure of your choice.
-The same subfolder names and files could exist on every disk or you could
+(including filename capitalisation) subfolder structure of our choice.
+The same subfolder names and files could exist on every disk or we could
 spread out the media files and subfolders across disks to balance disk usage...    
 
 Note that some 'top level media folder' trees are duplicated across 2 or more disks to make a backup.  
@@ -159,11 +159,11 @@ In this outline we'll assume we have only the USB3 disks. We can add more as nee
 just keep an eye on the mandatory 'disk volume label' naming (eg `DISK1`) 
 in line with the example model above.    
 
-The 'top level media folder's (eg `Movies`) can be named anything you like, just ensure
+The 'top level media folder's (eg `Movies`) can be named anything we like, just ensure
 consistency in capitalization across disks and do not use `space` characters and
 especially not `special characters` anywhere !   
 
-Later, you could manually shuffle individual 'top level media folder' trees from one disk to another 
+Later, we could manually shuffle individual 'top level media folder' trees from one disk to another 
 (by copying/moving between the underlying linux disk mounts) to perhaps balance
 disk space usage etc; the next `sync` process wll automatically detect it and stick
 with its 'fdd' rule in single-directional mirroring from 'ffd' to 'backup's.    
@@ -187,7 +187,7 @@ First ensuring that power switch is off where the Pi's power block plugs in,
 
 That's the hardware prepared and plugged in ... and still powered off.    
 
-In the outline below, we'll assume only 3 USB3 disks. You can add more as you need,
+In the outline below, we'll assume only 3 USB3 disks. we can add more as we need,
 just keep an eye on the disk naming and folder structures in line with the model above.    
 
 ---
@@ -195,11 +195,11 @@ just keep an eye on the disk naming and folder structures in line with the model
 ## Install Raspberry Pi OS with `autologin` to the SD card    
 Run the `Raspberry Pi Imager` on a PC to put the full 64 bit `Raspberry Pi OS` image to an SD card in the usual way    
 - Choose to "Edit Settings" and then the GENERAL tab.    
-- Set a Hostname you will recognise, eg PINAS64.    
+- Set a Hostname we will recognise, eg PINAS64.    
 - Set a username as `pi` (if not `pi` then replace username `pi` in this outline with the chosen username) and
-the password as something you will remember (you will need to enter it later during `SAMBA` setup,
+the password as something we will remember (we will need to enter it later during `SAMBA` setup,
 and change all references of `pi` to the username).    
-- Set you locale settings and keyboard layout (setting keyboard layout is important if in non-US non-GB country).    
+- Set we locale settings and keyboard layout (setting keyboard layout is important if in non-US non-GB country).    
 - Choose the SERVICES tab.    
 - Enable SSH with password authentification.    
 - Choose the OPTIONS tab.    
@@ -219,7 +219,7 @@ Click YES to proceed.
 
 **2. Once the Pi has finished booting to the desktop (leave it set to autologin)**    
 For me, the the Pi does not properly recognise the country and keyboard I specify whilst creating the SD card image.    
-Set you locale settings and keyboard layout and WiFi country (setting keyboard layout is important if in non-US non-GB country).    
+Set our locale settings and keyboard layout and WiFi country (setting keyboard layout is important if in non-US non-GB country).    
 - Click Start, Preferences, Raspberry Pi Configuration    
 - In the System Tab, set **Auto Logon ON**, **Splash Screen OFF**   
 - In the Interfaces Tab, sey **VNC ON**, **SSH ON**, perhaps **Raspberry Connect OFF**    
@@ -246,12 +246,12 @@ dtparam=pciex1_gen=3
 exit nano with `Control O` `Control X`.    
 
 
-**4. Enable the external RTC battery, assuming you purchased and installed one**    
+**4. Enable the external RTC battery, assuming we purchased and installed one**    
 Per https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#real-time-clock-rtc    
 The Raspberry Pi 5 includes an RTC module. 
 This can be battery powered via the J5 (BAT) connector on the board located to the right of the USB-C power connector:     
 https://www.raspberrypi.com/documentation/computers/images/j5.png?hash=70853cc7a9a01cd836ed8351ece14d59    
-You can set a wake alarm which will switch the board to a very low-power state (approximately 3mA). 
+We can set a wake alarm which will switch the board to a very low-power state (approximately 3mA). 
 When the alarm time is reached, the board will power back on. 
 This can be useful for periodic jobs like time-lapse imagery.
 To support the low-power mode for wake alarms, edit the bootloader configuration:    
@@ -275,14 +275,14 @@ dtparam=rtc_bbat_vchg=3000000
 ```
 exit nano with `Control O` `Control X`.   
 
-**NOTE: Later (not now) after you reboot, trickle recharging with the right voltage setting will take effect.**    
-You can check the `sysfs` files to ensure that the charging voltage was correctly set.
+**NOTE: Later (not now) after we reboot, trickle recharging with the right voltage setting will take effect.**    
+We can check the `sysfs` files to ensure that the charging voltage was correctly set.
 ```
 /sys/devices/platform/soc/soc:rpi_rtc/rtc/rtc0/charging_voltage:0
 /sys/devices/platform/soc/soc:rpi_rtc/rtc/rtc0/charging_voltage_max:4400000
 /sys/devices/platform/soc/soc:rpi_rtc/rtc/rtc0/charging_voltage_min:1300000
 ```
-If you like you could test the battery RTC functionality with:
+If we like we could test the battery RTC functionality with:
 ```
 echo +10 | sudo tee /sys/class/rtc/rtc0/wakealarm
 sudo halt
@@ -440,7 +440,7 @@ Normally the Pi will get a temporary DHCP IP Address Lease from the router, whic
 In this outline the LAN IP Address range is 10.0.0.0/255.255.255.0 with the Pi 5 knowing itself of course on 127.0.0.1,
 and the Router's IP Address lease for the Pi could be something like 10.0.0.18.    
 
-_If you have a different IP Address/Range, substitute in the correct IP and Address range etc._     
+_If we have a different IP Address/Range, substitute in the correct IP and Address range etc._     
 
 To allocate a `fixed` IP address, on the Pi start a Terminal and do these commands
 to show the Pi's network name and IP address lease     
@@ -462,8 +462,8 @@ hostname -f
 hostname -I
 #ifconfig
 ```
-and notice the IP address and hope it matches the IP Address reservation you made on the router.    
-If not, check what you have done on the router and fix it and reboot the Pi.    
+and notice the IP address and hope it matches the IP Address reservation we made on the router.    
+If not, check what we have done on the router and fix it and reboot the Pi.    
 
 
 **15. Reboot the Pi 5 for everything to take effect; in a Terminal**    
@@ -479,7 +479,7 @@ sudo reboot
 Per this thread    
 https://forums.raspberrypi.com/viewtopic.php?t=374341#p2240823    
 
-The **automount** feature may (and does, for unlucky users!) freeze your system and stop it from booting.    
+The **automount** feature may (and does, for unlucky users!) freeze our system and stop it from booting.    
 
 **1. DISABLE THE AUTOMOUNT FEATURE BEFORE TURNING ON ANY DISKS !!**    
 
@@ -502,7 +502,7 @@ Even if we have less than 8 disks, create the other mount points anyway so that 
 # /srv probably already exists, try to create it anyway
 sudo mkdir -v -m a=rwx /srv
 #
-# {1..8} for 8 disks, for underlying file system that mergerfs will depend on. More than you use is OK.
+# {1..8} for 8 disks, for underlying file system that mergerfs will depend on. More than we use is OK.
 sudo mkdir -v -m 777 /srv/usb3disk{1..8}
 #
 # double-ensure the protections are as we want them by setting them on the tree
@@ -531,17 +531,17 @@ Boot the Pi 5 to the desktop.
 
 
 **5. Identify the Disk PARTUUID for all USB3 disks, create fstab entries to mount disks at boot**    
-This is where it becomes important that you have already named all of you disk volumes properly
+This is where it becomes important that we have already named all of our disk volumes properly
 and have created a root folder in each where the root folder's name matches the disk label.    
 
 IE:    
 - For every disk, it's disk volume label should be like `DISK1`  **in strict numerical sequence** through to `DISK8` 
 and ensure they are definitely unique across disks.    
-- On each disk, you must have created one root folder named like `mediaroot`.
+- On each disk, we must have created one root folder named like `mediaroot`.
 
-OK, you are going to neeed 2 `Terminal` windows open to do this.
+OK, we are going to neeed 2 `Terminal` windows open to do this.
 Start 2 `Terminal`s and position them side by side. 
-Overlapping windows is OK, as long as you can see most of each window and easily click between then to change window focus.
+Overlapping windows is OK, as long as we can see most of each window and easily click between then to change window focus.
 
 In the leftmost window, edit `/etc/fstab` ready to add new items.
 ```
@@ -571,7 +571,7 @@ Preparation: add these lines to the end of `fstab`:
 #/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.requires=/srv/usb3disk1 0 0
 #
 ```
-Now **uncomment ONLY** lines to match the number if disks you have, eg: for 3 disks it would be:
+Now **uncomment ONLY** lines to match the number if disks we have, eg: for 3 disks it would be:
 ```
 PARTUUID= /srv/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=30,x-systemd.mount-timeout=30 0 0
 PARTUUID= /srv/usb3disk2 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=30,x-systemd.mount-timeout=30 0 0
@@ -591,7 +591,7 @@ sudo blkid
 sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
 ```
 Eventually, we "should" see the disks appear (notice lines with the disk labels appears)
-similar to the below .. if not check your connections etc.
+similar to the below .. if not check our connections etc.
 
 ```
 sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
@@ -640,8 +640,8 @@ Make the operating system notice these new changes in fstab:
 ```
 sudo systemctl daemon-reload
 ```
-Attempt to mount the disks via `fstab`. You should see something like the output below.    
-If not, immediatelty re-edit fstab and comment out the lines and save `fstab` before you then fix what
+Attempt to mount the disks via `fstab`. We should see something like the output below.    
+If not, immediatelty re-edit fstab and comment out the lines and save `fstab` before we then fix what
 has happened by cross-checking all of the relevant lines ! And repeat this step.    
 ```
 sudo mount -v -a
@@ -901,7 +901,7 @@ sudo apt -y install samba samba-common-bin smbclient cifs-utils
 Create the default user pi in creating the first samba user
 ```
 sudo smbpasswd -a pi
-# if prompted, enter the same password as the default user pi you setup earlier    
+# if prompted, enter the same password as the default user pi we setup earlier    
 ```
 
 **3. Configure `SAMBA`; in a Terminal:**    
@@ -946,7 +946,7 @@ wide links = yes
 ```
 
 Below are the definitions for 3 live shares, with 5 more commented out.    
-Copy and paste it to the end of `/etc/samba/smb.conf` and un-comment any shared you need to make live.     
+Copy and paste it to the end of `/etc/samba/smb.conf` and un-comment any shared we need to make live.     
 ```
 # DEFINE THE SHARES
 [media]
@@ -1162,9 +1162,9 @@ sudo hostname --fqdn
 sudo hostname --all-ip-addresses
 ```
 
-**7. How to access shares from Windows**    
+**7. How to access the Pi shares from Windows**    
 
-You can now access the `SAMBA` shares on the Pi from a Windows PC or from an app that supports the SMB protocol.    
+We can now access the `SAMBA` shares on the Pi from a Windows PC or from an app that supports the SMB protocol.    
 eg on a Windows PC in Windows Explorer, use the IP address of the Pi in the folder path text bar at the top, eg ...    
 ```
 REM read-only virtual folder of overlayed disk folders
@@ -1338,7 +1338,7 @@ root_container=PVA,/srv/overlay
 
 # now ADD any lines where wish to expose folders
 # separately to, but as well as in, the overlayed folder tree, eg
-# THE ENTRIES BELOW MUST EXACTLY MATCH THE FOLDERS YOU WISH DLNA TO EXPOSE
+# THE ENTRIES BELOW MUST EXACTLY MATCH THE FOLDERS WE WISH DLNA TO EXPOSE
 media_dir=PVA,/srv/overlay/ClassicMovies
 media_dir=PVA,/srv/overlay/Documentaries
 media_dir=PVA,/srv/overlay/Footy
@@ -1357,9 +1357,9 @@ tail -n 50 /srv/usb3disk1/minidlna/log/minidlna.log
 ```
 The minidlna service comes with an internal small web server and webinterface.    
 This webinterface is just for informational purposes.    
-You will not be able to configure anything here.    
-However, it gives you a nice and short information screen how many files have been found by minidlna.    
-To access the webinterface, open your browser of choice and enter url http://127.0.0.1:8200    
+We will not be able to configure anything here.    
+However, it gives us a nice and short information screen how many files have been found by minidlna.    
+To access the webinterface, open our browser of choice and enter url http://127.0.0.1:8200    
 ```
 curl -i http://127.0.0.1:8200
 ```
@@ -1503,11 +1503,11 @@ set +x
 echo "#"
 echo "# The minidlna service comes with a small webinterface. "
 echo "# This webinterface is just for informational purposes. "
-echo "# You will not be able to configure anything here. "
-echo "# However, it gives you a nice and short information screen how many files have been found by minidlna. "
+echo "# We will not be able to configure anything here. "
+echo "# However, it gives we a nice and short information screen how many files have been found by minidlna. "
 echo "# minidlna comes with it’s own webserver integrated. "
 echo "# This means that no additional webserver is needed in order to use the webinterface."
-echo "# To access the webinterface, open your browser of choice and enter url http://127.0.0.1:8200"
+echo "# To access the webinterface, open our browser of choice and enter url http://127.0.0.1:8200"
 echo ""
 set -x
 curl -i http://127.0.0.1:8200
@@ -1519,10 +1519,10 @@ echo ""
 # As the client software we use the Video Lan Client (VLC). 
 # Simple, robust, cross-platform and open source. 
 # After starting VLC, go to the playlist mode by pressing CTRL+L in windows. 
-# You will now see on the left side a category which is called Local Network. 
+# We will now see on the left side a category which is called Local Network. 
 # Click on Universal Plug’n’Play which is under the Local Network category. 
-# You will then see a list of available DLNA service within your local network. 
-# In this list you should see your DLNA server. 
+# We will then see a list of available DLNA service within our local network. 
+# In this list we should see our DLNA server. 
 # Navigate through the different directories for music, videos and pictures and select a file to start the streaming process
 echo ""
 #
@@ -1565,392 +1565,6 @@ MergerFS
 
 
 
-## Set the Router so this Pi has a Reserved fixed (permanent) DHCP IP Address Lease
-In this outline the LAN IP Address range is 10.0.0.0/255.255.255.0 with the Pi 5 knowing itself of course on 127.0.0.1,
-and the Router's IP Address lease for the Pi could be something like 10.0.0.18.    
-
-_If you have a different IP Address/Range, substitute in the correct IP and Address range etc in the outline below._     
-
-Normally the Pi will get a temporary DHCP IP Address Lease from the router, which may change over time as leases expire.    
-To get a `fixed` IP address:    
-
-On the Pi start a Terminal and do these commands to show the Pi's network name and IP address    
-```
-hostname -f
-hostname -I
-#ifconfig
-```
-The Pi's LAN IP address may be something like 10.0.0.18.    
-
-Login to the router and look at the LAN connected devices, looking for the IP address matching the Pi.    
-
-Head on to the Router's DHCP management area and allocated a Reserved fixed (permanent) DHCP IP address lease
-for the Pi and apply/save that in the router. Reboot the Pi, then on the Pi start a Terminal and do    
-```
-hostname -f
-hostname -I
-#ifconfig
-```
-and notice the IP address and hope it matches the IP Address reservation you made on the router.    
-If not, check what you have done on the router and fix it and reboot the Pi.    
-
-## Ascertain disks info, specifically DISK-UUID, PARTUUID, and MOUNTPOINT    
-At this point, the USB3 disks should already be auto-mounted and you may see links to them on the desktop.
-That's OK, we'll change all that to suit the NAS needs.    
-
-Start a Terminal and use `sudo lsblk` to look at the connected disks, and see something like this:
-```
-sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
-```
-```
-UUID                                 PARTUUID                             NAME        FSTYPE  SIZE MOUNTPOINT          LABEL
-                                                                          sda                 3.6T                     
-                                     c8c72b90-6c8a-4631-9704-a3816695a6dc ├─sda1              128M                     
-96DA1D13DA1CF0EB                     a175d2d3-c2f6-44d4-a5fc-209363280c89 └─sda2      ntfs    3.6T /media/pi/DISK2-4TB DISK2-4TB
-                                                                          sdb                 4.5T                     
-                                     c542d01e-9ac9-486f-98cb-4521e0fe54f8 ├─sdb1              128M                     
-C4D05ABAD05AB302                     2d5599a2-aa11-4aad-9f75-7fca2078b38b └─sdb2      ntfs    4.5T /media/pi/DISK1-5TB DISK1-5TB
-                                                                          mmcblk0            29.7G                     
-9BE2-1346                            9fd862b3-01                          ├─mmcblk0p1 vfat    512M /boot/firmware      bootfs
-12974fe2-889e-4060-b497-1d6ac3fbbb4b 9fd862b3-02                          └─mmcblk0p2 ext4   29.2G /                   rootfs
-```
-In that output, identify lines showing mount names for the USB3 disks, eg something like these:
-```
-UUID                                 PARTUUID                             NAME        FSTYPE  SIZE MOUNTPOINT          LABEL
-C4D05ABAD05AB302                     2d5599a2-aa11-4aad-9f75-7fca2078b38b └─sdb2      ntfs    4.5T /media/pi/DISK1-5TB DISK1-5TB
-96DA1D13DA1CF0EB                     a175d2d3-c2f6-44d4-a5fc-209363280c89 └─sda2      ntfs    3.6T /media/pi/DISK2-4TB DISK2-4TB
-```
-From each relevant partition we identify, look for the disk UUID, PARTUUID, NAME (eg `sda`) and save these somewhere, as we NEED the PARTUUIDs later.
-
-If we wanted to cross-check disks, we could `sudo mount` like this and amongst them will be something like this:
-```
-$ sudo mount -l | grep "overlay\|disk"
-/dev/sdb2 on /media/pi/DISK1-5TB type ntfs (rw,nosuid,nodev,relatime,uid=1000,gid=1000,windows_names,iocharset=utf8,uhelper=udisks2) [DISK1-5TB]
-/dev/sda2 on /media/pi/DISK2-4TB type ntfs (rw,nosuid,nodev,relatime,uid=1000,gid=1000,windows_names,iocharset=utf8,uhelper=udisks2) [DISK2-4TB]
-```
-
-Now we have identified the correct disks, partitions and their PARTUUID, and now need to identify the root folder names on them.    
-
-Start `File Manager` and navigate to each of the partitions, something like:
-- the media root folder is under `/media/pi/DISK1-5TB`    
-- the media root folder is under `/media/pi/DISK2-4TB`
-
-and locate the root folder in each partition which contains the media files 
-... and make a note of these root folder names **alongside** the corresponding PARTUUID.    
-So, you will have noted for each disk UUID, partition PARTUUID. and the root folder name on that partition, eg for
-```
-# File Manager Folder Name
-/media/pi/DISK1-5TB/ROOTFOLDER1
-/media/pi/DISK2-4TB/ROOTFOLDER2
-```
-the [UUID, PARTUUID, root folder name] quadruplet would be
-```
-DISK-UUID         PARTUUID                              NAME    root folder name
-C4D05ABAD05AB302  2d5599a2-aa11-4aad-9f75-7fca2078b38b  sdb     ROOTFOLDER1
-96DA1D13DA1CF0EB  a175d2d3-c2f6-44d4-a5fc-209363280c89  sda     ROOTFOLDER2
-```
-
-## Create new 'standardized' mount points for disks and 'virtual overlayed folder'
-Start a Terminal and create some folders etc
-```
-# create a new mount point for SAMBA sharing
-cd ~
-sudo mkdir -v -m a=rwx /srv
-
-# create new 'standardized' mount points for the external USB3 disks    
-sudo mkdir -v -m a=rwx /srv/usb3disk1
-sudo mkdir -v -m a=rwx /srv/usb3disk2
-
-# create a new 'overlayfs' mount point for 'virtual overlayed folder' sharing via SAMBA and dlna and set protections
-sudo mkdir -v -m a=rwx /srv/overlay
-sudo chown -R -v pi:   /srv/overlay
-sudo chmod -R -v a+rwx /srv/overlay
-
-# ensure the 'shared' tree has the right ownership and permissions
-sudo chown -R -v pi:  /srv
-sudo chmod -R -v a+rwx /srv
-```
-
-## Backup and Edit `/etc/fstab` so disks are mounted consistently     
-To make the USB3 disk mounts happen at boot time into the mount points we just created, we must edit `/etc/fstab` and
-use, for each partition, the PARTUUID and the root folder name on that partition which we collected earlier.    
-Start a Terminal and run the nano editor:    
-```
-sudo cp -fv /etc/fstab /etc/fstab.bak
-sudo nano  /etc/fstab
-```
-
-Using the nano editor, change fstab and add the following entries which must be in the specific order below.    
-**Remember to change the `PARTUUID` values and the `overlay` `lowerdir=` values to correspond to the values we determined !**    
-**Of course, if we have more disks then we**     
-- **add more lines, one for each disk, remembering to update each `x-systemd.requires=` so they are
-all in sequence and each new line requires the mount of the prior line**     
-- **amend the `x-systemd.requires=` on the `overlay` line to reference the last disk mount line above**    
-- **add more `lowerdir=` root folder names to the `overlay` line**    
-
-So in our example it becomes
-```
-# https://askubuntu.com/questions/109413/how-do-i-use-overlayfs/1348932#1348932
-# To set order/dependency of mounts in fstab file, we will declare systemd option "require" using syntax: x-systemd.require. 
-# Argument for this option is mount point of the mount which should be successfully mounted before given mount.
-# Mount each usb3 disk partition, each subsequent mount depending on the prior mount.
-# Careful: "nofail" will cause the process to continue with no errors (avoiding a boot hand when a disk does not mount)
-#          however the subsequently dependent mounts will fails as will the overlayfs mount
-#             ... but at least we have booted, not halting boot with a failed fstab entry, and can fix that !
-PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /srv/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=30,x-systemd.mount-timeout=30 0 0
-# Create the overlayfs virtual folder, by overlaying the 2 root folders. 
-# The overlayfs lowerdir folders in order Left to Right takes precedence when duplicate files are found.
-overlay /srv/overlay overlay lowerdir=/srv/usb3disk1/ROOTFOLDER1:/srv/usb3disk2/ROOTFOLDER2,defaults,auto,noatime,nodiratime,nofail,users,ro,exec,x-systemd.mount-timeout=60,x-systemd.requires=/srv/usb3disk2,noatime,nodiratime,nofail,x-systemd.device-timeout=30,x-systemd.mount-timeout=30 0 0
-#
-# in the past we had 'x-systemd.requires=/srv/usb3disk1' (numbers in sequence of course) on the 2nd and subsequent mounts so each mount depended on the prior. We do not do thast any more.
-```
-
-exit nano with `Control O` `Control X`.    
-
-##  Reboot to see what happens with those mounts    
-Reboot the Pi 5.    
-Start a Terminal
-```
-# find our disks and overlays
-sudo mount -l |  grep "overlay\|disk"
-sudo df  |  grep "overlay\|disk"
-```
-
-If the mounts do not match what you specified in `etc/fstab`, then something is astray !  Check what you have done above.    
-
-In a Terminal do an `ls -al` on each of the mounts, eg on `/srv/usb3disk1`, and also on the `/srv/overlay` folder to check they are visible.    
-
-**If the files in the mounts do not match what you expect from `/etc/fstab`, then something is astray !  Check what has been done above.**    
-
-## Setup `HD-IDLE` to ensure disks are not constantly spun up
-Per `https://www.htpcguides.com/spin-down-and-manage-hard-drive-power-on-raspberry-pi/`
-some WD external USB3 disks won't spin down on idle and HDPARM and SDPARM don't work on them
-... the `adelolmo` version of `hd-idle` appears to work, so let's use that.  
-
-**Do NOT do this:**
-```
-sudo apt -y install hd-idle
-# and then these
-sudo apt-cache show hd-idle
-sudo apt list --installed | grep hd-idle
-dpkg -l | grep hd-idle
-```
-since all show version `1.05+ds-2+b1` which is very old.
-
-This `https://github.com/adelolmo/hd-idle` shows a minimum of release `1.21 / 2023-10-22` in
-`https://github.com/adelolmo/hd-idle/releases/download/v1.21/hd-idle_1.21_arm64.deb`
-
-Remove any prior install of `hd-idle`. In a Terminal,
-```
-sudo systemctl disable hd-idle
-sudo systemctl stop hd-idle
-# wait 2 seconds, then
-sudo dpkg -l hd-idle
-sudo dpkg -P hd-idle 
-sudo apt -y purge hd-idle
-sudo rm -vf /var/log/hd-idle.log
-```
-
-Install the more up-to-date release of 'adelolmo' version of `hd-idle` direct from the author.
-In a Terminal
-```
-# https://github.com/adelolmo/hd-idle
-cd ~/Desktop
-rm -fvr ./hd-idle
-mkdir -pv hd-idle
-cd hd-idle
-sudo touch /var/log/hd-idle.log
-sudo chmod +777 /var/log/hd-idle.log
-sudo rm -vf hd-idle_1.21_arm64.deb
-wget https://github.com/adelolmo/hd-idle/releases/download/v1.21/hd-idle_1.21_arm64.deb
-sudo dpkg -i "./hd-idle_1.21_arm64.deb"
-sudo dpkg -l hd-idle
-cd ~/Desktop
-```
-
-Noting previously the [UUID, PARTUUID, root folder name] quadruplet of each disk
-```
-DISK-UUID         PARTUUID                              NAME    root folder name
-C4D05ABAD05AB302  2d5599a2-aa11-4aad-9f75-7fca2078b38b  sdb     ROOTFOLDER1
-96DA1D13DA1CF0EB  a175d2d3-c2f6-44d4-a5fc-209363280c89  sda     ROOTFOLDER2
-```
-
-Stop `hd-idle`
-```
-sudo systemctl stop hd-idle
-```
-
-After edit `etc/default/hd-idle` to change `hd-idle` parameters
-```
-sudo nano /etc/default/hd-idle
-# enabling hd-idle auto start by changing line 'START_HD_IDLE=false' to have a value **true**
-START_HD_IDLE=true
-# Adding lines at the end for every disk, using the noted NAME
-# option -d = debug
-##Double check hd-idle works with the hard drive
-##sudo hd-idle -t ??? -d
-#   #Command line options:
-#   #-a name Set device name of disks for subsequent idle-time parameters -i. This parameter is optional in the sense that there's a default entry for all disks which are not named otherwise by using this parameter. This can also be a symlink (e.g. /dev/disk/by-uuid/...)
-#   #-i idle_time Idle time in seconds for the currently named disk(s) (-a name) or for all disks.
-#   #-c command_type Api call to stop the device. Possible values are scsi (default value) and ata.
-#   #-s symlink_policy Set the policy to resolve symlinks for devices. If set to 0, symlinks are resolve only on start. If set to 1, symlinks are also resolved on runtime until success. By default symlinks are only resolve on start. If the symlink doesn't resolve to a device, the default configuration will be applied.
-#   #-l logfile Name of logfile (written only after a disk has spun up or spun down). Please note that this option might cause the disk which holds the logfile to spin up just because another disk had some activity. On single-disk systems, this option should not cause any additional spinups. On systems with more than one disk, the disk where the log is written will be spun up. On raspberry based systems the log should be written to the SD card.
-#   #-t disk Spin-down the specified disk immediately and exit.
-#   #-d Debug mode. It will print debugging info to stdout/stderr (/var/log/syslog if started with systemctl)
-#   #-h Print usage information.
-# default timeout 300s = 5 mins
-# sda etc     timeout 900s = 15 mins
-HD_IDLE_OPTS="-i 300 -l /var/log/hd-idle.log -a /dev/sdb -i 900 -a /dev/sda -i 900"
-```
-
-To enable `hd-idle` on reboot and then restart, in a Terminal:
-```
-sudo systemctl enable hd-idle   
-sudo systemctl stop hd-idle
-sudo systemctl restart hd-idle
-# wait 2 secs
-sudo cat /var/log/hd-idle.log
-journalctl -u hd-idle.service | grep hd-idle| tail -n 50
-sudo systemctl status hd-idle.service | tail -n 50
-```
-
-Test `hd-idle`
-```
-sudo hd-idle -t /dev/sdb -d -l /var/log/hd-idle.log
-sudo hd-idle -t /dev/sda -d -l /var/log/hd-idle.log
-# wait 2 secs
-sudo cat /var/log/hd-idle.log
-journalctl -u hd-idle.service | grep hd-idle| tail -n 50
-sudo systemctl status hd-idle.service | tail -n 50
-```
-
-## Install and configure `SAMBA`to create file shares on the LAN
-In a Terminal,    
-```
-sudo apt -y install samba samba-common-bin smbclient cifs-utils
-# create the default user pi in creating the first samba user
-sudo smbpasswd -a pi
-# if prompted, enter the same password as the default user pi you setup earlier    
-```
-
-
-Edit the `SAMBA` config `/etc/samba/smb.conf`.    
-```
-sudo nano /etc/samba/smb.conf
-```
-Per https://www.samba.org/samba/docs/current/man-html/smb.conf.5.html    
-Here are some global `SAMBA` settings in `/etc/samba/smb.conf`, use nano to check for and fix them    
-- if they not exist, create them    
-- if they are commented out, uncomment them    
-- if they contain different values, comment out and create a line underneath with the correct setting
-
-```
-workgroup = WORKGROUP
-hosts 10.0.0.0/255.255.255.0 127.0.0.1
-security = user
-deadtime = 15
-#socket options = IPTOS_LOWDELAY TCP_NODELAY SO_RCVBUF=65536 SO_SNDBUF=65536 SO_KEEPALIVE
-# linux auto tunes SO_RCVBUF=65536 SO_SNDBUF=65536
-socket options = IPTOS_LOWDELAY TCP_NODELAY SO_KEEPALIVE
-inherit permissions = yes
-# OK ... 1 is a sticky bit
-# create mask and directory mask actually REMOVE permissions !!!
-#   create mask = 0777
-#   directory mask = 0777
-# force create mode and force directory mode 
-# specifies a set of UNIX mode bit permissions that will always be set 
-force create mode = 1777
-force directory mode = 1777
-preferred master = No
-local master = No
-guest ok = yes
-browseable = yes
-#guest account = root
-public = yes
-guest account = pi
-allow insecure wide links = yes
-follow symlinks = yes
-wide links = yes
-```
-
-Below are the definition of the 2 new shares. Add them to the end of `/etc/samba/smb.conf`    
-```
-# DEFINE THE SHARES
-[overlayed_media_root]
-comment = RO access to overlayed root folders on USB3 disks using overlayfs
-path = /srv/overlay
-available = yes
-force user = pi
-writeable = no
-read only = yes
-browseable = yes
-public=yes
-guest ok = yes
-guest only = yes
-case sensitive = no
-default case = lower
-preserve case = yes
-follow symlinks = yes
-wide links = yes
-
-[individual_disks]
-comment = rw access to individual USB3 disks
-path = /srv
-available = yes
-force user = pi
-writeable = yes
-read only = no
-browseable = yes
-public=yes
-guest ok = yes
-guest only = yes
-case sensitive = no
-default case = lower
-preserve case = yes
-follow symlinks = yes
-wide links = yes
-force create mode = 1777
-force directory mode = 1777
-inherit permissions = yes
-```
-exit nano with `Control O` `Control X`.    
-
-Test the new `SAMBA` parameters in a Terminal:
-```
-sudo testparm
-```
-
-Restart the `SAMBA` service, waiting 2 secs in between each command
-```
-sudo systemctl enable smbd
-# wait 2 secs
-sudo systemctl stop smbd
-# wait 2 secs
-sudo systemctl restart smbd
-```
-
-List the new `SAMBA` users (which can have different passwords to the Pi itself) and shares
-
-```
-sudo pdbedit -L -v
-sudo net usershare info --long
-sudo smbstatus
-sudo smbstatus --shares # Will retrieve what's being shared and which machine (if any) is connected to what.
-sudo hostname
-sudo hostname --fqdn
-sudo hostname --all-ip-addresses
-```
-
-You can now access the defined shares from a Windows machine or from an app that supports the SMB protocol.    
-eg on a Windows 11 PC in Windows Explorer use the IP address of the Pi, eg ...    
-```
-REM read-only virtual folder of overlayed disk folders
-\\10.0.0.18\overlayed_media_root
-REM DISK1 as read-write (copy new media to subfolders here, depending on how full this disk is)
-\\10.0.0.18\individual_disks\DISK1
-REM DISK2 root folder as read-write (copy new media to subfolders here, depending on how full this disk is)
-\\10.0.0.18\individual_disks\DISK2\ROOTFOLDER2
-```
 
 ## Install and configure `miniDLNA` to serve media on the LAN via DLNA
 
@@ -2080,7 +1694,7 @@ root_container=PVA,/srv/overlay
 
 # now ADD any lines where wish to expose folders
 # separately to, but as well as in, the overlayed folder tree, eg
-# THE ENTRIES BELOW MUST EXACTLY MATCH THE FOLDERS YOU WISH DLNA TO EXPOSE
+# THE ENTRIES BELOW MUST EXACTLY MATCH THE FOLDERS WE WISH DLNA TO EXPOSE
 media_dir=PVA,/srv/overlay/ClassicMovies
 media_dir=PVA,/srv/overlay/Documentaries
 media_dir=PVA,/srv/overlay/Footy
@@ -2099,9 +1713,9 @@ tail -n 50 /srv/usb3disk1/minidlna/log/minidlna.log
 ```
 The minidlna service comes with an internal small web server and webinterface.    
 This webinterface is just for informational purposes.    
-You will not be able to configure anything here.    
-However, it gives you a nice and short information screen how many files have been found by minidlna.    
-To access the webinterface, open your browser of choice and enter url http://127.0.0.1:8200    
+We will not be able to configure anything here.    
+However, it gives us a nice and short information screen how many files have been found by minidlna.    
+To access the webinterface, open our browser of choice and enter url http://127.0.0.1:8200    
 ```
 curl -i http://127.0.0.1:8200
 ```
@@ -2247,11 +1861,11 @@ set +x
 echo "#"
 echo "# The minidlna service comes with a small webinterface. "
 echo "# This webinterface is just for informational purposes. "
-echo "# You will not be able to configure anything here. "
-echo "# However, it gives you a nice and short information screen how many files have been found by minidlna. "
+echo "# We will not be able to configure anything here. "
+echo "# However, it gives us a nice and short information screen how many files have been found by minidlna. "
 echo "# minidlna comes with it’s own webserver integrated. "
 echo "# This means that no additional webserver is needed in order to use the webinterface."
-echo "# To access the webinterface, open your browser of choice and enter url http://127.0.0.1:8200"
+echo "# To access the webinterface, open our browser of choice and enter url http://127.0.0.1:8200"
 echo ""
 set -x
 curl -i http://127.0.0.1:8200
@@ -2263,10 +1877,10 @@ echo ""
 # As the client software we use the Video Lan Client (VLC). 
 # Simple, robust, cross-platform and open source. 
 # After starting VLC, go to the playlist mode by pressing CTRL+L in windows. 
-# You will now see on the left side a category which is called Local Network. 
+# We will now see on the left side a category which is called Local Network. 
 # Click on Universal Plug’n’Play which is under the Local Network category. 
-# You will then see a list of available DLNA service within your local network. 
-# In this list you should see your DLNA server. 
+# We will then see a list of available DLNA service within our local network. 
+# In this list we should see our DLNA server. 
 # Navigate through the different directories for music, videos and pictures and select a file to start the streaming process
 echo ""
 #
@@ -2297,7 +1911,7 @@ The Raspberry Pi 5 includes an RTC module.
 This can be battery powered via the J5 (BAT) connector on the board located to the right of the USB-C power connector:     
 https://www.raspberrypi.com/documentation/computers/images/j5.png?hash=70853cc7a9a01cd836ed8351ece14d59    
 
-You can set a wake alarm which will switch the board to a very low-power state (approximately 3mA). 
+We can set a wake alarm which will switch the board to a very low-power state (approximately 3mA). 
 When the alarm time is reached, the board will power back on. 
 This can be useful for periodic jobs like time-lapse imagery.
 To support the low-power mode for wake alarms, edit the bootloader configuration:
@@ -2326,7 +1940,7 @@ Check the `sysfs` files to ensure that the charging voltage was correctly set.
 /sys/devices/platform/soc/soc:rpi_rtc/rtc/rtc0/charging_voltage_max:4400000
 /sys/devices/platform/soc/soc:rpi_rtc/rtc/rtc0/charging_voltage_min:1300000
 ```
-You can test the battery RTC functionality with:
+We can test the battery RTC functionality with:
 ```
 echo +600 | sudo tee /sys/class/rtc/rtc0/wakealarm
 sudo halt
