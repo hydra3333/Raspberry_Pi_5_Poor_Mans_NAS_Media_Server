@@ -1,10 +1,12 @@
 ### Changed the mergerfs mount to mount the disk AND the top level folder
-### eg from 
-###    /srv/usb3disk1
-### to
-###    /srv/usb3disk1/mediaroot
-### So we changed all this code to suit that. 
-### Hopefuilly it works.
+### eg from     /srv/usb3disk1    to    /srv/usb3disk1/mediaroot
+### So we changed all this code to suit that. Hopefuilly it works.
+
+# REMEMBER
+# REMEMBER: In Python, when you assign or pass a **mutable object (like a dictionary)** to another variable or function,
+# REMEMBER:            it doesn't create a copy but rather a **reference** to the same object.
+# REMEMBER:            BEING BY REFERENCE, updates to that variable makes updates TO THE ORIGINAL OBJECT.
+# REMEMBER
 
 import os
 import sys
@@ -61,7 +63,7 @@ def error_log_and_print(message, data=None):
     print(f"ERROR: {message}", flush=True)
     if data is not None:
         logging.error(f"\n" + objPrettyPrint.pformat(data))
-        print(objPrettyPrint.pformat(data), flush=True)
+        print(f"\n" + oobjPrettyPrint.pformat(data), flush=True)
 
 def log_and_print(message, data=None):
     """
@@ -100,6 +102,11 @@ def get_top_level_folder_from_path(path):
     """
     Returns the status, error number, error string, and the topmost folder underneath the mount point from a path.
     """
+    # REMEMBER
+    # REMEMBER: In Python, when you assign or pass a **mutable object (like a dictionary)** to another variable or function,
+    # REMEMBER:            it doesn't create a copy but rather a **reference** to the same object.
+    # REMEMBER:            BEING BY REFERENCE, updates to that variable makes updates TO THE ORIGINAL OBJECT.
+    # REMEMBER
     status = True
     error_number = 0
     error_string = ""
@@ -147,6 +154,11 @@ def extract_five_path_components(path):
     Called:
         status, error_number, error_string, resolved_path, resolved_mount_point, resolved_path_under_mount, resolved_top_level_folder, resolved_path_under_top_level_folder = extract_five_path_components(path)
     """
+    # REMEMBER
+    # REMEMBER: In Python, when you assign or pass a **mutable object (like a dictionary)** to another variable or function,
+    # REMEMBER:            it doesn't create a copy but rather a **reference** to the same object.
+    # REMEMBER:            BEING BY REFERENCE, updates to that variable makes updates TO THE ORIGINAL OBJECT.
+    # REMEMBER
     status = True
     error_number = 0
     error_string = ""
@@ -229,6 +241,11 @@ def get_free_disk_space(path):
     - error_string: the error string if an exception occurred, otherwise an empty string
     - free_space: the free space in bytes, or 0 if an error occurred
     """
+    # REMEMBER
+    # REMEMBER: In Python, when you assign or pass a **mutable object (like a dictionary)** to another variable or function,
+    # REMEMBER:            it doesn't create a copy but rather a **reference** to the same object.
+    # REMEMBER:            BEING BY REFERENCE, updates to that variable makes updates TO THE ORIGINAL OBJECT.
+    # REMEMBER
     status = True
     error_number = 0
     error_string = ""
@@ -277,8 +294,8 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
     #
     # ITEMS FROM THIS LIST WILL ALWAYS BE RETURNED IN THE ORDER THEY WERE ADDED.
     # THIS IS REQUIRED BEHAVIOUR FOR THIS CODE BASE TO WORK
-    the_mergerfs_disks_in_LtoR_order_from_fstab = []
 
+    the_mergerfs_disks_in_LtoR_order_from_fstab = []
     try:
         with open('/etc/fstab', 'r') as fstab_file:
             fstab_lines = fstab_file.readlines()
@@ -407,6 +424,7 @@ def detect_mergerfs_disks_having_a_root_folder_having_files(mergerfs_disks_in_Lt
     # REMEMBER:            it doesn't create a copy but rather a **reference** to the same object.
     # REMEMBER:            BEING BY REFERENCE, updates to that variable makes updates TO THE ORIGINAL OBJECT.
     # REMEMBER
+
     those_mergerfs_disks_having_a_root_folder_having_files = {}
     for disk_info in mergerfs_disks_in_LtoR_order_from_fstab:
         disk_mount_point = disk_info['disk_mount_point']    # 'disk_mount_point' in mergerfs_disks_in_LtoR_order_from_fstab are ONLY the mountpoint eg '/srv/usb3disk1'
@@ -528,9 +546,10 @@ def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, 
     # REMEMBER:            it doesn't create a copy but rather a **reference** to the same object.
     # REMEMBER:            BEING BY REFERENCE, updates to that variable makes updates TO THE ORIGINAL OBJECT.
     # REMEMBER
-    #
+
     # AFTER SORTING USING ORDEREDDICT, ITEMS FROM THIS DICT WILL ALWAYS BE RETURNED IN THE ORDER THEY WERE ADDED.
     # THIS IS REQUIRED BEHAVIOUR FOR THIS CODE BASE TO WORK
+
     unique_top_level_media_folders = {}
 
     # Step 1: Gather all unique top-level media folder names (name only, not paths)
