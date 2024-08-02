@@ -74,26 +74,69 @@ def log_and_print(message, data=None):
 
 def find_mount_point_from_path(path):
     """
-    Returns the mount point from a path.
+    Returns the status, error number, error string, and the mount point from a path.
     """
-    resolved_path = Path(path).resolve()
-    while not resolved_path.is_mount():
-        resolved_path = resolved_path.parent
-    return str(resolved_path)
+    status = True
+    error_number = 0
+    error_string = ""
+    resolved_mount_point_str = ""
+    try:
+        resolved_path = Path(path).resolve(strict=True)
+        while not resolved_path.is_mount():
+            resolved_path = resolved_path.parent
+        resolved_mount_point_str = str(resolved_path)
+    except OSError as e:
+        error_number = e.errno
+        error_string = e.strerror
+        status = False
+    except Exception as e:
+        error_number = getattr(e, 'errno', None)
+        error_string = str(e)
+        status = False
+    return status, error_number, error_string, resolved_mount_point_str
 
 def get_top_level_folder_from_path(path):
     """
-    returns the topmost folder underneath the mount point from a path
+    Returns the status, error number, error string, and the topmost folder underneath the mount point from a path.
     """
-    path = Path(path).resolve()
-    resolved_mount_point = find_mount_point_from_path(path)
-    resolved_path_under_mount = path.relative_to(resolved_mount_point)
-    resolved_top_level_folder = resolved_path_under_mount.parts[0]
-    return resolved_top_level_folder
+    status = True
+    error_number = 0
+    error_string = ""
+    resolved_top_level_folder_str = ""
+    try:
+        resolved_path = Path(path).resolve(strict=True)
+    except OSError as e:
+        error_number = e.errno
+        error_string = e.strerror
+        status = False
+        return status, error_number, error_string, resolved_top_level_folder_str
+    except Exception as e:
+        error_number = getattr(e, 'errno', None)
+        error_string = str(e)
+        status = False
+        return status, error_number, error_string, resolved_top_level_folder_str
+    status, error_number, error_string, resolved_mount_point = find_mount_point_from_path(resolved_path)
+    if not status or not resolved_mount_point:
+        return status, error_number, error_string, resolved_top_level_folder_str
+    try:
+        resolved_path_under_mount = resolved_path.relative_to(resolved_mount_point)
+        resolved_top_level_folder_str = resolved_path_under_mount.parts[0] if resolved_path_under_mount.parts else ""
+    except OSError as e:
+        error_number = e.errno
+        error_string = e.strerror
+        status = False
+    except Exception as e:
+        error_number = getattr(e, 'errno', None)
+        error_string = str(e)
+        status = False
+    return status, error_number, error_string, resolved_top_level_folder_str
 
 def extract_five_path_components(path):
     """
-    Returns 5 strings:
+    Returns a status, error number, error string, and 5 path components:
+    - status: boolean indicating if the whole process succeeded
+    - error_number: the error number if an exception occurred, otherwise 0
+    - error_string: the error string if an exception occurred, otherwise an empty string
     - the resolved path
     - the resolved mount point
     - the resolved path underneath the mount point
@@ -101,29 +144,107 @@ def extract_five_path_components(path):
     - the resolved remaining path underneath the topmost folder
     from a given path.
     Called:
-        resolved_path, resolved_mount_point, resolved_path_under_mount, resolved_top_level_folder, resolved_path_under_top_level_folder = extract_five_path_components(path)
+        status, error_number, error_string, resolved_path, resolved_mount_point, resolved_path_under_mount, resolved_top_level_folder, resolved_path_under_top_level_folder = extract_five_path_components(path)
     """
-    # Resolve the incoming path
-    resolved_path = Path(path).resolve()
-    # Finding the mount point
-    resolved_mount_point = resolved_path
-    while not resolved_mount_point.is_mount():
-        resolved_mount_point = resolved_mount_point.parent
-    # Getting the relative path from the mount point
-    resolved_path_under_mount = resolved_path.relative_to(resolved_mount_point)
-    # Extracting the top-level folder and the remaining path
-    resolved_top_level_folder = resolved_path_under_mount.parts[0]
-    resolved_path_under_top_level_folder = Path(*resolved_path_under_mount.parts[1:]) if len(resolved_path_under_mount.parts) > 1 else Path()
-    return str(resolved_path), str(resolved_mount_point), str(resolved_path_under_mount), resolved_top_level_folder, str(resolved_path_under_top_level_folder)
+    status = True
+    error_number = 0
+    error_string = ""
+    resolved_path_str = ""
+    resolved_mount_point_str = ""
+    resolved_path_under_mount_str = ""
+    resolved_top_level_folder_str = ""
+    resolved_path_under_top_level_folder_str = ""
+
+    if status:
+        try:
+            resolved_path = Path(path).resolve(strict=True)
+            resolved_path_str = str(resolved_path)
+        except OSError as e:
+            error_number = e.errno
+            error_string = e.strerror
+            status = False
+        except Exception as e:
+            error_number = getattr(e, 'errno', None)
+            error_string = str(e)
+            status = False
+    if status:
+        try:
+            resolved_mount_point = resolved_path
+            while not resolved_mount_point.is_mount():
+                resolved_mount_point = resolved_mount_point.parent
+            resolved_mount_point_str = str(resolved_mount_point)
+        except OSError as e:
+            error_number = e.errno
+            error_string = e.strerror
+            status = False
+        except Exception as e:
+            error_number = getattr(e, 'errno', None)
+            error_string = str(e)
+            status = False
+    if status:
+        try:
+            resolved_path_under_mount = resolved_path.relative_to(resolved_mount_point)
+            resolved_path_under_mount_str = str(resolved_path_under_mount) if str(resolved_path_under_mount) != "." else ""
+        except OSError as e:
+            error_number = e.errno
+            error_string = e.strerror
+            status = False
+        except Exception as e:
+            error_number = getattr(e, 'errno', None)
+            error_string = str(e)
+            status = False
+    if status:
+        try:
+            resolved_top_level_folder = resolved_path_under_mount.parts[0] if resolved_path_under_mount.parts else ""
+            resolved_top_level_folder_str = str(resolved_top_level_folder)
+        except OSError as e:
+            error_number = e.errno
+            error_string = e.strerror
+            status = False
+        except Exception as e:
+            error_number = getattr(e, 'errno', None)
+            error_string = str(e)
+            status = False
+    if status:
+        try:
+            resolved_path_under_top_level_folder = Path(*resolved_path_under_mount.parts[1:]) if len(resolved_path_under_mount.parts) > 1 else Path()
+            resolved_path_under_top_level_folder_str = str(resolved_path_under_top_level_folder)
+        except OSError as e:
+            error_number = e.errno
+            error_string = e.strerror
+            status = False
+        except Exception as e:
+            error_number = getattr(e, 'errno', None)
+            error_string = str(e)
+            status = False
+    return status, error_number, error_string, resolved_path_str, resolved_mount_point_str, resolved_path_under_mount_str, resolved_top_level_folder_str, resolved_path_under_top_level_folder_str
 
 def get_free_disk_space(path):
     """
     Get the free disk space for the given path.
-    Returns the free space in bytes.
+    Returns a tuple:
+    - status: boolean indicating if the whole process succeeded
+    - error_number: the error number if an exception occurred, otherwise 0
+    - error_string: the error string if an exception occurred, otherwise an empty string
+    - free_space: the free space in bytes, or 0 if an error occurred
     """
-    st = os.statvfs(path)
-    free_space = st.f_bavail * st.f_frsize
-    return free_space
+    status = True
+    error_number = 0
+    error_string = ""
+    free_space = 0
+
+    try:
+        st = os.statvfs(path)
+        free_space = st.f_bavail * st.f_frsize
+    except OSError as e:
+        error_number = e.errno
+        error_string = e.strerror
+        status = False
+    except Exception as e:
+        error_number = getattr(e, 'errno', None)
+        error_string = str(e)
+        status = False
+    return status, error_number, error_string, free_space
 
 def get_mergerfs_disks_in_LtoR_order_from_fstab():
     """
