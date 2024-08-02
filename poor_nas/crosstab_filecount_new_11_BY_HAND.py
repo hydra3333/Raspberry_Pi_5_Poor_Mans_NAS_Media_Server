@@ -244,8 +244,8 @@ def main():
     """
     Main function to coordinate the gathering of disk and media folder information and print the results.
     """
-    common_functions.DEBUG_IS_ON = False
-    #common_functions.DEBUG_IS_ON = True
+    #common_functions.DEBUG_IS_ON = False
+    common_functions.DEBUG_IS_ON = True
 
     TERMINAL_WIDTH = 200
     common_functions.init_PrettyPrinter(TERMINAL_WIDTH)
@@ -259,8 +259,8 @@ def main():
     # Step 1: Get mergerfs disks in LtoR order from fstab
     common_functions.log_and_print("Finding MergerFS Disks in Left-to-Right Order from /etc/fstab ...")
     mergerfs_disks_in_LtoR_order_from_fstab = common_functions.get_mergerfs_disks_in_LtoR_order_from_fstab()
-    #common_functions.log_and_print("MergerFS Disks in Left-to-Right Order from /etc/fstab :", data=mergerfs_disks_in_LtoR_order_from_fstab)
-    #common_functions.debug_pause()
+    common_functions.log_and_print("MergerFS Disks in Left-to-Right Order from /etc/fstab :", data=mergerfs_disks_in_LtoR_order_from_fstab)
+    common_functions.debug_pause()
     
     # Step 2: Detect mergerfs disks having a root folder
     common_functions.log_and_print("Finding MergerFS Disks Having a Root Folder ...")
