@@ -186,18 +186,24 @@ def sync_folders(unique_top_level_media_folders, perform_action=False):
         #    --size-only       Ignore timestamps, Update files in the target if their size differs from the corresponding files in the source.
         #    --human-readable  Output numbers in a more human-readable format.
         #    --stats           Print a verbose set of statistics on the file transfer, telling how effective rsync’s delta-transfer algorithm is.
-        rsync_command = f"rsync -av --delete --size-only --human-readable --stats {source_path}/ {target_path}/ # for '{top_level_media_folder_name}'"
-        log_and_print(f"Syncing {top_level_media_folder_name} from '{source_path}' to '{target_path}' with rsync command: ", data=rsync_command)
+        #    --dry-run         This makes rsync perform a trial run that doesn’t make any changes (and produces mostly the same output  as a real run).
+        rsync_options = "-av --delete --size-only --human-readable --stats"
+        if not perform_action:
+            rsync_options = rsync_options + " " + "--dry-run"
+
+        rsync_command = f"rsync {rsync_options} '{source_path}/' '{target_path}/'   # for '{top_level_media_folder_name}'"
         if perform_action:
-            return_code = run_command_process_4(rsync_command)  # latest version of code from ChatGPT discussion is "4"
-            if return_code == 0:
-                log_and_print(f"Successfully completed syncing {top_level_media_folder_name} from '{source_path}' to '{target_path}' with rsync command:", rsync_command)
-            else:
-                error_log_and_print(f"Failed syncing {top_level_media_folder_name} from '{source_path}' to '{target_path}' with rsync command. Continuing with syncing ...")
-                error_log_and_print(f"Continuing with syncing ...")
-                pass
+            log_and_print(f"Syncing {top_level_media_folder_name} from '{source_path}' to '{target_path}' with rsync command: ", data=rsync_command)
         else:
-            log_and_print(f"DRY RUN: Syncing {top_level_media_folder_name} from '{source_path}' to '{target_path}' with rsync command:", rsync_command)
+            log_and_print(f"DRY RUN: Syncing {top_level_media_folder_name} from '{source_path}' to '{target_path}' with rsync command: ", data=rsync_command)
+
+        return_code = run_command_process_4(rsync_command)  # latest version of code from ChatGPT discussion is "4"
+        if return_code == 0:
+            log_and_print(f"Successfully completed syncing {top_level_media_folder_name} from '{source_path}' to '{target_path}' with rsync command: ", data=rsync_command)
+        else:
+            error_log_and_print(f"FAILED syncing {top_level_media_folder_name} from '{source_path}' to '{target_path}' with rsync command: ", data=rsync_command)
+            error_log_and_print(f"Continuing with syncing remaining 'top level mediafolder name's ...")
+            pass
 
 def main():
     """
