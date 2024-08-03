@@ -1,18 +1,23 @@
 ### Changed the mergerfs mount to mount the disk AND the top level folder
-### eg from 
-###    /srv/usb3disk1
-### to
-###    /srv/usb3disk1/mediaroot
-### So we changed all this code to suit that. 
-### Hopefuilly it works.
+### eg from     /srv/usb3disk1    to    /srv/usb3disk1/mediaroot
+### So we changed all this code to suit that. Hopefuilly it works.
+
+# REMEMBER
+# REMEMBER: In Python, when you assign or pass a **mutable object (like a dictionary)** to another variable or function,
+# REMEMBER:            it doesn't create a copy but rather a **reference** to the same object.
+# REMEMBER:            BEING BY REFERENCE, updates to that variable makes updates TO THE ORIGINAL OBJECT.
+# REMEMBER
 
 import os
 import sys
-from collections import OrderedDict
 import subprocess
+import select
+from collections import OrderedDict
 from pathlib import Path
 import glob
 import re
+import shutil
+import datetime
 import logging
 import pprint
 
@@ -30,9 +35,9 @@ def init_PrettyPrinter(TERMINAL_WIDTH):
     return
 
 def init_logging(log_filename):
-    # Set up logging
+    # Set up logging, enable for DEBUG upward to ensure capturing everything
     logging.basicConfig(filename=log_filename,
-                        level=logging.DEBUG if DEBUG_IS_ON else logging.INFO,
+                        level=logging.DEBUG,
                         format='%(asctime)s %(levelname)s: %(message)s')
 
 def debug_pause():
@@ -53,15 +58,25 @@ def debug_log_and_print(message, data=None):
             logging.debug(f"\n" + objPrettyPrint.pformat(data))
             print(objPrettyPrint.pformat(data), flush=True)
 
+def warning_log_and_print(message, data=None):
+    """
+    Logs and prints a message with optional data
+    """
+    logging.warning(message)
+    print(f"WARNING: {message}", flush=True)
+    if data is not None:
+        logging.warning(f"\n" + objPrettyPrint.pformat(data))
+        print(f"\n" + oobjPrettyPrint.pformat(data), flush=True)
+
 def error_log_and_print(message, data=None):
     """
-    Logs and prints a message with optional data, if DEBUG is on.
+    Logs and prints a message with optional data
     """
     logging.error(message)
     print(f"ERROR: {message}", flush=True)
     if data is not None:
         logging.error(f"\n" + objPrettyPrint.pformat(data))
-        print(objPrettyPrint.pformat(data), flush=True)
+        print(f"\n" + oobjPrettyPrint.pformat(data), flush=True)
 
 def log_and_print(message, data=None):
     """
@@ -100,6 +115,11 @@ def get_top_level_folder_from_path(path):
     """
     Returns the status, error number, error string, and the topmost folder underneath the mount point from a path.
     """
+    # REMEMBER
+    # REMEMBER: In Python, when you assign or pass a **mutable object (like a dictionary)** to another variable or function,
+    # REMEMBER:            it doesn't create a copy but rather a **reference** to the same object.
+    # REMEMBER:            BEING BY REFERENCE, updates to that variable makes updates TO THE ORIGINAL OBJECT.
+    # REMEMBER
     status = True
     error_number = 0
     error_string = ""
@@ -147,6 +167,11 @@ def extract_five_path_components(path):
     Called:
         status, error_number, error_string, resolved_path, resolved_mount_point, resolved_path_under_mount, resolved_top_level_folder, resolved_path_under_top_level_folder = extract_five_path_components(path)
     """
+    # REMEMBER
+    # REMEMBER: In Python, when you assign or pass a **mutable object (like a dictionary)** to another variable or function,
+    # REMEMBER:            it doesn't create a copy but rather a **reference** to the same object.
+    # REMEMBER:            BEING BY REFERENCE, updates to that variable makes updates TO THE ORIGINAL OBJECT.
+    # REMEMBER
     status = True
     error_number = 0
     error_string = ""
@@ -229,6 +254,11 @@ def get_free_disk_space(path):
     - error_string: the error string if an exception occurred, otherwise an empty string
     - free_space: the free space in bytes, or 0 if an error occurred
     """
+    # REMEMBER
+    # REMEMBER: In Python, when you assign or pass a **mutable object (like a dictionary)** to another variable or function,
+    # REMEMBER:            it doesn't create a copy but rather a **reference** to the same object.
+    # REMEMBER:            BEING BY REFERENCE, updates to that variable makes updates TO THE ORIGINAL OBJECT.
+    # REMEMBER
     status = True
     error_number = 0
     error_string = ""
@@ -276,9 +306,9 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
     # REMEMBER
     #
     # ITEMS FROM THIS LIST WILL ALWAYS BE RETURNED IN THE ORDER THEY WERE ADDED.
-	# THIS IS REQUIRED BEHAVIOUR FOR THIS CODE BASE TO WORK
-	the_mergerfs_disks_in_LtoR_order_from_fstab = []
+    # THIS IS REQUIRED BEHAVIOUR FOR THIS CODE BASE TO WORK
 
+    the_mergerfs_disks_in_LtoR_order_from_fstab = []
     try:
         with open('/etc/fstab', 'r') as fstab_file:
             fstab_lines = fstab_file.readlines()
@@ -333,7 +363,7 @@ def get_mergerfs_disks_in_LtoR_order_from_fstab():
                             the_mergerfs_disks_in_LtoR_order_from_fstab.append({'disk_mount_point': efpc_resolved_mount_point, 'free_disk_space': fds_free_disk_space, 'root_folder_path': efpc_resolved_path})
                     else:
                         # Handle plain (eg /mnt/hdd1 underlying file system mount point
-						# Do not care if there is an error from get_free_disk_space ... the free disk space will be returned as zero which is OK
+                        # Do not care if there is an error from get_free_disk_space ... the free disk space will be returned as zero which is OK
                         efpc_status, efpc_error_number, efpc_error_string, efpc_resolved_path, efpc_resolved_mount_point, efpc_resolved_path_under_mount, efpc_resolved_top_level_folder, efpc_resolved_path_under_top_level_folder = extract_five_path_components(disk)
                         if (not efpc_status) or (efpc_resolved_mount_point == "") or (not re.match(rf'^{re.escape(MEDIAROOT_FOLDER_NAME)}$', efpc_resolved_path_under_mount)):
                             continue # disk perhaps not mounted etc, skip to the end of this FOR iteration
@@ -407,9 +437,10 @@ def detect_mergerfs_disks_having_a_root_folder_having_files(mergerfs_disks_in_Lt
     # REMEMBER:            it doesn't create a copy but rather a **reference** to the same object.
     # REMEMBER:            BEING BY REFERENCE, updates to that variable makes updates TO THE ORIGINAL OBJECT.
     # REMEMBER
+
     those_mergerfs_disks_having_a_root_folder_having_files = {}
     for disk_info in mergerfs_disks_in_LtoR_order_from_fstab:
-        disk_mount_point = disk_info['disk_mount_point']	# 'disk_mount_point' in mergerfs_disks_in_LtoR_order_from_fstab are ONLY the mountpoint eg '/srv/usb3disk1'
+        disk_mount_point = disk_info['disk_mount_point']    # 'disk_mount_point' in mergerfs_disks_in_LtoR_order_from_fstab are ONLY the mountpoint eg '/srv/usb3disk1'
         root_folder_path = disk_info['root_folder_path']    # 'root_folder_path' comes from the fstab mergerfs mount, is a valid resolved path to the root folder '/srv/usb3disk1/mediaroot'
         try:
             if Path(root_folder_path).is_dir():
@@ -528,13 +559,14 @@ def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, 
     # REMEMBER:            it doesn't create a copy but rather a **reference** to the same object.
     # REMEMBER:            BEING BY REFERENCE, updates to that variable makes updates TO THE ORIGINAL OBJECT.
     # REMEMBER
-    #
+
     # AFTER SORTING USING ORDEREDDICT, ITEMS FROM THIS DICT WILL ALWAYS BE RETURNED IN THE ORDER THEY WERE ADDED.
-	# THIS IS REQUIRED BEHAVIOUR FOR THIS CODE BASE TO WORK
+    # THIS IS REQUIRED BEHAVIOUR FOR THIS CODE BASE TO WORK
+
     unique_top_level_media_folders = {}
 
     # Step 1: Gather all unique top-level media folder names (name only, not paths)
-	#         Determining draft ffd depends on SORTED mergerfs_disks_having_a_root_folder_having_files
+    #         Determining draft ffd depends on SORTED mergerfs_disks_having_a_root_folder_having_files
     for disk_info in mergerfs_disks_having_a_root_folder_having_files.values():
         for media_folder_info in disk_info['top_level_media_folders']:
             top_level_media_folder_name = media_folder_info['top_level_media_folder_name']
@@ -546,7 +578,7 @@ def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, 
                     'disk_info': []                                                                            # blank since we are only seeing the FIRST unique top-level media folder name that we find
                 }
     # To ensure dict items are always returned in order of key,
-	# make it an ORDEREDDICT sorted by keys
+    # make it an ORDEREDDICT sorted by keys
     unique_top_level_media_folders = OrderedDict(sorted(unique_top_level_media_folders.items()))
     debug_log_and_print(f"get_unique_top_level_media_folders AFTER STEP 1 unique_top_level_media_folders:\n", data=unique_top_level_media_folders)
 
@@ -589,5 +621,97 @@ def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, 
             media_folder_name = media_folder_info['top_level_media_folder_name']
             media_folder_info['ffd'] = unique_top_level_media_folders[media_folder_name]['ffd']
     debug_log_and_print(f"get_unique_top_level_media_folders AFTER STEP 3 unique_top_level_media_folders:\n", data=unique_top_level_media_folders)
-
     return unique_top_level_media_folders, mergerfs_disks_having_a_root_folder_having_files
+
+def get_list_of_media_folder_ffd_disks_to_sync(unique_top_level_media_folders):
+    """
+    Parses unique top-level media folder names from the detected disks to return a dict,
+    of media folder names and from-disk to-disk which can be used for performing backups.
+    The 'from-disk' is the 'ffd' (in mergerfs terms)
+    and the 'to-disk' is a 'backup' disk to make copies of files onto.
+      Args:
+        dict: A dictionary containing unique top-level media folders and related derived information.
+        Key: 'top_level_media_folder_name' (str): The unique name of the top-level media folder (e.g., 'Movies').
+        Value: dict with the following keys:
+            - 'top_level_media_folder_name' (str): yes it is a key above as well as a key/value pair here
+            - 'ffd' (str): The first found disk for this media folder.
+            - 'ffd_root_folder_path': the root path of the ffd.
+            - 'disk_info' (list of dict): A list of dictionaries with information about each disk containing this media folder.
+                Each dictionary contains:
+                    - 'disk_mount_point' (str): The mount point path of the disk.
+                    - 'is_ffd' (bool): Whether this disk is the FFD for the media folder.
+                    - 'root_folder_path' (Path): The path to the root folder.
+                    - 'number_of_files' (int): The number of files in this media folder on this disk.
+                    - 'disk_space_used' (int): The disk space used by this media folder on this disk.
+                    - 'total_free_disk_space' (int): The total free disk space on this disk.
+      Example:
+        {
+            'Movies': {
+                'top_level_media_folder_name': 'Movies',
+                'ffd': '/srv/usb3disk1',
+                'ffd_root_folder_path': '/srv/usb3disk1/mediaroot',
+                'disk_info': [
+                    {
+                        'disk_mount_point': '/srv/usb3disk1',
+                        'is_ffd': True,
+                        'root_folder_path': Path('/srv/usb3disk1/mediaroot'),
+                        'number_of_files': 1500,
+                        'disk_space_used': 12000000000,
+                        'total_free_disk_space': 50000000000
+                    },
+                    {
+                        'disk_mount_point': '/srv/usb3disk2',
+                        'is_ffd': False,
+                        'root_folder_path': Path('/srv/usb3disk2/mediaroot'),
+                        'number_of_files': 1500,
+                        'disk_space_used': 12000000000,
+                        'total_free_disk_space': 60000000000
+                    },
+                    ...
+                ]
+            },
+            ...
+        }
+      Returns:
+        a list: a list of candiates to rsync from to
+            - a top_level_media_folder_name
+            - a path to copy from : disk_mount_point / top_level_media_folder_name
+            - a path to copy to   : disk_mount_point / top_level_media_folder_name
+    """
+    # REMEMBER
+    # REMEMBER: In Python, when you assign or pass a **mutable object (like a dictionary)** to another variable or function,
+    # REMEMBER:            it doesn't create a copy but rather a **reference** to the same object.
+    # REMEMBER:            BEING BY REFERENCE, updates to that variable makes updates TO THE ORIGINAL OBJECT.
+    # REMEMBER
+
+    # Loop, cross-check entries, create a list of candidates to rsync from and to
+    list_of_media_folder_ffd_disks_to_sync = []
+    # Ensure the dictionary is sorted by key
+    sorted_unique_top_level_media_folders = OrderedDict(sorted(unique_top_level_media_folders.items()))
+    for top_level_media_folder_name, utlmf in sorted_unique_top_level_media_folders.items():
+        log_and_print(f"Processing top_level_media_folder_name: '{top_level_media_folder_name}'")
+        # Access the top-level media folder information
+        top_level_media_folder_name = utlmf['top_level_media_folder_name']
+        ffd = utlmf['ffd']
+        ffd_root_folder_path = utlmf['ffd_root_folder_path']
+        # Process each disk information entry
+        for disk_info in utlmf['disk_info']:
+            disk_mount_point = disk_info['disk_mount_point']
+            is_ffd = disk_info['is_ffd']
+            root_folder_path = disk_info['root_folder_path']
+            number_of_files = disk_info['number_of_files']
+            disk_space_used = disk_info['disk_space_used']
+            total_free_disk_space = disk_info['total_free_disk_space']
+            if disk_info['is_ffd']:
+                if disk_info['root_folder_path'] != utlmf['ffd_root_folder_path']:
+                error_log_and_print(f"ERROR: '{utlmf['top_level_media_folder_name']}' disk '{disk_info['disk_mount_point']}' says is_ffd='{disk_info['is_ffd']}' yet  dict ffd mismatches '{utlmf['ffd_root_folder_path']}' != '{disk_info['root_folder_path']}'")
+                sys.exit(1)
+            if utlmf['ffd_root_folder_path'] == disk_info['root_folder_path']:
+                error_log_and_print(f"ERROR: '{utlmf['top_level_media_folder_name']}' from: ffd_root_folder_path '{utlmf['ffd_root_folder_path']}' must never equal to: root_folder_path '{disk_info['root_folder_path']}'")
+                sys.exit(1)
+            if disk_info['root_folder_path'] < utlmf['ffd_root_folder_path']:
+                warning_log_and_print(f"f"WARNING: '{utlmf['top_level_media_folder_name']}' disk '{disk_info['disk_mount_point']}' is less than ffd '{utlmf['ffd_root_folder_path']}'")
+            # Joining paths using pathlib "/"
+            list_of_media_folder_ffd_disks_to_sync.append([ utlmf['top_level_media_folder_name'], Path(utlmf['ffd_root_folder_path']) / utlmf['top_level_media_folder_name'], Path(disk_info['disk_mount_point']) / utlmf['top_level_media_folder_name'] ])
+    debug_log_and_print(f"DEBUG: list_of_media_folder_ffd_disks_to_sync:", data=list_of_media_folder_ffd_disks_to_sync)
+    return list_of_media_folder_ffd_disks_to_sync                

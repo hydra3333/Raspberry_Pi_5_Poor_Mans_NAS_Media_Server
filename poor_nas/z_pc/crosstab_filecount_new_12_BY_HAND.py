@@ -184,7 +184,7 @@ def generate_crosstab_report(unique_top_level_media_folders, mergerfs_disks_in_L
                 if number_of_files > 0 or disk_space_used_gb > 0 or is_ffd:
                     row_a.append(f"{number_of_files:,} files")  	# Comma separator for number_of_files
                     row_b.append(f"{disk_space_used_gb:,.2f} GB")   # Comma separator for GB
-                    row_c.append(f"ffd:{is_ffd}")
+                    row_c.append(f"ffd:{is_ffd}" if is_ffd else "")
                 else:
                     row_a.append("")
                     row_b.append("")
@@ -244,14 +244,12 @@ def main():
     """
     Main function to coordinate the gathering of disk and media folder information and print the results.
     """
-    #common_functions.DEBUG_IS_ON = False
-    common_functions.DEBUG_IS_ON = True
+    common_functions.DEBUG_IS_ON = False
+    #common_functions.DEBUG_IS_ON = True
 
     TERMINAL_WIDTH = 200
     common_functions.init_PrettyPrinter(TERMINAL_WIDTH)
     common_functions.init_logging(r'/home/pi/Desktop/logs/crosstab.log')
-
-    common_functions.DEBUG_IS_ON = False
 
     common_functions.log_and_print('-' * TERMINAL_WIDTH)
     
@@ -270,19 +268,15 @@ def main():
     #common_functions.debug_log_and_print("MergerFS Disks Having a Root Folder :\n", data=mergerfs_disks_having_a_root_folder_having_files)
     #common_functions.debug_pause()
     
-    common_functions.DEBUG_IS_ON = True
-
     # Step 3: Get unique top level media folders and update ffd information
     common_functions.log_and_print("Finding Unique Top-Level Media Folders")
     unique_top_level_media_folders, mergerfs_disks_having_a_root_folder_having_files = common_functions.get_unique_top_level_media_folders(
         mergerfs_disks_in_LtoR_order_from_fstab,
         mergerfs_disks_having_a_root_folder_having_files
     )
-    common_functions.debug_log_and_print("AFTER STEP 3: MergerFS Disks Having a Root Folder BACK-UPDATED WITH FFD :\n", data=mergerfs_disks_having_a_root_folder_having_files)
-    common_functions.debug_log_and_print("AFTER STEP 3: Unique Top-Level Media Folders :\n", data=unique_top_level_media_folders)
+    #common_functions.debug_log_and_print("AFTER STEP 3: MergerFS Disks Having a Root Folder BACK-UPDATED WITH FFD :\n", data=mergerfs_disks_having_a_root_folder_having_files)
+    #common_functions.debug_log_and_print("AFTER STEP 3: Unique Top-Level Media Folders :\n", data=unique_top_level_media_folders)
     #common_functions.debug_pause()
-
-    common_functions.DEBUG_IS_ON = False
 
     # Step 4: Generate and log the crosstab report
     common_functions.log_and_print("Generating crosstab_report ...")
