@@ -111,18 +111,33 @@ def sync_folders(unique_top_level_media_folders, mergerfs_disks_having_a_root_fo
                         log_and_print(f"mkdir {target_folder} -p")
                         #target_folder.mkdir(parents=True, exist_ok=True)
                     # Rsync command to synchronize the FFD folder to the target folder
-                    #    -av         Copy files and directories from the source to the target if they are missing in the target.
-                    #    --delete    Remove files from the target that are not present in the source.
-                    #    --size-only Update files in the target if their size differs from the corresponding files in the source, ignoring timestamps.
-                    sync_command = f"rsync -av --delete --size-only {ffd_folder}/ {target_folder}/"
+                    #    -av               Copy files and directories from the source to the target if they are missing in the target.
+                    #    --delete          Remove files from the target that are not present in the source.
+                    #    --size-only       Ignore timestamps, Update files in the target if their size differs from the corresponding files in the source, .
+                    #    --human-readable  Output numbers in a more human-readable format.
+                    #    --stats           Print a verbose set of statistics on the file transfer, telling how effective rsync’s delta-transfer algorithm is.
+                    sync_command = f"rsync -av --delete --size-only --human-readable --stats {ffd_folder}/ {target_folder}/"
+
                     try:
                         log_and_print(f"Syncing {media_folder_name} from {ffd_folder} to {target_folder} : ")
                         log_and_print(f"{sync_command}")
                         if perform_action:
                             #subprocess.run(sync_command, shell=True, check=True)
-                            pass
+                            with subprocess.Popen(sync_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True) as process:
+                                for line in process.stdout:
+                                    log_and_print(line.strip())
+                                for line in process.stderr:
+                                    log_and_print(line.strip())
+                            process.wait()
+                            if process.returncode == 0:
+                                log_and_print(f"Successfully synced {media_folder_name}")
+                            else:
+                                log_and_print(f"Failed to sync {media_folder_name}. Error code: {process.returncode}")
                     except subprocess.CalledProcessError as e:
-                        error_log_and_print(f"Error syncing {media_folder_name} from {ffd_folder} to {target_folder} using '{sync_command}': {e} ... continuing")
+                        log_and_print(f"Failed to sync {media_folder_name}. Error: {e}")
+                        error_log_and_print(f"Error syncing {media_folder_name} from {ffd_folder} to {target_folder} using '{sync_command}'")
+                        error_log_and_print(f"ERROR: {e}\n... continuing...")
+                        error_log_and_print(f"Continuing with sync ...")
                         pass  # Considered continuing after an error, adjust as needed
 
 def main():
