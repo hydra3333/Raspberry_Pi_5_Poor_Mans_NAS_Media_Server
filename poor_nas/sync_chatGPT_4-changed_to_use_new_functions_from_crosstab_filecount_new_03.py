@@ -15,7 +15,7 @@ import common_functions
 
 def run_command_process(command):
     """
-    Run the  command and log stdout and stderr in real-time.
+    Run the command and log stdout and stderr in real-time.
     """
     try:
         with subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True) as command_process:
@@ -36,7 +36,7 @@ def run_command_process(command):
             command_process.wait()
         return command_process.returncode
     except subprocess.CalledProcessError as e:
-        error_log_and_print(f"Error running command: {e}")
+        error_log_and_print(f"Error running command: '{command}'",data=e)
         return e.returncode
 
 def sync_folders(unique_top_level_media_folders, perform_action=False):
@@ -48,7 +48,7 @@ def sync_folders(unique_top_level_media_folders, perform_action=False):
     for candidate in list_of_media_folder_ffd_disks_to_sync:
         # candidate is an item in a list, itself a list: [ a top_level_media_folder_name, a path to copy from, a path to copy to ]
         if any(item == "" or item is None for item in candidate):
-            error_log_and_print(f"ERROR: one of list_of_media_folder_ffd_disks_to_sync is has no value: {candidate}")
+            error_log_and_print(f"ERROR: one of list_of_media_folder_ffd_disks_to_sync has no value: {candidate}")
             sys.exit(1)  # Exit with a status code indicating an error
         top_level_media_folder_name, source_path, target_path = candidate
         source_path = Path(source_path)
@@ -63,7 +63,7 @@ def sync_folders(unique_top_level_media_folders, perform_action=False):
         # rsync command to synchronize the FFD folder to the target folder
         #    -av               Copy files and directories from the source to the target if they are missing in the target.
         #    --delete          Remove files from the target that are not present in the source.
-        #    --size-only       Ignore timestamps, Update files in the target if their size differs from the corresponding files in the source, .
+        #    --size-only       Ignore timestamps, Update files in the target if their size differs from the corresponding files in the source.
         #    --human-readable  Output numbers in a more human-readable format.
         #    --stats           Print a verbose set of statistics on the file transfer, telling how effective rsync’s delta-transfer algorithm is.
         rsync_command = f"rsync -av --delete --size-only --human-readable --stats {source_path}/ {target_path}/ # for '{top_level_media_folder_name}'"
@@ -73,6 +73,7 @@ def sync_folders(unique_top_level_media_folders, perform_action=False):
             if return_code == 0:
                 log_and_print(f"Successfully completed syncing {top_level_media_folder_name} from '{source_path}' to '{target_path}' with rsync command:", rsync_command)
             else:
+                error_log_and_print(f"Failed syncing {top_level_media_folder_name} from '{source_path}' to '{target_path}' with rsync command. Continuing with syncing ...")
                 error_log_and_print(f"Continuing with syncing ...")
                 pass
         else:
@@ -118,7 +119,7 @@ def main():
     common_functions.DEBUG_IS_ON = False
 
     current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    common_functions.log_and_print(f"Finished 'media 'SYNC' at {current_time}.")
+    common_functions.log_and_print(f"Finished media 'SYNC' at {current_time}.")
     common_functions.log_and_print('-' * TERMINAL_WIDTH)
 
 if __name__ == "__main__":
