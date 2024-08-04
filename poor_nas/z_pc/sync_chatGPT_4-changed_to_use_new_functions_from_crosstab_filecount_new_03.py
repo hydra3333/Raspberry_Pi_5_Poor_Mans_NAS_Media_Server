@@ -187,9 +187,9 @@ def sync_folders(unique_top_level_media_folders, perform_action=False):
         #    --human-readable  Output numbers in a more human-readable format.
         #    --stats           Print a verbose set of statistics on the file transfer, telling how effective rsync’s delta-transfer algorithm is.
         #    --dry-run         This makes rsync perform a trial run that doesn’t make any changes (and produces mostly the same output  as a real run).
-        rsync_options = "-av --delete --size-only --human-readable --stats"
+        rsync_options = "--dry-run -av --delete --size-only --human-readable --stats"
         if not perform_action:
-            rsync_options = rsync_options + " " + "--dry-run"
+            rsync_options = " --dry-run " + rsync_options
 
         rsync_command = f"rsync {rsync_options} '{source_path}/' '{target_path}/'   # for '{top_level_media_folder_name}'"
         if perform_action:
