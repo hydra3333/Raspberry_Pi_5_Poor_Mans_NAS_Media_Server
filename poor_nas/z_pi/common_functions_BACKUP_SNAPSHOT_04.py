@@ -718,6 +718,55 @@ def get_list_of_media_folder_ffd_disks_to_sync(unique_top_level_media_folders):
     debug_log_and_print(f"get_list_of_media_folder_ffd_disks_to_sync: list_of_media_folder_ffd_disks_to_sync:", data=list_of_media_folder_ffd_disks_to_sync)
     return list_of_media_folder_ffd_disks_to_sync                
 
+def run_command_process_old_this_nearly_worked(command):
+    """
+    Run the command and log stdout and stderr in real-time IN NON READ-BLOCKING MODE
+    """
+    try:
+        debug_log_and_print(f"run_command_process: START command:\n{command}")
+        with subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True) as command_process:
+            # Set stdout and stderr to non-blocking mode
+            os.set_blocking(command_process.stdout.fileno(), False)  # sets stdout to non-blocking read mode.
+            os.set_blocking(command_process.stderr.fileno(), False)  # sets stderr to non-blocking read mode.
+            timeout = 1.0  # a timeout in seconds just in case nothing gets written to stdout, stderr
+            while True:
+                reads = [command_process.stdout.fileno(), command_process.stderr.fileno()]
+                # Use a short timeout in select.select() to periodically continue and check if the process has completed
+                # select.select(reads, [], []) ensures that we only attempt to read from the file descriptors when they are ready.
+                # This prevents the loop from blocking or spinning unnecessarily.
+                ret = select.select(reads, [], [], timeout)  # a timeout in seconds just in case nothing gets written to stdout, stderr
+                for fd in ret[0]:
+                    if fd == command_process.stdout.fileno():
+                        try:
+                            stdout_data = command_process.stdout.read()
+                            if stdout_data:
+                                log_and_print(stdout_data.strip())
+                        except IOError as e:
+                            if e.errno != errno.EAGAIN and e.errno != errno.EWOULDBLOCK:
+                                raise
+                            # If the exception is EAGAIN or EWOULDBLOCK, it means there's no data available right now, and the loop continues.
+                            pass
+                    if fd == command_process.stderr.fileno():
+                        try:
+                            stderr_data = command_process.stderr.read()
+                            if stderr_data:
+                                error_log_and_print(stderr_data.strip())
+                        except IOError as e:
+                            if e.errno != errno.EAGAIN and e.errno != errno.EWOULDBLOCK:
+                                raise
+                            # If the exception is EAGAIN or EWOULDBLOCK, it means there's no data available right now, and the loop continues.
+                            pass
+                # Check if the process has terminated
+                if command_process.poll() is not None:
+                    break
+            # Wait for the process to complete
+            command_process.wait()
+        debug_log_and_print(f"run_command_process: FINISHED command:\n{command}")
+        return command_process.returncode
+    except subprocess.CalledProcessError as e:
+        error_log_and_print(f"Error: run_command_process: command: '{command}'", data=e)
+        return e.returncode
+
 def run_command_process(command):
     """
     Run the command and log stdout and stderr in real-time IN NON READ-BLOCKING MODE

@@ -10,11 +10,14 @@
 
 import os
 import sys
-from collections import OrderedDict
 import subprocess
+import select
+from collections import OrderedDict
 from pathlib import Path
 import glob
 import re
+import shutil
+import datetime
 import logging
 import pprint
 
@@ -32,9 +35,9 @@ def init_PrettyPrinter(TERMINAL_WIDTH):
     return
 
 def init_logging(log_filename):
-    # Set up logging
+    # Set up logging, enable for DEBUG upward to ensure capturing everything
     logging.basicConfig(filename=log_filename,
-                        level=logging.DEBUG if DEBUG_IS_ON else logging.INFO,
+                        level=logging.DEBUG,
                         format='%(asctime)s %(levelname)s: %(message)s')
 
 def debug_pause():
@@ -55,15 +58,25 @@ def debug_log_and_print(message, data=None):
             logging.debug(f"\n" + objPrettyPrint.pformat(data))
             print(objPrettyPrint.pformat(data), flush=True)
 
+def warning_log_and_print(message, data=None):
+    """
+    Logs and prints a message with optional data
+    """
+    logging.warning(message)
+    print(f"WARNING: {message}", flush=True)
+    if data is not None:
+        logging.warning(f"\n" + objPrettyPrint.pformat(data))
+        print(f"\n" + objPrettyPrint.pformat(data), flush=True)
+
 def error_log_and_print(message, data=None):
     """
-    Logs and prints a message with optional data, if DEBUG is on.
+    Logs and prints a message with optional data
     """
     logging.error(message)
     print(f"ERROR: {message}", flush=True)
     if data is not None:
         logging.error(f"\n" + objPrettyPrint.pformat(data))
-        print(f"\n" + oobjPrettyPrint.pformat(data), flush=True)
+        print(f"\n" + objPrettyPrint.pformat(data), flush=True)
 
 def log_and_print(message, data=None):
     """
@@ -608,5 +621,172 @@ def get_unique_top_level_media_folders(mergerfs_disks_in_LtoR_order_from_fstab, 
             media_folder_name = media_folder_info['top_level_media_folder_name']
             media_folder_info['ffd'] = unique_top_level_media_folders[media_folder_name]['ffd']
     debug_log_and_print(f"get_unique_top_level_media_folders AFTER STEP 3 unique_top_level_media_folders:\n", data=unique_top_level_media_folders)
-
     return unique_top_level_media_folders, mergerfs_disks_having_a_root_folder_having_files
+
+def get_list_of_media_folder_ffd_disks_to_sync(unique_top_level_media_folders):
+    """
+    Parses unique top-level media folder names from the detected disks to return a dict,
+    of media folder names and from-disk to-disk which can be used for performing backups.
+    The 'from-disk' is the 'ffd' (in mergerfs terms)
+    and the 'to-disk' is a 'backup' disk to make copies of files onto.
+      Args:
+        dict: A dictionary containing unique top-level media folders and related derived information.
+        Key: 'top_level_media_folder_name' (str): The unique name of the top-level media folder (e.g., 'Movies').
+        Value: dict with the following keys:
+            - 'top_level_media_folder_name' (str): yes it is a key above as well as a key/value pair here
+            - 'ffd' (str): The first found disk for this media folder.
+            - 'ffd_root_folder_path': the root path of the ffd.
+            - 'disk_info' (list of dict): A list of dictionaries with information about each disk containing this media folder.
+                Each dictionary contains:
+                    - 'disk_mount_point' (str): The mount point path of the disk.
+                    - 'is_ffd' (bool): Whether this disk is the FFD for the media folder.
+                    - 'root_folder_path' (Path): The path to the root folder.
+                    - 'number_of_files' (int): The number of files in this media folder on this disk.
+                    - 'disk_space_used' (int): The disk space used by this media folder on this disk.
+                    - 'total_free_disk_space' (int): The total free disk space on this disk.
+      Example:
+        {
+            'Movies': {
+                'top_level_media_folder_name': 'Movies',
+                'ffd': '/srv/usb3disk1',
+                'ffd_root_folder_path': '/srv/usb3disk1/mediaroot',
+                'disk_info': [
+                    {
+                        'disk_mount_point': '/srv/usb3disk1',
+                        'is_ffd': True,
+                        'root_folder_path': Path('/srv/usb3disk1/mediaroot'),
+                        'number_of_files': 1500,
+                        'disk_space_used': 12000000000,
+                        'total_free_disk_space': 50000000000
+                    },
+                    {
+                        'disk_mount_point': '/srv/usb3disk2',
+                        'is_ffd': False,
+                        'root_folder_path': Path('/srv/usb3disk2/mediaroot'),
+                        'number_of_files': 1500,
+                        'disk_space_used': 12000000000,
+                        'total_free_disk_space': 60000000000
+                    },
+                    ...
+                ]
+            },
+            ...
+        }
+      Returns:
+        a list: a list of candiates to rsync from to
+            - a top_level_media_folder_name
+            - a path to copy from : disk_mount_point / top_level_media_folder_name
+            - a path to copy to   : disk_mount_point / top_level_media_folder_name
+    """
+    # REMEMBER
+    # REMEMBER: In Python, when you assign or pass a **mutable object (like a dictionary)** to another variable or function,
+    # REMEMBER:            it doesn't create a copy but rather a **reference** to the same object.
+    # REMEMBER:            BEING BY REFERENCE, updates to that variable makes updates TO THE ORIGINAL OBJECT.
+    # REMEMBER
+
+    # Loop, cross-check entries, create a list of candidates to rsync from and to
+    list_of_media_folder_ffd_disks_to_sync = []
+    # Ensure the dictionary is sorted by key
+    sorted_unique_top_level_media_folders = OrderedDict(sorted(unique_top_level_media_folders.items()))
+    for top_level_media_folder_name, utlmf in sorted_unique_top_level_media_folders.items():
+        debug_log_and_print(f"get_list_of_media_folder_ffd_disks_to_sync: Processing top_level_media_folder_name: '{top_level_media_folder_name}'")
+        # Access the top-level media folder information
+        top_level_media_folder_name = utlmf['top_level_media_folder_name']
+        ffd = utlmf['ffd']
+        ffd_root_folder_path = utlmf['ffd_root_folder_path']
+        # Process each disk information entry
+        for disk_info in utlmf['disk_info']:
+            disk_mount_point = disk_info['disk_mount_point']
+            is_ffd = disk_info['is_ffd']
+            root_folder_path = disk_info['root_folder_path']
+            number_of_files = disk_info['number_of_files']
+            disk_space_used = disk_info['disk_space_used']
+            total_free_disk_space = disk_info['total_free_disk_space']
+            debug_log_and_print(f"get_list_of_media_folder_ffd_disks_to_sync: IN LOOP top_level_media_folder_name:'{top_level_media_folder_name}' ffd_root_folder_path: '{ffd_root_folder_path}' utlmf:", data=utlmf)
+            if disk_info['is_ffd']:
+                if disk_info['root_folder_path'] != utlmf['ffd_root_folder_path']:
+                   error_log_and_print(f"ERROR: get_list_of_media_folder_ffd_disks_to_sync: '{utlmf['top_level_media_folder_name']}' disk '{disk_info['disk_mount_point']}' says is_ffd='{disk_info['is_ffd']}' yet  dict ffd mismatches '{utlmf['ffd_root_folder_path']}' != '{disk_info['root_folder_path']}'", data=sorted_unique_top_level_media_folders)
+                   sys.exit(1)
+            if utlmf['ffd_root_folder_path'] == disk_info['root_folder_path']:
+                continue    # skip to end of this iteration if flooking at the ffd
+                #error_log_and_print(f"ERROR: get_list_of_media_folder_ffd_disks_to_sync: '{utlmf['top_level_media_folder_name']}' from: ffd_root_folder_path '{utlmf['ffd_root_folder_path']}' must never equal : root_folder_path '{disk_info['root_folder_path']}'", data=sorted_unique_top_level_media_folders)
+                #sys.exit(1)
+            if disk_info['root_folder_path'] < utlmf['ffd_root_folder_path']:
+                warning_log_and_print(f"WARNING: get_list_of_media_folder_ffd_disks_to_sync: '{utlmf['top_level_media_folder_name']}' disk '{disk_info['root_folder_path']}' is less than ffd '{utlmf['ffd_root_folder_path']}'", data=sorted_unique_top_level_media_folders)
+            # Joining paths using pathlib "/"
+            list_of_media_folder_ffd_disks_to_sync.append([ utlmf['top_level_media_folder_name'], Path(utlmf['ffd_root_folder_path']) / utlmf['top_level_media_folder_name'], Path(disk_info['root_folder_path']) / utlmf['top_level_media_folder_name'] ])
+    debug_log_and_print(f"get_list_of_media_folder_ffd_disks_to_sync: list_of_media_folder_ffd_disks_to_sync:", data=list_of_media_folder_ffd_disks_to_sync)
+    return list_of_media_folder_ffd_disks_to_sync                
+
+def run_command_process(command):
+    """
+    Run the command and log stdout and stderr in real-time IN NON READ-BLOCKING MODE
+    """
+    try:
+        debug_log_and_print(f"run_command_process: START command:\n{command}")
+        with subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True) as command_process:
+            # Set stdout and stderr to non-blocking mode
+            os.set_blocking(command_process.stdout.fileno(), False)  # sets stdout to non-blocking read mode.
+            os.set_blocking(command_process.stderr.fileno(), False)  # sets stderr to non-blocking read mode.
+            timeout = 1.0  # a timeout in seconds just in case nothing gets written to stdout, stderr
+            stdout_buffer = ""
+            stderr_buffer = ""
+            while True:
+                reads = [command_process.stdout.fileno(), command_process.stderr.fileno()]
+                # Use a short timeout in select.select() to periodically continue and check if the process has completed
+                # select.select(reads, [], []) ensures that we only attempt to read from the file descriptors when they are ready.
+                # This prevents the loop from blocking or spinning unnecessarily.
+                ret = select.select(reads, [], [], timeout)  # a timeout in seconds just in case nothing gets written to stdout, stderr
+                for fd in ret[0]:
+                    if fd == command_process.stdout.fileno():
+                        try:
+                            # This 'read' may read a chunk of data possibly including multiple lines and perhaps even ending with a residual partial line
+                            # Thus we use a 'read buffer' for processing it and leaving any residual partial line at the start of the buffer for the next iteration
+                            stdout_data = command_process.stdout.read()
+                            if stdout_data:
+                                stdout_buffer += stdout_data
+                                # Process each complete line in the buffer
+                                while '\n' in stdout_buffer:
+                                    # Split at the first newline character
+                                    line, stdout_buffer = stdout_buffer.split('\n', 1)
+                                    log_and_print(line.strip())
+                                # At this point, stdout_buffer contains only residual data with no newline
+                        except IOError as e:
+                            if e.errno != errno.EAGAIN and e.errno != errno.EWOULDBLOCK:
+                                raise
+                            # If the exception is EAGAIN or EWOULDBLOCK, it means there's no data available right now, and the loop continues.
+                            pass
+                    if fd == command_process.stderr.fileno():
+                        try:
+                            # This 'read' may read a chunk of data possibly including multiple lines and perhaps even ending with a residual partial line
+                            # Thus we use a 'read buffer' for processing it and leaving any residual partial line at the start of the buffer for the next iteration
+                            stderr_data = command_process.stderr.read()
+                            if stderr_data:
+                                stderr_buffer += stderr_data
+                                # Process each complete line in the buffer
+                                while '\n' in stderr_buffer:
+                                    # Split at the first newline character
+                                    line, stderr_buffer = stderr_buffer.split('\n', 1)
+                                    error_log_and_print(line.strip())
+                                # At this point, stderr_buffer contains only residual data with no newline
+                        except IOError as e:
+                            if e.errno != errno.EAGAIN and e.errno != errno.EWOULDBLOCK:
+                                raise
+                            # If the exception is EAGAIN or EWOULDBLOCK, it means there's no data available right now, and the loop continues.
+                            pass
+                # Check if the process has terminated
+                if command_process.poll() is not None:
+                    break
+            # Log any remaining data in the buffers
+            # This handles any data that was in the buffer but didn't end with a newline
+            if stdout_buffer:
+                log_and_print(stdout_buffer.strip())
+            if stderr_buffer:
+                error_log_and_print(stderr_buffer.strip())
+            # Wait for the process to complete
+            command_process.wait()
+        debug_log_and_print(f"run_command_process: FINISHED command:\n{command}")
+        return command_process.returncode
+    except subprocess.CalledProcessError as e:
+        error_log_and_print(f"Error: run_command_process: command: '{command}'", data=e)
+        return e.returncode
