@@ -23,5 +23,5 @@ PARTUUID=e5ff156e-b704-40a9-86d5-5c36c35d6095 /srv/usb3disk6 ntfs defaults,auto,
 PARTUUID=27891019-f894-4e9b-b326-5f9d10c5c2cf /srv/usb3disk7 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount 0 0
 #PARTUUID= /srv/usb3disk8 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount 0 0
 #
-#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true 0 0
+#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk1.mount 0 0
 #
