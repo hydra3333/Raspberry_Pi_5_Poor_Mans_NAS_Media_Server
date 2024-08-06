@@ -364,6 +364,48 @@ sudo apt install -y wget
 #
 ```
 
+See hd-idle here `https://github.com/adelolmo/hd-idle`     
+Note: that site shows a minimum of release `1.21 / 2023-10-22` in    
+`https://github.com/adelolmo/hd-idle/releases/download/v1.21/hd-idle_1.21_arm64.deb`    
+Download and Install the most up-to-date release of the 'adelolmo' version of `hd-idle` direct from the author:    
+```
+cd ~/Desktop
+rm -fvR /home/pi/Desktop/hd-idle
+mkdir -v -m a=rwx /home/pi/Desktop/hd-idle
+chmod -c a=rwx -R /home/pi/Desktop/hd-idle
+cd /home/pi/Desktop/hd-idle
+touch /home/pi/Desktop/hd-idle/hd-idle.log
+chmod -c a=rw -R /home/pi/Desktop/hd-idle/hd-idle.log
+#
+sudo rm -vf hd-idle_1.21_arm64.deb
+wget https://github.com/adelolmo/hd-idle/releases/download/v1.21/hd-idle_1.21_arm64.deb
+sudo dpkg -i "./hd-idle_1.21_arm64.deb"
+sudo dpkg -l hd-idle
+#Stop `hd-idle`
+sudo systemctl stop hd-idle
+cd ~/Desktop
+```
+
+See `mergerfs` here `https://github.com/trapexit/mergerfs/releases`    
+Download and Install the most up-to-date release of `mergerfs` direct from the author:    
+```
+# For this to run on Pi 4 and newer:
+#    <ver>=2.40.2
+#    <rel>=bookworm
+#    <arch>=arm64
+# wget https://github.com/trapexit/mergerfs/releases/download/<ver>/mergerfs_<ver>.debian-<rel>_<arch>.deb
+# dpkg -i mergerfs_<ver>.debian-<rel>_<arch>.deb
+# sudo apt-get install -f
+#
+cd ~/Desktop
+wget -v https://github.com/trapexit/mergerfs/releases/download/2.40.2/mergerfs_2.40.2.debian-bookworm_arm64.deb
+sudo dpkg --install mergerfs_2.40.2.debian-bookworm_arm64.deb
+sudo dpkg --status mergerfs
+# Fix any missing dependencies or conflicts.
+sudo apt-get install -f
+```
+
+
 
 **10. Add user `pi` into groups `plugdev` and `systemd-journal`; in a Terminal**    
 ```
@@ -567,19 +609,19 @@ Preparation: add these lines to the end of `fstab`:
 # for disks 1 to 1:
 #/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk1.mount 0 0
 # for disks 1 to 2:
-#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount 0 0
+#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount 0 0
 # for disks 1 to 3:
-#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount 0 0
+#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount 0 0
 # for disks 1 to 4:
-#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount 0 0
+#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount 0 0
 # for disks 1 to 5:
-#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount 0 0
+#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount 0 0
 # for disks 1 to 6:
-#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount 0 0
+#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk6.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount 0 0
 # for disks 1 to 7:
-#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount,x-systemd.after=srv-usb3disk7.mount 0 0
+#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk7.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount,x-systemd.after=srv-usb3disk7.mount 0 0
 # for disks 1 to 8:
-#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount,x-systemd.after=srv-usb3disk7.mount,x-systemd.after=srv-usb3disk8.mount 0 0
+#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk8.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount,x-systemd.after=srv-usb3disk7.mount,x-systemd.after=srv-usb3disk8.mount 0 0
 
 ```
 Now **uncomment ONLY** lines to match the number if disks we have, eg: for 3 disks it would be:
@@ -636,6 +678,7 @@ then select/copy the **full `PARTUUID`** for
 that disk and paste it immediately to the right of the `=` sign for that disk (no spaces).    
 In this example the result of doing that with 3 disks looks like this:
 ```
+# UNCOMMENT A LINE BELOW FOR EACH DISK WE HAVE, DEPENDING ON HOW MANY DISKS WE HAVE, AND POP IN THE CORRECT PARTUUID FOR EACH DISK
 PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /srv/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount 0 0
 PARTUUID=a175d2d3-c2f6-44d4-a5fc-209363280c89 /srv/usb3disk2 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount 0 0
 PARTUUID=9a63b215-bcf1-462b-89d2-56979cec6ed8 /srv/usb3disk3 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk2.mount, 0 0
@@ -645,25 +688,25 @@ PARTUUID=9a63b215-bcf1-462b-89d2-56979cec6ed8 /srv/usb3disk3 ntfs defaults,auto,
 #PARTUUID= /srv/usb3disk7 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk6.mount, 0 0
 #PARTUUID= /srv/usb3disk8 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk7.mount, 0 0
 ```
-Now, un-comment one of these lines matching the number of disks we have (in this example, 3)
+For the moment LEAVE AS COMMENTED-OUT ALL OF THESE LINES below including the one matching the number of disks we have (in this example, 3)
 ```
 # UNCOMMENT ONE OF THE LINES BELOW DEPENDNG ON HOW MANY DISKS WE HAVE
 # for disks 1 to 1:
 #/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk1.mount 0 0
 # for disks 1 to 2:
-#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount 0 0
+#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount 0 0
 # for disks 1 to 3:
-/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount 0 0
+#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount 0 0
 # for disks 1 to 4:
-#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount 0 0
+#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount 0 0
 # for disks 1 to 5:
-#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount 0 0
+#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount 0 0
 # for disks 1 to 6:
-#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount 0 0
+#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk6.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount 0 0
 # for disks 1 to 7:
-#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount,x-systemd.after=srv-usb3disk7.mount 0 0
+#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk7.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount,x-systemd.after=srv-usb3disk7.mount 0 0
 # for disks 1 to 8:
-#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount,x-systemd.after=srv-usb3disk7.mount,x-systemd.after=srv-usb3disk8.mount 0 0
+#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk8.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount,x-systemd.after=srv-usb3disk7.mount,x-systemd.after=srv-usb3disk8.mount 0 0
 ```
 save and exit nano with `Control O` `Control X`.     
 
@@ -705,38 +748,13 @@ They only mounted correctly in that order due to the mount dependencies we set i
 
 ---
 
-## Setup `HD-IDLE` to ensure disks are not constantly spun up
+## Configure `HD-IDLE` to ensure disks are not constantly spun up
 
 Per `https://www.htpcguides.com/spin-down-and-manage-hard-drive-power-on-raspberry-pi/`
 some WD an other external USB3 disks won't spin down on idle and HDPARM and SDPARM don't work on them
 ... the `adelolmo` version of `hd-idle` appears to work, so let's use that.  
 
-This    
-`https://github.com/adelolmo/hd-idle`     
-shows a minimum of release `1.21 / 2023-10-22` in    
-`https://github.com/adelolmo/hd-idle/releases/download/v1.21/hd-idle_1.21_arm64.deb`
-
-Install the more up-to-date release of 'adelolmo' version of `hd-idle` direct from the author.    
-https://github.com/adelolmo/hd-idle    
-```
-cd ~/Desktop
-rm -fvR /home/pi/Desktop/hd-idle
-mkdir -v -m a=rwx /home/pi/Desktop/hd-idle
-chmod -c a=rwx -R /home/pi/Desktop/hd-idle
-cd /home/pi/Desktop/hd-idle
-touch /home/pi/Desktop/hd-idle/hd-idle.log
-chmod -c a=rw -R /home/pi/Desktop/hd-idle/hd-idle.log
-#
-sudo rm -vf hd-idle_1.21_arm64.deb
-wget https://github.com/adelolmo/hd-idle/releases/download/v1.21/hd-idle_1.21_arm64.deb
-sudo dpkg -i "./hd-idle_1.21_arm64.deb"
-sudo dpkg -l hd-idle
-#Stop `hd-idle`
-sudo systemctl stop hd-idle
-cd ~/Desktop
-```
-
-**Do NOT do this** since we instead install the newer version direct from the author:
+**Do NOT install like this** since, above, we instead installed the newer version direct from the author:
 ```
 # since this show versions `1.05+ds-2+b1` which is very old.
 sudo apt -y install hd-idle
@@ -804,7 +822,15 @@ sudo nano /etc/default/hd-idle
 # default timeout 300s = 5 mins
 # sda sdb sdc etc     timeout 900s = 15 mins
 START_HD_IDLE=true
-HD_IDLE_OPTS="-i 300 -l /home/pi/Desktop/hd-idle/hd-idle.log -a /dev/sda -i 900 -a /dev/sdb -i 900 -a /dev/sdc -i 900"
+# UN-COMMENT ONE OF THESE LINES IF sda,sd...etc MATCHES ALL OF YOUR USB3 DISKS AND ONLY THOSE USB3 DISKS
+#HD_IDLE_OPTS="-i 300 -l /home/pi/Desktop/hd-idle/hd-idle.log -a /dev/sda -i 900"
+#HD_IDLE_OPTS="-i 300 -l /home/pi/Desktop/hd-idle/hd-idle.log -a /dev/sda -i 900 -a /dev/sdb -i 900"
+#HD_IDLE_OPTS="-i 300 -l /home/pi/Desktop/hd-idle/hd-idle.log -a /dev/sda -i 900 -a /dev/sdb -i 900 -a /dev/sdc -i 900"
+#HD_IDLE_OPTS="-i 300 -l /home/pi/Desktop/hd-idle/hd-idle.log -a /dev/sda -i 900 -a /dev/sdb -i 900 -a /dev/sdc -i 900 -a /dev/sdd -i 900"
+#HD_IDLE_OPTS="-i 300 -l /home/pi/Desktop/hd-idle/hd-idle.log -a /dev/sda -i 900 -a /dev/sdb -i 900 -a /dev/sdc -i 900 -a /dev/sdd -i 900 -a /dev/sde -i 900"
+#HD_IDLE_OPTS="-i 300 -l /home/pi/Desktop/hd-idle/hd-idle.log -a /dev/sda -i 900 -a /dev/sdb -i 900 -a /dev/sdc -i 900 -a /dev/sdd -i 900 -a /dev/sde -i 900 -a /dev/sdf -i 900"
+#HD_IDLE_OPTS="-i 300 -l /home/pi/Desktop/hd-idle/hd-idle.log -a /dev/sda -i 900 -a /dev/sdb -i 900 -a /dev/sdc -i 900 -a /dev/sdd -i 900 -a /dev/sde -i 900 -a /dev/sdf -i 900 -a /dev/sdg -i 900"
+#HD_IDLE_OPTS="-i 300 -l /home/pi/Desktop/hd-idle/hd-idle.log -a /dev/sda -i 900 -a /dev/sdb -i 900 -a /dev/sdc -i 900 -a /dev/sdd -i 900 -a /dev/sde -i 900 -a /dev/sdf -i 900 -a /dev/sdg -i 900 -a /dev/sdh -i 900"
 ```
 
 To enable `hd-idle` on reboot and then restart, in a Terminal:
@@ -832,51 +858,51 @@ sudo journalctl -u hd-idle.service | grep hd-idle| tail -n 20
 
 ---
 
-## Setup `mergerfs` for a virtual disk    
+## Configure `mergerfs` for a virtual disk    
 ### Virtual "merge" disks for serving as if one disk    
 #### finds media using "first found disk" in Left to Right mount order    
 
-**1. Install mergerfs ... the LATEST version ...**    
+**1. Configure mergerfs ...**    
 
-See here https://github.com/trapexit/mergerfs/releases    
-
-Download and install it direct from the author:    
-```
-# For this to run on Pi 4 and newer:
-#    <ver>=2.40.2
-#    <rel>=bookworm
-#    <arch>=arm64
-# wget https://github.com/trapexit/mergerfs/releases/download/<ver>/mergerfs_<ver>.debian-<rel>_<arch>.deb
-# dpkg -i mergerfs_<ver>.debian-<rel>_<arch>.deb
-# sudo apt-get install -f
-#
-cd ~/Desktop
-wget -v https://github.com/trapexit/mergerfs/releases/download/2.40.2/mergerfs_2.40.2.debian-bookworm_arm64.deb
-sudo dpkg --install mergerfs_2.40.2.debian-bookworm_arm64.deb
-sudo dpkg --status mergerfs
-# Fix any missing dependencies or conflicts.
-sudo apt-get install -f
-```
-Check that the mount definitions for underlying disks to be merged are correctly in `fstab`:    
+Check the mount definitions for underlying disks to be 'merged' are correctly in `fstab` as you need them:    
 ```
 sudo cat /etc/fstab
 ```
-Should by now look a bit like this:
+So, `fstab` should look something like this, with the individual disk mounts
+un-commented and the `mergerfs` mounts still commented out.    
 ```
+# UNCOMMENT A LINE BELOW FOR EACH DISK WE HAVE, DEPENDING ON HOW MANY DISKS WE HAVE, AND POP IN THE CORRECT PARTUUID FOR EACH DISK
 PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /srv/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount 0 0
-PARTUUID=a175d2d3-c2f6-44d4-a5fc-209363280c89 /srv/usb3disk2 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount 0 0
-PARTUUID=9a63b215-bcf1-462b-89d2-56979cec6ed8 /srv/usb3disk3 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount 0 0
-#PARTUUID= /srv/usb3disk4 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount 0 0
-#PARTUUID= /srv/usb3disk5 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount 0 0
-#PARTUUID= /srv/usb3disk6 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount 0 0
-#PARTUUID= /srv/usb3disk7 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount 0 0
-#PARTUUID= /srv/usb3disk8 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount 0 0
+PARTUUID=a175d2d3-c2f6-44d4-a5fc-209363280c89 /srv/usb3disk2 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount 0 0
+PARTUUID=9a63b215-bcf1-462b-89d2-56979cec6ed8 /srv/usb3disk3 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk2.mount, 0 0
+#PARTUUID= /srv/usb3disk4 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk3.mount, 0 0
+#PARTUUID= /srv/usb3disk5 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk4.mount, 0 0
+#PARTUUID= /srv/usb3disk6 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk5.mount, 0 0
+#PARTUUID= /srv/usb3disk7 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk6.mount, 0 0
+#PARTUUID= /srv/usb3disk8 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk7.mount, 0 0
 #
-#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true 0 0
-#
-
+# UNCOMMENT ONE OF THE LINES BELOW DEPENDNG ON HOW MANY DISKS WE HAVE
+# for disks 1 to 1:
+#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk1.mount 0 0
+# for disks 1 to 2:
+#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount 0 0
+# for disks 1 to 3:
+#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount 0 0
+# for disks 1 to 4:
+#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount 0 0
+# for disks 1 to 5:
+#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount 0 0
+# for disks 1 to 6:
+#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk6.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount 0 0
+# for disks 1 to 7:
+#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk7.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount,x-systemd.after=srv-usb3disk7.mount 0 0
+# for disks 1 to 8:
+#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk8.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount,x-systemd.after=srv-usb3disk7.mount,x-systemd.after=srv-usb3disk8.mount 0 0
 ```
-Notice the line at the end starting with `/srv/usb3disk*/mediaroot`.   
+The individual disk mount lines have soft dependencies so each disk tries to get mounted after the previous disk in the sequence.    
+Notice that The `mergerfs` lines have dependencies 
+
+Notice the lines at the end of `fstab` starting with `/srv/usb3disk*/mediaroot`.   
 When we un-comment this and remount disks, it will permit `mergerfs` to mount all disks in order `/srv/usb3disk1` ...    
 
 So, edit `fstab`    
