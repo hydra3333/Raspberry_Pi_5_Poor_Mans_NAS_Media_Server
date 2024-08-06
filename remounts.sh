@@ -4,10 +4,6 @@ set -x
 # Make the operating system notice changes in fstab:
 sudo systemctl daemon-reload
 
-sudo blkid
-
-sudo lsblk -o UUID,PARTUUID,NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
-
 sudo umount -f /srv/media
 sudo umount -f /srv/usb3disk1
 sudo umount -f /srv/usb3disk2
