@@ -405,7 +405,11 @@ sudo dpkg --status mergerfs
 sudo apt-get install -f
 ```
 
-
+Install SAMBA to serve up standard SAMBA SMB/CIFS file shares across the network
+```
+sudo apt -y install samba samba-common-bin smbclient cifs-utils
+stop samba
+```
 
 **10. Add user `pi` into groups `plugdev` and `systemd-journal`; in a Terminal**    
 ```
@@ -790,7 +794,7 @@ sdc
 
 To configure `hd-idle` for those disks:
 
-Stop `hd-idle`
+Ensure `hd-idle` is stopped:
 ```
 sudo systemctl stop hd-idle
 ```
@@ -955,13 +959,12 @@ so that devices on the lan need not know which disk things are on.
 
 ---
 
-## Install and configure `SAMBA`to create file shares on the LAN
+## Configure `SAMBA`to create file shares on the LAN
 
-**1. Install `SAMBA`; in a Terminal:**    
+**1. Ensure `SAMBA` is stopped; in a Terminal:**    
 ```
-sudo apt -y install samba samba-common-bin smbclient cifs-utils
+sudo systemctl stop smbd
 ```
-
 
 **2. Configure `SAMBA` user; in a Terminal:**    
 Create the default user pi in creating the first samba user
@@ -1246,11 +1249,19 @@ sudo hostname --all-ip-addresses
 
 We can now access the `SAMBA` shares on the Pi from a Windows PC or from an app that supports the SMB protocol.    
 eg on a Windows PC in Windows Explorer, use the IP address of the Pi in the folder path text bar at the top, eg ...    
+
+Assuming the Pi 5's IP address on the LAN is 10.0.0.18, then:    
 ```
-REM read-only virtual folder of overlayed disk folders
+REM read-only virtual folder of 'merged' disk folders, eg for consumption by media players
 \\10.0.0.18\media
 
-REM DISK1 as read-write (copy new media to subfolders here, depending on how full this disk is)
+REM Below are are-write 'file shares' use for copy/delete new media to
+REM 'ffd' into 'top level media folder' and subfolders on various disks,
+REM according to our 'ffd's and 'top level media folder's backup strategy.
+REM The nightly SYNC process will take care of rippling changes to all 'ffd's for 'top level media folder's
+REM over to other disks containing backups of files in 'top level media folder's.
+
+REM DISK1 as read-write ... copy/delete new media to 'ffd' subfolders here, according to disk spreading and diska backup strategy
 \\10.0.0.18\usb3disk1
 
 REM DISK2 as read-write (copy new media to subfolders here, depending on how full this disk is)
