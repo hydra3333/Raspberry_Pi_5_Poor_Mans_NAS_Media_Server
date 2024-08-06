@@ -324,7 +324,7 @@ exit nano with `Control O` `Control X`.
 Use nano to edit the APT sources for updates:    
 ```
 sudo nano /etc/apt/sources.list
-# Now in nano `uncomment` all of the `deb-src` lines by removing the # at the start of those lines.
+# Now in nano `un-comment` all of the `deb-src` lines by removing the # at the start of those lines.
 ```
 exit nano with `Control O` `Control X`.    
 Update the system; in a Terminal:    
@@ -595,17 +595,17 @@ Preparation: add these lines to the end of `fstab`:
 # x-systemd.wants=srv-usb3disk1.mount       Means it wants (not requires) the nominated mount point but does not cause a fail if it does not.
 # x-systemd.after=srv-usb3disk1.mount       Means it wouldo like to be mounted after the nominated mount point but does not cause a fail if it does not.
 #
-# UNCOMMENT A LINE BELOW FOR EACH DISK WE HAVE, DEPENDING ON HOW MANY DISKS WE HAVE, AND POP IN THE CORRECT PARTUUID FOR EACH DISK
-#PARTUUID= /srv/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount 0 0
-#PARTUUID= /srv/usb3disk2 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount 0 0
-#PARTUUID= /srv/usb3disk3 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk2.mount, 0 0
-#PARTUUID= /srv/usb3disk4 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk3.mount, 0 0
-#PARTUUID= /srv/usb3disk5 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk4.mount, 0 0
-#PARTUUID= /srv/usb3disk6 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk5.mount, 0 0
-#PARTUUID= /srv/usb3disk7 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk6.mount, 0 0
-#PARTUUID= /srv/usb3disk8 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk7.mount, 0 0
+# UN-COMMENT A LINE BELOW FOR EACH DISK WE HAVE, DEPENDING ON HOW MANY DISKS WE HAVE, AND POP IN THE CORRECT PARTUUID FOR EACH DISK
+#PARTUUID= /srv/usb3disk1 /srv/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount 0 0
+#PARTUUID= /srv/usb3disk2 /srv/usb3disk2 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount 0 0
+#PARTUUID= /srv/usb3disk3 /srv/usb3disk3 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount 0 0
+#PARTUUID= /srv/usb3disk4 /srv/usb3disk4 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount 0 0
+#PARTUUID= /srv/usb3disk5 /srv/usb3disk5 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount 0 0
+#PARTUUID= /srv/usb3disk6 /srv/usb3disk6 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount 0 0
+#PARTUUID= /srv/usb3disk7 /srv/usb3disk7 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount 0 0
+#PARTUUID= /srv/usb3disk8 /srv/usb3disk8 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount,x-systemd.after=srv-usb3disk7.mount 0 0
 #
-# UNCOMMENT ONE OF THE LINES BELOW DEPENDNG ON HOW MANY DISKS WE HAVE
+# UN-COMMENT ONE OF THE LINES BELOW DEPENDNG ON HOW MANY DISKS WE HAVE
 # for disks 1 to 1:
 #/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk1.mount 0 0
 # for disks 1 to 2:
@@ -622,18 +622,19 @@ Preparation: add these lines to the end of `fstab`:
 #/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk7.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount,x-systemd.after=srv-usb3disk7.mount 0 0
 # for disks 1 to 8:
 #/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk8.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount,x-systemd.after=srv-usb3disk7.mount,x-systemd.after=srv-usb3disk8.mount 0 0
-
+#
 ```
-Now **uncomment ONLY** lines to match the number if disks we have, eg: for 3 disks it would be:
+Now **un-comment ONLY** lines to match the number if disks we have, eg: for 3 disks it would be:
 ```
-#PARTUUID= /srv/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount 0 0
-#PARTUUID= /srv/usb3disk2 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount 0 0
-#PARTUUID= /srv/usb3disk3 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk2.mount, 0 0
-#PARTUUID= /srv/usb3disk4 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk3.mount, 0 0
-#PARTUUID= /srv/usb3disk5 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk4.mount, 0 0
-#PARTUUID= /srv/usb3disk6 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk5.mount, 0 0
-#PARTUUID= /srv/usb3disk7 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk6.mount, 0 0
-#PARTUUID= /srv/usb3disk8 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk7.mount, 0 0
+# UN-COMMENT A LINE BELOW FOR EACH DISK WE HAVE, DEPENDING ON HOW MANY DISKS WE HAVE, AND POP IN THE CORRECT PARTUUID FOR EACH DISK
+PARTUUID= /srv/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount 0 0
+PARTUUID= /srv/usb3disk2 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount 0 0
+PARTUUID= /srv/usb3disk3 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount 0 0
+#PARTUUID= /srv/usb3disk4 /srv/usb3disk4 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount 0 0
+#PARTUUID= /srv/usb3disk5 /srv/usb3disk5 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount 0 0
+#PARTUUID= /srv/usb3disk6 /srv/usb3disk6 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount 0 0
+#PARTUUID= /srv/usb3disk7 /srv/usb3disk7 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount 0 0
+#PARTUUID= /srv/usb3disk8 /srv/usb3disk8 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount,x-systemd.after=srv-usb3disk7.mount 0 0
 ```
 Leave `nano` open editing `fstab` in that `Terminal` and swap to the other `Terminal` to enter other commands.
 
@@ -678,19 +679,20 @@ then select/copy the **full `PARTUUID`** for
 that disk and paste it immediately to the right of the `=` sign for that disk (no spaces).    
 In this example the result of doing that with 3 disks looks like this:
 ```
-# UNCOMMENT A LINE BELOW FOR EACH DISK WE HAVE, DEPENDING ON HOW MANY DISKS WE HAVE, AND POP IN THE CORRECT PARTUUID FOR EACH DISK
-PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /srv/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount 0 0
-PARTUUID=a175d2d3-c2f6-44d4-a5fc-209363280c89 /srv/usb3disk2 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount 0 0
-PARTUUID=9a63b215-bcf1-462b-89d2-56979cec6ed8 /srv/usb3disk3 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk2.mount, 0 0
-#PARTUUID= /srv/usb3disk4 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk3.mount, 0 0
-#PARTUUID= /srv/usb3disk5 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk4.mount, 0 0
-#PARTUUID= /srv/usb3disk6 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk5.mount, 0 0
-#PARTUUID= /srv/usb3disk7 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk6.mount, 0 0
-#PARTUUID= /srv/usb3disk8 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk7.mount, 0 0
+# UN-COMMENT A LINE BELOW FOR EACH DISK WE HAVE, DEPENDING ON HOW MANY DISKS WE HAVE, AND POP IN THE CORRECT PARTUUID FOR EACH DISK
+PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /srv/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount 0 0
+PARTUUID=a175d2d3-c2f6-44d4-a5fc-209363280c89 /srv/usb3disk2 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount 0 0
+PARTUUID=9a63b215-bcf1-462b-89d2-56979cec6ed8 /srv/usb3disk3 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount 0 0
+#PARTUUID= /srv/usb3disk4 /srv/usb3disk4 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount 0 0
+#PARTUUID= /srv/usb3disk5 /srv/usb3disk5 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount 0 0
+#PARTUUID= /srv/usb3disk6 /srv/usb3disk6 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount 0 0
+#PARTUUID= /srv/usb3disk7 /srv/usb3disk7 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount 0 0
+#PARTUUID= /srv/usb3disk8 /srv/usb3disk8 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount,x-systemd.after=srv-usb3disk7.mount 0 0
 ```
 For the moment LEAVE AS COMMENTED-OUT ALL OF THESE LINES below including the one matching the number of disks we have (in this example, 3)
 ```
-# UNCOMMENT ONE OF THE LINES BELOW DEPENDNG ON HOW MANY DISKS WE HAVE
+#
+# UN-COMMENT ONE OF THE LINES BELOW DEPENDNG ON HOW MANY DISKS WE HAVE
 # for disks 1 to 1:
 #/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk1.mount 0 0
 # for disks 1 to 2:
@@ -707,6 +709,7 @@ For the moment LEAVE AS COMMENTED-OUT ALL OF THESE LINES below including the one
 #/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk7.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount,x-systemd.after=srv-usb3disk7.mount 0 0
 # for disks 1 to 8:
 #/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk8.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount,x-systemd.after=srv-usb3disk7.mount,x-systemd.after=srv-usb3disk8.mount 0 0
+#
 ```
 save and exit nano with `Control O` `Control X`.     
 
@@ -728,7 +731,6 @@ which should yield something like this:
 /srv/usb3disk1           : successfully mounted
 /srv/usb3disk2           : successfully mounted
 /srv/usb3disk3           : successfully mounted
-/srv/media               : successfully mounted
 ```
 Congratulations, the USB3 disks are now mounted and will be mounted during every boot from now on.    
 Check what's mounted using:
@@ -737,10 +739,9 @@ sudo mount -v | grep srv
 ```
 ```
 mount -v | grep srv
-/dev/sda2 on /srv/usb3disk1 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount)
-/dev/sdc2 on /srv/usb3disk2 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount)
-/dev/sdf1 on /srv/usb3disk3 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk2.mount)
-1/mediaroot:2/mediaroot:3/mediaroot on /srv/media type fuse.mergerfs (ro,relatime,user_id=0,group_id=0,default_permissions,allow_other)
+/dev/sda2 on /srv/usb3disk1 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount)
+/dev/sdc2 on /srv/usb3disk2 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount)
+/dev/sdf1 on /srv/usb3disk3 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount)
 ```
 Notice in the last line `1/` `2/` `3/` means it is `usb3disk1` `usb3disk2` `usb3disk3` in that Left-to-Right order.    
 They only mounted correctly in that order due to the mount dependencies we set in the individual mounts above.    
@@ -871,17 +872,17 @@ sudo cat /etc/fstab
 So, `fstab` should look something like this, with the individual disk mounts
 un-commented and the `mergerfs` mounts still commented out.    
 ```
-# UNCOMMENT A LINE BELOW FOR EACH DISK WE HAVE, DEPENDING ON HOW MANY DISKS WE HAVE, AND POP IN THE CORRECT PARTUUID FOR EACH DISK
-PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /srv/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount 0 0
-PARTUUID=a175d2d3-c2f6-44d4-a5fc-209363280c89 /srv/usb3disk2 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount 0 0
-PARTUUID=9a63b215-bcf1-462b-89d2-56979cec6ed8 /srv/usb3disk3 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk2.mount, 0 0
-#PARTUUID= /srv/usb3disk4 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk3.mount, 0 0
-#PARTUUID= /srv/usb3disk5 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk4.mount, 0 0
-#PARTUUID= /srv/usb3disk6 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk5.mount, 0 0
-#PARTUUID= /srv/usb3disk7 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk6.mount, 0 0
-#PARTUUID= /srv/usb3disk8 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=60,x-systemd.mount-timeout=60,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk7.mount, 0 0
+# UN-COMMENT A LINE BELOW FOR EACH DISK WE HAVE, DEPENDING ON HOW MANY DISKS WE HAVE, AND POP IN THE CORRECT PARTUUID FOR EACH DISK
+PARTUUID=2d5599a2-aa11-4aad-9f75-7fca2078b38b /srv/usb3disk1 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount 0 0
+PARTUUID=a175d2d3-c2f6-44d4-a5fc-209363280c89 /srv/usb3disk2 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount 0 0
+PARTUUID=9a63b215-bcf1-462b-89d2-56979cec6ed8 /srv/usb3disk3 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount 0 0
+#PARTUUID= /srv/usb3disk4 /srv/usb3disk4 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount 0 0
+#PARTUUID= /srv/usb3disk5 /srv/usb3disk5 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount 0 0
+#PARTUUID= /srv/usb3disk6 /srv/usb3disk6 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount 0 0
+#PARTUUID= /srv/usb3disk7 /srv/usb3disk7 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount 0 0
+#PARTUUID= /srv/usb3disk8 /srv/usb3disk8 ntfs defaults,auto,nofail,users,rw,exec,umask=000,dmask=000,fmask=000,uid=pi,gid=pi,noatime,nodiratime,nofail,x-systemd.device-timeout=120,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount,x-systemd.after=srv-usb3disk7.mount 0 0
 #
-# UNCOMMENT ONE OF THE LINES BELOW DEPENDNG ON HOW MANY DISKS WE HAVE
+# UN-COMMENT ONE OF THE LINES BELOW DEPENDNG ON HOW MANY DISKS WE HAVE
 # for disks 1 to 1:
 #/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk1.mount 0 0
 # for disks 1 to 2:
@@ -895,11 +896,12 @@ PARTUUID=9a63b215-bcf1-462b-89d2-56979cec6ed8 /srv/usb3disk3 ntfs defaults,auto,
 # for disks 1 to 6:
 #/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk6.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount 0 0
 # for disks 1 to 7:
-#/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk7.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount,x-systemd.after=srv-usb3disk7.mount 0 0
+/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk7.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount,x-systemd.after=srv-usb3disk7.mount 0 0
 # for disks 1 to 8:
 #/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk8.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk4.mount,x-systemd.after=srv-usb3disk5.mount,x-systemd.after=srv-usb3disk6.mount,x-systemd.after=srv-usb3disk7.mount,x-systemd.after=srv-usb3disk8.mount 0 0
+#
 ```
-The individual disk mount lines have soft dependencies so each disk tries to get mounted after the previous disk in the sequence.    
+The individual disk mount lines have soft dependencies so that each disk tries to get mounted after the previous disk in the sequence.    
 Notice that The `mergerfs` lines have dependencies 
 
 Notice the lines at the end of `fstab` starting with `/srv/usb3disk*/mediaroot`.   
@@ -909,9 +911,10 @@ So, edit `fstab`
 ```
 sudo nano /etc/fstab
 ```
-and remove the '#' from the start of that line so it looks like:    
+and remove the '#' from the start of that line so it looks a bit like:    
 ```
-/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true 0 0
+# for disks 1 to 3:
+/srv/usb3disk*/mediaroot /srv/media mergerfs defaults,ro,category.action=ff,category.create=ff,category.search=all,moveonenospc=true,dropcacheonclose=true,cache.readdir=true,cache.files=partial,lazy-umount-mountpoint=true,x-systemd.wants=srv-usb3disk3.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount,x-systemd.after=srv-usb3disk3.mount 0 0
 ```
 exit nano with `Control O` `Control X`. 
 
@@ -926,10 +929,10 @@ sudo mount -v | grep srv
 ```
 which should look a bit like:    
 ```
-/dev/sda2 on /srv/usb3disk1 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.device-timeout=60,x-systemd.mount-timeout=60)
-/dev/sdc2 on /srv/usb3disk2 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.device-timeout=60,x-systemd.mount-timeout=60)
-/dev/sdg1 on /srv/usb3disk3 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.device-timeout=60,x-systemd.mount-timeout=60)
-1/mediaroot:2/mediaroot:3/mediaroot on /srv/media type fuse.mergerfs (rw,relatime,user_id=0,group_id=0,default_permissions,allow_other)
+/dev/sda2 on /srv/usb3disk1 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount)
+/dev/sdc2 on /srv/usb3disk2 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount)
+/dev/sdf1 on /srv/usb3disk3 type fuseblk (rw,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,x-systemd.mount-timeout=120,x-systemd.wanted-by=srv-media.mount,x-systemd.after=srv-usb3disk1.mount,x-systemd.after=srv-usb3disk2.mount)
+1/mediaroot:2/mediaroot:3/mediaroot on /srv/media type fuse.mergerfs (ro,relatime,user_id=0,group_id=0,default_permissions,allow_other)
 ```
 
 **3. See the "merged" disks/folders appear as one folder**    
@@ -990,7 +993,7 @@ Per https://www.samba.org/samba/docs/current/man-html/smb.conf.5.html
 Here are some global `SAMBA` settings in `/etc/samba/smb.conf`.    
 Use nano to check for and fix each of them    
 - if they do not exist, create them    
-- if they are commented out, uncomment and fix them    
+- if they are commented out, un-comment and fix them    
 - if they contain different values, comment that line out and create a new line underneath with the correct setting
 
 ```
@@ -1375,38 +1378,38 @@ now in nano,
 # Find and change line `album_art_names=` to comment it out:
 ##album_art_names=
 
-# Find and uncomment and/or change/add line `#friendly_name=` to:
+# Find and un-comment and/or change/add line `#friendly_name=` to:
 friendly_name=PINAS64-minidlna
 
-# Find and uncomment and/or change/add line `#model_name=` to:
+# Find and un-comment and/or change/add line `#model_name=` to:
 model_name=PINAS64-miniDLNA
 
-# Find and uncomment and/or change/add line `#merge_media_dirs=` to:
+# Find and un-comment and/or change/add line `#merge_media_dirs=` to:
 merge_media_dirs=no
 
-# Find and uncomment and/or change/add line `#db_dir=/var/cache/minidlna` to:
+# Find and un-comment and/or change/add line `#db_dir=/var/cache/minidlna` to:
 db_dir=/srv/usb3disk1/minidlna/cache
 
-# Find and uncomment and/or change/add line `#log_dir=/var/log/minidlna` to:
+# Find and un-comment and/or change/add line `#log_dir=/var/log/minidlna` to:
 log_dir=/srv/usb3disk1/minidlna/log
 
 # inotify=yes and notify_interval=895 work together fopr miniDLNA to discover added and modified files
-# Find and uncomment and/or change/add line `#inotify=yes` to:
+# Find and un-comment and/or change/add line `#inotify=yes` to:
 inotify=yes
-# Find and uncomment and/or change/add line `#notify_interval=895` (5 seconds under 15 minutes) to:
+# Find and un-comment and/or change/add line `#notify_interval=895` (5 seconds under 15 minutes) to:
 notify_interval=895
 
-# Find and uncomment and/or change/add line `#strict_dlna=no` to:
+# Find and un-comment and/or change/add line `#strict_dlna=no` to:
 strict_dlna=yes
 
-# Find and uncomment and/or change/add line `#max_connections=50` to a number expected for this LAN:
+# Find and un-comment and/or change/add line `#max_connections=50` to a number expected for this LAN:
 # (many clients open several simultaneous connections while streaming)
 max_connections=24
 
-# Find and uncomment and/or change/add line `#log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=warn` to:
+# Find and un-comment and/or change/add line `#log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=warn` to:
 log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=info
 
-# Find and uncomment and/or change/add line `#wide_links=no` to:
+# Find and un-comment and/or change/add line `#wide_links=no` to:
 wide_links=yes
 
 # now ADD the line to expose the overlayed media folder ...
@@ -1731,38 +1734,38 @@ now in nano,
 # Find and change line `album_art_names=` to comment it out:
 ##album_art_names=
 
-# Find and uncomment and/or change/add line `#friendly_name=` to:
+# Find and un-comment and/or change/add line `#friendly_name=` to:
 friendly_name=PINAS64-minidlna
 
-# Find and uncomment and/or change/add line `#model_name=` to:
+# Find and un-comment and/or change/add line `#model_name=` to:
 model_name=PINAS64-miniDLNA
 
-# Find and uncomment and/or change/add line `#merge_media_dirs=` to:
+# Find and un-comment and/or change/add line `#merge_media_dirs=` to:
 merge_media_dirs=no
 
-# Find and uncomment and/or change/add line `#db_dir=/var/cache/minidlna` to:
+# Find and un-comment and/or change/add line `#db_dir=/var/cache/minidlna` to:
 db_dir=/srv/usb3disk1/minidlna/cache
 
-# Find and uncomment and/or change/add line `#log_dir=/var/log/minidlna` to:
+# Find and un-comment and/or change/add line `#log_dir=/var/log/minidlna` to:
 log_dir=/srv/usb3disk1/minidlna/log
 
 # inotify=yes and notify_interval=895 work together fopr miniDLNA to discover added and modified files
-# Find and uncomment and/or change/add line `#inotify=yes` to:
+# Find and un-comment and/or change/add line `#inotify=yes` to:
 inotify=yes
-# Find and uncomment and/or change/add line `#notify_interval=895` (5 seconds under 15 minutes) to:
+# Find and un-comment and/or change/add line `#notify_interval=895` (5 seconds under 15 minutes) to:
 notify_interval=895
 
-# Find and uncomment and/or change/add line `#strict_dlna=no` to:
+# Find and un-comment and/or change/add line `#strict_dlna=no` to:
 strict_dlna=yes
 
-# Find and uncomment and/or change/add line `#max_connections=50` to a number expected for this LAN:
+# Find and un-comment and/or change/add line `#max_connections=50` to a number expected for this LAN:
 # (many clients open several simultaneous connections while streaming)
 max_connections=24
 
-# Find and uncomment and/or change/add line `#log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=warn` to:
+# Find and un-comment and/or change/add line `#log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=warn` to:
 log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=info
 
-# Find and uncomment and/or change/add line `#wide_links=no` to:
+# Find and un-comment and/or change/add line `#wide_links=no` to:
 wide_links=yes
 
 # now ADD the line to expose the overlayed media folder ...
