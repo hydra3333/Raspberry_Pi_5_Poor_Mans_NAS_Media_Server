@@ -1,0 +1,2 @@
+zip -r /home/pi/chromium_backup.zip /home/pi/.config/chromium/Default
+unzip  /home/pi/chromium_backup.zip -d /home/pi/.config/chromium/
