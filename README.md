@@ -1287,16 +1287,10 @@ REM DISK3 as read-write (copy new media to subfolders here, depending on how ful
 1. **Ensure we un-install any prior `miniDLNA`; in a Terminal**    
 ```
 sudo systemctl stop minidlna
-sleep 2s
-sudo systemctl disable minidlna
-sleep 2s
-sudo apt purge minidlna -y
-sudo apt autoremove -y
 ```
 
 2. **Remove any prior config items and index db; in a Terminal**    
 ```
-sudo rm -vfR "/etc/minidlna.conf"
 sudo rm -vfR "/var/log/minidlna.log"
 sudo rm -vfR "/run/minidlna"
 # note: the next lines may fail, ignore any fails:
