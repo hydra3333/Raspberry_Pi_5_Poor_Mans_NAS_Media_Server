@@ -370,12 +370,8 @@ Note: that site shows a minimum of release `1.21 / 2023-10-22` in
 Download and Install the most up-to-date release of the 'adelolmo' version of `hd-idle` direct from the author:    
 ```
 cd ~/Desktop
-rm -fvR /home/pi/Desktop/hd-idle
-mkdir -v -m a=rwx /home/pi/Desktop/hd-idle
-chmod -c a=rwx -R /home/pi/Desktop/hd-idle
-cd /home/pi/Desktop/hd-idle
-touch /home/pi/Desktop/hd-idle/hd-idle.log
-chmod -c a=rw -R /home/pi/Desktop/hd-idle/hd-idle.log
+touch /home/pi/Desktop/hd-idle.log
+chmod -c a=rw -R /home/pi/Desktop/hd-idle.log
 #
 sudo rm -vf hd-idle_1.21_arm64.deb
 wget https://github.com/adelolmo/hd-idle/releases/download/v1.21/hd-idle_1.21_arm64.deb
@@ -408,7 +404,7 @@ sudo apt-get install -f
 Install SAMBA to serve up standard SAMBA SMB/CIFS file shares across the network
 ```
 sudo apt -y install samba samba-common-bin smbclient cifs-utils
-stop samba
+sudo systemctl stop smbd
 ```
 
 **10. Add user `pi` into groups `plugdev` and `systemd-journal`; in a Terminal**    
@@ -828,14 +824,14 @@ sudo nano /etc/default/hd-idle
 # sda sdb sdc etc     timeout 900s = 15 mins
 START_HD_IDLE=true
 # UN-COMMENT ONE OF THESE LINES IF sda,sd...etc MATCHES ALL OF YOUR USB3 DISKS AND ONLY THOSE USB3 DISKS
-#HD_IDLE_OPTS="-i 300 -l /home/pi/Desktop/hd-idle/hd-idle.log -a /dev/sda -i 900"
-#HD_IDLE_OPTS="-i 300 -l /home/pi/Desktop/hd-idle/hd-idle.log -a /dev/sda -i 900 -a /dev/sdb -i 900"
-#HD_IDLE_OPTS="-i 300 -l /home/pi/Desktop/hd-idle/hd-idle.log -a /dev/sda -i 900 -a /dev/sdb -i 900 -a /dev/sdc -i 900"
-#HD_IDLE_OPTS="-i 300 -l /home/pi/Desktop/hd-idle/hd-idle.log -a /dev/sda -i 900 -a /dev/sdb -i 900 -a /dev/sdc -i 900 -a /dev/sdd -i 900"
-#HD_IDLE_OPTS="-i 300 -l /home/pi/Desktop/hd-idle/hd-idle.log -a /dev/sda -i 900 -a /dev/sdb -i 900 -a /dev/sdc -i 900 -a /dev/sdd -i 900 -a /dev/sde -i 900"
-#HD_IDLE_OPTS="-i 300 -l /home/pi/Desktop/hd-idle/hd-idle.log -a /dev/sda -i 900 -a /dev/sdb -i 900 -a /dev/sdc -i 900 -a /dev/sdd -i 900 -a /dev/sde -i 900 -a /dev/sdf -i 900"
-#HD_IDLE_OPTS="-i 300 -l /home/pi/Desktop/hd-idle/hd-idle.log -a /dev/sda -i 900 -a /dev/sdb -i 900 -a /dev/sdc -i 900 -a /dev/sdd -i 900 -a /dev/sde -i 900 -a /dev/sdf -i 900 -a /dev/sdg -i 900"
-#HD_IDLE_OPTS="-i 300 -l /home/pi/Desktop/hd-idle/hd-idle.log -a /dev/sda -i 900 -a /dev/sdb -i 900 -a /dev/sdc -i 900 -a /dev/sdd -i 900 -a /dev/sde -i 900 -a /dev/sdf -i 900 -a /dev/sdg -i 900 -a /dev/sdh -i 900"
+#HD_IDLE_OPTS="-i 300 -l /home/pi/Desktop/hd-idle.log -a /dev/sda -i 900"
+#HD_IDLE_OPTS="-i 300 -l /home/pi/Desktop/hd-idle.log -a /dev/sda -i 900 -a /dev/sdb -i 900"
+#HD_IDLE_OPTS="-i 300 -l /home/pi/Desktop/hd-idle.log -a /dev/sda -i 900 -a /dev/sdb -i 900 -a /dev/sdc -i 900"
+#HD_IDLE_OPTS="-i 300 -l /home/pi/Desktop/hd-idle.log -a /dev/sda -i 900 -a /dev/sdb -i 900 -a /dev/sdc -i 900 -a /dev/sdd -i 900"
+#HD_IDLE_OPTS="-i 300 -l /home/pi/Desktop/hd-idle.log -a /dev/sda -i 900 -a /dev/sdb -i 900 -a /dev/sdc -i 900 -a /dev/sdd -i 900 -a /dev/sde -i 900"
+#HD_IDLE_OPTS="-i 300 -l /home/pi/Desktop/hd-idle.log -a /dev/sda -i 900 -a /dev/sdb -i 900 -a /dev/sdc -i 900 -a /dev/sdd -i 900 -a /dev/sde -i 900 -a /dev/sdf -i 900"
+#HD_IDLE_OPTS="-i 300 -l /home/pi/Desktop/hd-idle.log -a /dev/sda -i 900 -a /dev/sdb -i 900 -a /dev/sdc -i 900 -a /dev/sdd -i 900 -a /dev/sde -i 900 -a /dev/sdf -i 900 -a /dev/sdg -i 900"
+#HD_IDLE_OPTS="-i 300 -l /home/pi/Desktop/hd-idle.log -a /dev/sda -i 900 -a /dev/sdb -i 900 -a /dev/sdc -i 900 -a /dev/sdd -i 900 -a /dev/sde -i 900 -a /dev/sdf -i 900 -a /dev/sdg -i 900 -a /dev/sdh -i 900"
 ```
 
 To enable `hd-idle` on reboot and then restart, in a Terminal:
@@ -844,7 +840,7 @@ sudo systemctl enable hd-idle
 sudo systemctl stop hd-idle
 sudo systemctl restart hd-idle
 # wait 2 secs
-sudo cat /home/pi/Desktop/hd-idle/hd-idle.log
+sudo cat /home/pi/Desktop/hd-idle.log
 #
 sudo journalctl -u hd-idle.service | grep hd-idle| tail -n 20
 #
@@ -853,7 +849,7 @@ sudo systemctl status hd-idle.service | tail -n 20
 Look at the status and logs:
 ```
 # wait 2 secs
-sudo cat /home/pi/Desktop/hd-idle/hd-idle.log
+sudo cat /home/pi/Desktop/hd-idle.log
 #
 # Display the status of the service
 sudo systemctl status hd-idle.service | tail -n 20
