@@ -411,7 +411,13 @@ sudo apt -y install samba samba-common-bin smbclient cifs-utils
 sudo systemctl stop smbd
 ```
 
-Install miniDLNA
+Install miniDLNA and then stop the service so we can configure it    
+```
+sudo apt install -y minidlna
+sudo systemctl stop minidlna 
+sudo systemctl enable minidlna
+```
+
 
 **10. Add user `pi` into groups `plugdev` and `systemd-journal`; in a Terminal**    
 ```
@@ -1297,14 +1303,7 @@ sudo rm -vfR "/run/minidlna"
 sudo rm -vfR "/home/pi/Desktop/minidlna"
 ```
 
-3. **Install `miniDLNA`, enable, and then stop the service so we can configure it; in a Terminal**    
-```
-sudo apt install -y minidlna
-sudo systemctl stop minidlna 
-sudo systemctl enable minidlna
-```
-
-4. **Add users to `miniDLNA` Groups, and vice versa; in a Terminal**    
+3. **Add users to `miniDLNA` Groups, and vice versa; in a Terminal**    
 ```
 sudo usermod -a -G pi minidlna
 sudo usermod -a -G minidlna pi
@@ -1312,7 +1311,7 @@ sudo usermod -a -G minidlna root
 sudo usermod -a -G root minidlna
 ```
 
-5. **Fix ownerships etc, create folders for db and log at the top of external USB3 disk DISK1; in a Terminal**    
+4. **Fix ownerships etc, create folders for db and log at the top of external USB3 disk DISK1; in a Terminal**    
 
 ```
 sudo chmod -c a=rwx -R         "/etc/minidlna.conf"
@@ -1338,7 +1337,7 @@ sudo chmod -c a=rwx            "/home/pi/Desktop/minidlna/minidlna.log"
 sudo chown -c -R pi:minidlna   "/home/pi/Desktop/minidlna/minidlna.log"
 ```
 
-6. **Change the config to align with out disk/folder arrangement etc; in a Terminal**    
+5. **Change the config to align with out disk/folder arrangement etc; in a Terminal**    
 
 Backup and edit the miniDLNA config file:    
 ```
