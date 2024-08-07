@@ -984,8 +984,8 @@ Edit the `SAMBA` config `/etc/samba/smb.conf`
 sudo nano /etc/samba/smb.conf
 ```
 Per https://www.samba.org/samba/docs/current/man-html/smb.conf.5.html    
-Here are some global `SAMBA` settings in `/etc/samba/smb.conf`.    
-Use nano to check for and fix each of them    
+Here are some `[global]` `SAMBA` settings in `/etc/samba/smb.conf`.    
+Use nano to check for and fix each of them in the `[global]` section      
 - if they do not exist, create them    
 - if they are commented out, un-comment and fix them    
 - if they contain different values, comment that line out and create a new line underneath with the correct setting
@@ -993,6 +993,8 @@ Use nano to check for and fix each of them
 ```
 workgroup = WORKGROUP
 hosts 10.0.0.1/255.255.255.0 127.0.0.1
+log file = /home/pi/Desktop/samba.log.%m
+max log size = 20000
 security = user
 deadtime = 15
 #socket options = IPTOS_LOWDELAY TCP_NODELAY SO_RCVBUF=65536 SO_SNDBUF=65536 SO_KEEPALIVE
