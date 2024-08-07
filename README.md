@@ -1,4 +1,3 @@
-
 # WARNING: UNDER CONSTRUCTION
 
 # DO NOT USE
@@ -973,13 +972,9 @@ sudo smbpasswd -a pi
 Set up a folder for the `SAMBA` log.    
 ```
 cd ~/Desktop
-rm -fvR /home/pi/Desktop/samba
-mkdir -v -m a=rwx /home/pi/Desktop/samba
-chmod -c a=rwx -R /home/pi/Desktop/samba
 #
-cd /home/pi/Desktop/samba
-touch /home/pi/Desktop/samba/samba.log
-chmod -c a=rw -R /home/pi/Desktop/samba/samba.log
+touch /home/pi/Desktop/samba.log
+chmod -c a=rw -R /home/pi/Desktop/samba.log
 #
 cd ~/Desktop
 ```
