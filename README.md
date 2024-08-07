@@ -1279,7 +1279,7 @@ REM DISK3 as read-write (copy new media to subfolders here, depending on how ful
 
 ---
 
-## Install and configure `miniDLNA` to serve media on the LAN via DLNA
+## Configure `miniDLNA` to serve media on the LAN via DLNA
 
 #### NOTE: we install the miniDLNA index db onto USB3 DISK1 rather than the SD card    
 ####       since it is faster, and the SD card won't wear out quicker due to index rebuilds    
