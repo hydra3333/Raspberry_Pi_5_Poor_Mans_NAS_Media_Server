@@ -1294,7 +1294,7 @@ sudo rm -vfR "/etc/minidlna.conf"
 sudo rm -vfR "/var/log/minidlna.log"
 sudo rm -vfR "/run/minidlna"
 # note: the next lines may fail, ignore any fails:
-sudo rm -vfR "/srv/usb3disk1/minidlna"
+sudo rm -vfR "/home/pi/Desktop/minidlna"
 ```
 
 3. **Install `miniDLNA`, enable, and then stop the service so we can configure it; in a Terminal**    
@@ -1318,9 +1318,9 @@ sudo usermod -a -G root minidlna
 sudo chmod -c a=rwx -R         "/etc/minidlna.conf"
 sudo chown -c -R pi:minidlna   "/etc/minidlna.conf"
 #
-sudo mkdir -pv                 "/srv/usb3disk1/minidlna"
-sudo chmod -c a=rwx -R         "/srv/usb3disk1/minidlna"
-sudo chown -c -R pi:minidlna   "/srv/usb3disk1/minidlna"
+sudo mkdir -pv                 "/home/pi/Desktop/minidlna"
+sudo chmod -c a=rwx -R         "/home/pi/Desktop/minidlna"
+sudo chown -c -R pi:minidlna   "/home/pi/Desktop/minidlna"
 #
 sudo chmod -c a=rwx -R         "/run/minidlna"
 sudo chown -c -R pi:minidlna   "/run/minidlna"
@@ -1329,39 +1329,33 @@ sudo touch                     "/run/minidlna/minidlna.pid"
 sudo chmod -c a=rwx -R         "/run/minidlna/minidlna.pid"
 sudo chown -c -R pi:minidlna   "/run/minidlna/minidlna.pid"
 #
-sudo mkdir -pv                 "/srv/usb3disk1/minidlna/cache"
-sudo chmod -c a=rwx -R         "/srv/usb3disk1/minidlna/cache"
-sudo chown -c -R pi:minidlna   "/srv/usb3disk1/minidlna/cache"
+sudo mkdir -pv                 "/home/pi/Desktop/minidlna/cache"
+sudo chmod -c a=rwx -R         "/home/pi/Desktop/minidlna/cache"
+sudo chown -c -R pi:minidlna   "/home/pi/Desktop/minidlna/cache"
 #
-# no longer use a subfolder for the log
-#sudo mkdir -pv                 "/srv/usb3disk1/minidlna/log"
-#sudo touch                     "/srv/usb3disk1/minidlna/log/minidlna.log"
-#sudo chmod -c a=rwx -R         "/srv/usb3disk1/minidlna/log"
-#sudo chown -c -R pi:minidlna   "/srv/usb3disk1/minidlna/log"
-sudo touch                     "/srv/usb3disk1/minidlna/minidlna.log"
-sudo chmod -c a=rwx            "/srv/usb3disk1/minidlna.log"
-sudo chmod -c a=rwx            "/srv/usb3disk1/minidlna.log"
-sudo chown -c -R pi:minidlna   "/srv/usb3disk1/minidlna.log"
+sudo touch                     "/home/pi/Desktop/minidlna/minidlna.log"
+sudo chmod -c a=rwx            "/home/pi/Desktop/minidlna/minidlna.log"
+sudo chown -c -R pi:minidlna   "/home/pi/Desktop/minidlna/minidlna.log"
 ```
 
 6. **Change the config to align with out disk/folder arrangement etc; in a Terminal**    
 
+Backup and edit the miniDLNA config file:    
 ```
-# backup and edit the miniDLNA config file
 sudo cp -fv "/etc/minidlna.conf" "/etc/minidlna.conf.original"
 sudo nano "/etc/minidlna.conf"
 ```
 now in nano,
 ```
-# ignore these 3 ...
-##minidlna_refresh_log_file=/srv/usb3disk1/minidlna/log/minidlna_refresh.log
-##minidlna_refresh_sh_file=/srv/usb3disk1/minidlna/minidlna_refresh.sh
-##minidlna_restart_refresh_sh_file=/srv/usb3disk1/minidlna/minidlna_restart_refresh.sh
+# ignore these 3 lines which are commented out...
+##minidlna_refresh_log_file=/home/pi/Desktop/minidlna/minidlna_refresh.log
+##minidlna_refresh_sh_file=/home/pi/Desktop/minidlna/minidlna_refresh.sh
+##minidlna_restart_refresh_sh_file=/home/pi/Desktop/minidlna/minidlna_restart_refresh.sh
 
-# Find and change line `media_dir=/var/lib/minidlna` to comment it out:
+# Find and change line `media_dir=/var/lib/minidlna` to comment it out with a preceding #:
 ##media_dir=/var/lib/minidlna
 
-# Find and change line `album_art_names=` to comment it out:
+# Find and change line `album_art_names=` to comment it out with a preceding #:
 ##album_art_names=
 
 # Find and un-comment and/or change/add line `#friendly_name=` to:
@@ -1374,14 +1368,16 @@ model_name=PINAS64-miniDLNA
 merge_media_dirs=no
 
 # Find and un-comment and/or change/add line `#db_dir=/var/cache/minidlna` to:
-db_dir=/srv/usb3disk1/minidlna/cache
+db_dir=/home/pi/Desktop/minidlna/cache
 
 # Find and un-comment and/or change/add line `#log_dir=/var/log/minidlna` to:
-log_dir=/srv/usb3disk1/minidlna/log
+log_dir=/home/pi/Desktop/minidlna
 
-# inotify=yes and notify_interval=895 work together fopr miniDLNA to discover added and modified files
+# inotify=yes and notify_interval=895 work together for miniDLNA to discover added and modified files
 # Find and un-comment and/or change/add line `#inotify=yes` to:
 inotify=yes
+
+# inotify=yes and notify_interval=895 work together for miniDLNA to discover added and modified files
 # Find and un-comment and/or change/add line `#notify_interval=895` (5 seconds under 15 minutes) to:
 notify_interval=895
 
@@ -1390,7 +1386,7 @@ strict_dlna=yes
 
 # Find and un-comment and/or change/add line `#max_connections=50` to a number expected for this LAN:
 # (many clients open several simultaneous connections while streaming)
-max_connections=24
+max_connections=30
 
 # Find and un-comment and/or change/add line `#log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=warn` to:
 log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=info
@@ -1398,36 +1394,80 @@ log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=info
 # Find and un-comment and/or change/add line `#wide_links=no` to:
 wide_links=yes
 
-# now ADD the line to expose the overlayed media folder ...
-root_container=PVA,/srv/overlay
-##media_dir=PVA,/srv/overlay
+# now ADD the line to expose the mergerfs media folder ...
+root_container=PVA,/srv/media
+##media_dir=PVA,/srv/media
 
-# now ADD any lines where wish to expose folders
-# separately to, but as well as in, the overlayed folder tree, eg
+# now ADD any lines to match the folders we need to expose from with the merged folder tree
 # THE ENTRIES BELOW MUST EXACTLY MATCH THE FOLDERS WE WISH DLNA TO EXPOSE
-media_dir=PVA,/srv/overlay/ClassicMovies
-media_dir=PVA,/srv/overlay/Documentaries
-media_dir=PVA,/srv/overlay/Footy
-media_dir=PVA,/srv/overlay/Movies
-media_dir=PVA,/srv/overlay/Music
-media_dir=PVA,/srv/overlay/OldMovies
-media_dir=PVA,/srv/overlay/SciFi
+# THE EXAMPLE BELOW INCLUDES COMMENTED-OUT UNUSED FOLDERS
+#media_dir=PVA,/srv/media/BigIdeas
+#media_dir=PVA,/srv/media/ClassicDocumentaries
+media_dir=PVA,/srv/media/ClassicMovies
+media_dir=PVA,/srv/media/Documentaries
+#media_dir=PVA,/srv/media/Family_Photos
+media_dir=PVA,/srv/media/Footy
+media_dir=PVA,/srv/media/Movies
+#media_dir=PVA,/srv/media/Movies_unsorted
+media_dir=PVA,/srv/media/Music
+#media_dir=PVA,/srv/media/MusicVideos
+media_dir=PVA,/srv/media/OldMovies
+media_dir=PVA,/srv/media/SciFi
+#media_dir=PVA,/srv/media/Series
 ```
-Restart miniDLNA and force a db reload.
+Restart miniDLNA and force a db reload, whihc will take a long time to index
 ```
 sudo systemctl stop minidlna 
 sudo systemctl restart minidlna 
+sudo systemctl reload minidlna
 sudo systemctl force-reload minidlna 
 sudo systemctl status minidlna | tail -n 50
-tail -n 50 /srv/usb3disk1/minidlna/log/minidlna.log
+tail -n 50 /home/pi/Desktop/minidlna/minidlna.log
 ```
-The minidlna service comes with an internal small web server and webinterface.    
-This webinterface is just for informational purposes.    
-We will not be able to configure anything here.    
-However, it gives us a nice and short information screen how many files have been found by minidlna.    
-To access the webinterface, open our browser of choice and enter url http://127.0.0.1:8200    
+The minidlna service comes with a small internal web server and web-interface.    
+This web-interface is just for informational purposes.    
+We will not be able to configure anything in it.    
+However, it gives us a short information screen indicating how many files have been found by minidlna.    
+To access the web-interface, open our browser of choice and enter url http://127.0.0.1:8200    
 ```
 curl -i http://127.0.0.1:8200
+curl -i http://10.0.0.18:8200
+```
+
+Debian miniDLNA man page:    
+```
+minidlnad	[-f config_file] [-d] [-v] [-u user] [-i interface] [-p port] [-s serial] [-m model_number] [-t notify_interval] [-P pid_filename] [-w url] [-S] [-L] [-R]
+minidlnad	[-h | -V]
+
+DESCRIPTION
+The minidlnad daemon is a DLNA/UPnP-AV server sharing media files (video, music and pictures) to clients on your network. 
+Clients are typically multimedia players such as vlc, totem and xbmc, and devices such as portable media players, 
+smartphones, televisions, video game entertainment systems and blu-ray players.
+
+By default, minidlnad listens on all the network interfaces (except loopback) for clients. 
+This behavior can be changed on the command-line using the -i option, or in the configuration file 
+through the network_interface option (see minidlna.conf(5) for details).
+
+OPTIONS
+Most of the options below can also be set in a configuration file, as described in minidlna.conf(5).
+
+-d					Activate debug mode (do not daemonize).
+-f config_file		Specify the location of the configuration file. Uses /etc/minidlna.conf by default.
+-h					Show help and exit.
+-i interface		Network interface to listen on. Can be specified more than once.
+-L					Do not create playlists.
+-m model_number		Model number the daemon will report to clients in its XML description.
+-P pid_filename		PID file to use; the default is /run/minidlna/minidlna.pid.
+-p port				Port number to listen on.
+-R					Forces a full rescan of the media files. First it will remove all cached data and database. Any bookmarks will be lost.
+-r					Do a non-destructive rescan of the media files on start-up.
+-S					Stay foreground. Can be used when minidlnad is being managed by systemd
+-s serial			Serial number the daemon will report to clients in its XML description.
+-t notify_interval	Notify interval, in seconds; defaults to 895 seconds.
+-u user				Specify which user minidlnad should run as, instead of root; user can either be a numerical UID or a user name.
+-V					Show the program version and exit.
+-v					Verbose output.
+-w url				Sets the presentation url; the default is http address.
 ```
 
 
@@ -1436,9 +1476,9 @@ curl -i http://127.0.0.1:8200
 
 **Under Construction for miniDLNA**    
 ```
-minidlna_refresh_sh_file=/srv/usb3disk1/minidlna/minidlna_refresh.sh
-minidlna_refresh_log_file=/srv/usb3disk1/minidlna/log/minidlna_refresh.log
-minidlna_restart_refresh_sh_file=/srv/usb3disk1/minidlna/minidlna_restart_refresh.sh
+minidlna_refresh_sh_file=/home/pi/Desktop/minidlna/minidlna_refresh.sh
+minidlna_refresh_log_file=/home/pi/Desktop/minidlna/log/minidlna_refresh.log
+minidlna_restart_refresh_sh_file=/home/pi/Desktop/minidlna/minidlna_restart_refresh.sh
 ```
 
 
