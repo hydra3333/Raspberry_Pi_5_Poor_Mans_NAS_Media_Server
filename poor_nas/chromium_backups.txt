@@ -1,0 +1,106 @@
+Copyright (c) 1990-2008 Info-ZIP - Type 'zip "-L"' for software license.
+Zip 3.0 (July 5th 2008). Usage:
+zip [-options] [-b path] [-t mmddyyyy] [-n suffixes] [zipfile list] [-xi list]
+  The default action is to add or replace zipfile entries from list, which
+  can include the special name - to compress standard input.
+  If zipfile and list are omitted, zip compresses stdin to stdout.
+  -f   freshen: only changed files  -u   update: only changed or new files
+  -d   delete entries in zipfile    -m   move into zipfile (delete OS files)
+  -r   recurse into directories     -j   junk (don't record) directory names
+  -0   store only                   -l   convert LF to CR LF (-ll CR LF to LF)
+  -1   compress faster              -9   compress better
+  -q   quiet operation              -v   verbose operation/print version info
+  -c   add one-line comments        -z   add zipfile comment
+  -@   read names from stdin        -o   make zipfile as old as latest entry
+  -x   exclude the following names  -i   include only the following names
+  -F   fix zipfile (-FF try harder) -D   do not add directory entries
+  -A   adjust self-extracting exe   -J   junk zipfile prefix (unzipsfx)
+  -T   test zipfile integrity       -X   eXclude eXtra file attributes
+  -y   store symbolic links as the link instead of the referenced file
+  -e   encrypt                      -n   don't compress these suffixes
+
+zip -r -u -9 -v /home/pi/Desktop/chromium_backup.zip /home/pi/.config/chromium/Default
+
+
+
+UnZip 6.00 of 20 April 2009, by Debian. Original by Info-ZIP.
+Usage: unzip [-Z] [-opts[modifiers]] file[.zip] [list] [-x xlist] [-d exdir]
+  Default action is to extract files in list, except those in xlist, to exdir;
+  file[.zip] may be a wildcard.  -Z => ZipInfo mode ("unzip -Z" for usage).
+
+  -p  extract files to pipe, no messages     -l  list files (short format)
+  -f  freshen existing files, create none    -t  test compressed archive data
+  -u  update files, create if necessary      -z  display archive comment only
+  -v  list verbosely/show version info       -T  timestamp archive to latest
+  -x  exclude files that follow (in xlist)   -d  extract files into exdir
+modifiers:
+  -n  never overwrite existing files         -q  quiet mode (-qq => quieter)
+  -o  overwrite files WITHOUT prompting      -a  auto-convert any text files
+  -j  junk paths (do not make directories)   -aa treat ALL files as text
+  -U  use escapes for all non-ASCII Unicode  -UU ignore any Unicode fields
+  -C  match filenames case-insensitively     -L  make (some) names lowercase
+  -X  restore UID/GID info                   -V  retain VMS version numbers
+  -K  keep setuid/setgid/tacky permissions   -M  pipe through "more" pager
+See "unzip -hh" or unzip.txt for more help.  Examples:
+  unzip data1 -x joe   => extract all files except joe from zipfile data1.zip
+  unzip -p foo | more  => send contents of foo.zip via pipe into program more
+  unzip -fo foo ReadMe => quietly replace existing ReadMe if archive file newer
+
+unzip -u -o -v /home/pi/Desktop/chromium_backup.zip -d /home/pi/.config/chromium/
+
+
+To fix sch/ssh issues, edit:
+notepad C:\Users\u\.ssh\known_hosts 
+
+
+FROM:
+cd somewhere
+scp -p -v pi@10.0.0.6:/home/pi/Desktop/chromium_backup.zip .
+
+TO:
+cd somewhere
+scp -p -v chromium_backup.zip pi@10.0.0.6:/home/pi/Desktop/
+
+The `scp` command has several options, each serving a different purpose. Here is a list of common `scp` options and their meanings:
+- `-3` : Copies between two remote hosts are transferred through the local host.
+- `-4` : Forces `scp` to use IPv4 addresses only.
+- `-6` : Forces `scp` to use IPv6 addresses only.
+- `-A` : Allows forwarding of the authentication agent connection.
+- `-B` : Selects batch mode (prevents asking for passwords or passphrases).
+- `-C` : Compression enabled.
+- `-c cipher` : Selects the cipher to use for encrypting the data transfer.
+- `-D sftp_server_path` : Specifies the path to the sftp server on the remote host.
+- `-F ssh_config` : Specifies an alternative per-user configuration file for SSH.
+- `-i identity_file` : Selects the file from which the identity (private key) for public key authentication is read.
+- `-J destination` : Connects to the target host by first making a SSH connection to the jump host described by `destination` and then establishing a TCP forwarding to the ultimate destination from there.
+- `-l limit` : Limits the used bandwidth, specified in Kbit/s.
+- `-O` : Use the legacy `scp` protocol.
+- `-o ssh_option` : Can be used to pass options to `ssh` in the format used in `ssh_config`.
+- `-P port` : Specifies the port to connect to on the remote host.
+- `-p` : Preserves modification times, access times, and modes from the original file.
+- `-q` : Quiet mode: disables the progress meter as well as warning and diagnostic messages from `ssh`.
+- `-r` : Recursively copy entire directories.
+- `-S program` : Name of program to use for the encrypted connection.
+- `-T` : Disables strict filename checking.
+- `-v` : Verbose mode. Causes `scp` and `ssh` to print debugging messages about their progress.
+- `-X sftp_option` : Specifies an option for the sftp client. 
+
+For your use case, you likely won't need to use many of these options. If you simply want to copy a file from a remote host to your local machine, you might use a command like:
+scp pi@10.0.0.6:/home/pi/Desktop/chromium_backup.zip .
+
+- **Basic File Copy:**
+  scp user@remote_host:/path/to/remote/file /path/to/local/destination
+
+- **Copy Directory Recursively:**
+  scp -r user@remote_host:/path/to/remote/directory /path/to/local/destination
+
+- **Specify Port:**
+  scp -P 2222 user@remote_host:/path/to/remote/file /path/to/local/destination
+
+- **Use Identity File (Private Key):**
+  scp -i /path/to/private/key user@remote_host:/path/to/remote/file /path/to/local/destination
+
+- **Verbose Mode:**
+  scp -v user@remote_host:/path/to/remote/file /path/to/local/destination
+
+These examples should help you understand how to use `scp` effectively for transferring files. If you have specific requirements or face any issues, feel free to ask!
