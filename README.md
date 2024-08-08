@@ -238,7 +238,8 @@ Edit the firmware's config file:
 sudo nano /boot/firmware/config.txt 
 ```
 then check-for/modify/add the following 3 lines so they are at the end of the config file ...    
-also, to disable WiFi and BlueTooth add the 3 lines after  that:    
+also, to disable WiFi and BlueTooth add the 3 lines after  that ...    
+also, to add screen blanking, add te 2 lines after that"    
 ```
 # Enable PCIE v3
 dtparam=pciex1
@@ -246,6 +247,8 @@ dtparam=pciex1_gen=3
 # Disable WiFi and BlueTooth
 dtoverlay=disable-wifi
 dtoverlay=disable-bt
+# enable screen blanking after 600 seconds (10 mns)
+consoleblank=600
 ```
 exit nano with `Control O` `Control X`.    
 
