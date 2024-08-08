@@ -1292,15 +1292,7 @@ REM DISK3 as read-write (copy new media to subfolders here, depending on how ful
 sudo systemctl stop minidlna
 ```
 
-2. **Remove any prior config items and index db; in a Terminal**    
-```
-sudo rm -vfR "/var/log/minidlna.log"
-sudo rm -vfR "/run/minidlna"
-# note: the next lines may fail, ignore any fails:
-sudo rm -vfR "/home/pi/Desktop/minidlna"
-```
-
-3. **Add users to `miniDLNA` Groups, and vice versa; in a Terminal**    
+2. **Add users to `miniDLNA` Groups, and vice versa; in a Terminal**    
 ```
 sudo usermod -a -G pi minidlna
 sudo usermod -a -G minidlna pi
@@ -1308,15 +1300,11 @@ sudo usermod -a -G minidlna root
 sudo usermod -a -G root minidlna
 ```
 
-4. **Fix ownerships etc, create folders for db and log at the top of external USB3 disk DISK1; in a Terminal**    
+3. **Fix ownerships etc, create folders for db and log at the top of external USB3 disk DISK1; in a Terminal**    
 
 ```
 sudo chmod -c a=rwx -R         "/etc/minidlna.conf"
 sudo chown -c -R pi:minidlna   "/etc/minidlna.conf"
-#
-sudo mkdir -pv                 "/home/pi/Desktop/minidlna"
-sudo chmod -c a=rwx -R         "/home/pi/Desktop/minidlna"
-sudo chown -c -R pi:minidlna   "/home/pi/Desktop/minidlna"
 #
 sudo chmod -c a=rwx -R         "/run/minidlna"
 sudo chown -c -R pi:minidlna   "/run/minidlna"
@@ -1334,40 +1322,82 @@ sudo chmod -c a=rwx            "/home/pi/Desktop/minidlna/minidlna.log"
 sudo chown -c -R pi:minidlna   "/home/pi/Desktop/minidlna/minidlna.log"
 ```
 
-5. **Change the config to align with out disk/folder arrangement etc; in a Terminal**    
+4. **Change the config to align with out disk/folder arrangement etc; in a Terminal**    
 
 Backup and edit the miniDLNA config file:    
 ```
 sudo cp -fv "/etc/minidlna.conf" "/etc/minidlna.conf.original"
 sudo nano "/etc/minidlna.conf"
 ```
-now in nano,
+Now, in nano check every entry and where it matches an item below:    
+- if necessary un-comment it    
+- change its value to become the value below    
 ```
-# ignore these 3 lines which are commented out...
-##minidlna_refresh_log_file=/home/pi/Desktop/minidlna/minidlna_refresh.log
-##minidlna_refresh_sh_file=/home/pi/Desktop/minidlna/minidlna_refresh.sh
-##minidlna_restart_refresh_sh_file=/home/pi/Desktop/minidlna/minidlna_restart_refresh.sh
+#user=minidlna
 
-# Find and change line `media_dir=/var/lib/minidlna` to comment it out with a preceding #:
-##media_dir=/var/lib/minidlna
-
-# Find and change line `album_art_names=` to comment it out with a preceding #:
-##album_art_names=
-
-# Find and un-comment and/or change/add line `#friendly_name=` to:
-friendly_name=PINAS64-minidlna
-
-# Find and un-comment and/or change/add line `#model_name=` to:
-model_name=PINAS64-miniDLNA
-
-# Find and un-comment and/or change/add line `#merge_media_dirs=` to:
+# Set this to merge all media_dir base contents into the root container
+# (The default is no.)
 merge_media_dirs=no
 
-# Find and un-comment and/or change/add line `#db_dir=/var/cache/minidlna` to:
-db_dir=/home/pi/Desktop/minidlna/cache
+# Path to the directory that should hold the database and album art cache.
+db_dir=/var/cache/minidlna
 
-# Find and un-comment and/or change/add line `#log_dir=/var/log/minidlna` to:
-log_dir=/home/pi/Desktop/minidlna
+# Path to the directory that should hold the log file.
+log_dir=/var/log/minidlna
+
+# Type and minimum level of importance of messages to be logged.
+#
+# The types are "artwork", "database", "general", "http", "inotify",
+# "metadata", "scanner", "ssdp" and "tivo".
+#
+# The levels are "off", "fatal", "error", "warn", "info" or "debug".
+# "off" turns of logging entirely, "fatal" is the highest level of importance
+# and "debug" the lowest.
+#
+# The types are comma-separated, followed by an equal sign ("="), followed by a
+# level that applies to the preceding types. This can be repeated, separating
+# each of these constructs with a comma.
+#
+# The default is to log all types of messages at the "warn" level.
+log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=info
+
+# Port number for HTTP traffic (descriptions, SOAP, media transfer).
+# This option is mandatory (or it must be specified on the command-line using
+# "-p").
+port=8200
+
+# Name that the DLNA server presents to clients.
+# Defaults to "hostname: username".
+friendly_name=PINAS64-minidlna
+
+# Serial number the server reports to clients.
+# Defaults to the MAC address of nework interface.
+serial=001
+
+# Model name the server reports to clients.
+#model_name=Windows Media Connect compatible (MiniDLNA)
+model_name=PINAS64-miniDLNA
+
+# Automatic discovery of new files in the media_dir directory.
+inotify=yes
+
+# Strictly adhere to DLNA standards.
+# This allows server-side downscaling of very large JPEG images, which may
+# decrease JPEG serving performance on (at least) Sony DLNA products.
+strict_dlna=yes
+
+# Support for streaming .jpg and .mp3 files to a TiVo supporting HMO.
+enable_tivo=no
+
+# SSDP notify interval, in seconds. 5 seconds after 15 minutes
+notify_interval=895
+
+# maximum number of simultaneous connections
+# note: many clients open several simultaneous connections while streaming
+max_connections=30
+
+# set this to yes to allow symlinks that point outside user-defined media_dirs.
+wide_links=yes
 
 # inotify=yes and notify_interval=895 work together for miniDLNA to discover added and modified files
 # Find and un-comment and/or change/add line `#inotify=yes` to:
@@ -1377,24 +1407,8 @@ inotify=yes
 # Find and un-comment and/or change/add line `#notify_interval=895` (5 seconds under 15 minutes) to:
 notify_interval=895
 
-# Find and un-comment and/or change/add line `#strict_dlna=no` to:
-strict_dlna=yes
+# *** Now ... ADD lines to match the folders we need to expose withing the merged folder tree:
 
-# Find and un-comment and/or change/add line `#max_connections=50` to a number expected for this LAN:
-# (many clients open several simultaneous connections while streaming)
-max_connections=30
-
-# Find and un-comment and/or change/add line `#log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=warn` to:
-log_level=general,artwork,database,inotify,scanner,metadata,http,ssdp,tivo=info
-
-# Find and un-comment and/or change/add line `#wide_links=no` to:
-wide_links=yes
-
-# now ADD the line to expose the mergerfs media folder ...
-root_container=PVA,/srv/media
-##media_dir=PVA,/srv/media
-
-# now ADD any lines to match the folders we need to expose from with the merged folder tree
 # THE ENTRIES BELOW MUST EXACTLY MATCH THE FOLDERS WE WISH DLNA TO EXPOSE
 # THE EXAMPLE BELOW INCLUDES COMMENTED-OUT UNUSED FOLDERS
 #media_dir=PVA,/srv/media/BigIdeas
@@ -1403,6 +1417,7 @@ media_dir=PVA,/srv/media/ClassicMovies
 media_dir=PVA,/srv/media/Documentaries
 #media_dir=PVA,/srv/media/Family_Photos
 media_dir=PVA,/srv/media/Footy
+media_dir=PVA,/srv/media/HomePics
 media_dir=PVA,/srv/media/Movies
 #media_dir=PVA,/srv/media/Movies_unsorted
 media_dir=PVA,/srv/media/Music
@@ -1411,14 +1426,14 @@ media_dir=PVA,/srv/media/OldMovies
 media_dir=PVA,/srv/media/SciFi
 #media_dir=PVA,/srv/media/Series
 ```
-Restart miniDLNA and force a db reload, whihc will take a long time to index
+Restart miniDLNA and force a db reload, which may take 15 mins or more to index
 ```
 sudo systemctl stop minidlna 
 sudo systemctl restart minidlna 
-sudo systemctl reload minidlna
 sudo systemctl force-reload minidlna 
 sudo systemctl status minidlna | tail -n 50
-tail -n 50 /home/pi/Desktop/minidlna/minidlna.log
+#cat /var/log/minidlna/minidlna.log
+tail -n 100 /var/log/minidlna/minidlna.log
 ```
 The minidlna service comes with a small internal web server and web-interface.    
 This web-interface is just for informational purposes.    
